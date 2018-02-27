@@ -153,6 +153,8 @@ return [
 		// App\Providers\BroadcastServiceProvider::class,
 		App\Providers\EventServiceProvider::class ,
 		App\Providers\RouteServiceProvider::class ,
+		App\API\v1\Validators\Concretes\Laravel\LaravelValidatorsProvider::class ,
+		App\Repos\Concretes\Eloquent\EloquentReposProvider::class ,
 	] ,
 	/*
 	  |--------------------------------------------------------------------------
