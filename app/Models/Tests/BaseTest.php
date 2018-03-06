@@ -5,6 +5,9 @@ namespace App\Models\Tests ;
 use App\Models\User ;
 use Tests\TestCase ;
 
+/**
+ * @codeCoverageIgnore
+ */
 class BaseTest extends TestCase
 {
 
@@ -38,20 +41,6 @@ class BaseTest extends TestCase
 				'id' ,
 				'secret' ,
 		] ) ) ;
-	}
-
-	public function test__toString ()
-	{
-		$user = new User() ;
-
-		$user -> id = $this -> faker () -> numberBetween () ;
-		$user -> key = $this -> faker () -> userName ;
-		$user -> secret = $this -> faker () -> password ;
-
-		$userString = $user . '' ;
-
-		$this
-			-> assertSame ( '{"id":' . $user -> id . ',"key":"' . $user -> key . '","secret":"' . $user -> secret . '"}' , $userString ) ;
 	}
 
 }

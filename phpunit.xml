@@ -21,6 +21,9 @@
 		<testsuite name="Handlers">
 			<directory suffix="Test.php">./app/Handlers/Tests</directory>
 		</testsuite>
+		<testsuite name="Models">
+			<directory suffix="Test.php">./app/Models/Tests</directory>
+		</testsuite>
 		<testsuite name="RepoEloquent">
 			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Tests</directory>
 		</testsuite>
@@ -30,6 +33,9 @@
 			<directory suffix=".php">./app</directory>
 			<exclude>
 				<directory>./app/API/v1/routes</directory>
+				<directory>./app/Exceptions</directory>
+				<directory>./app/Http</directory>
+				<directory>./app/Providers</directory>
 			</exclude>
 		</whitelist>
 	</filter>

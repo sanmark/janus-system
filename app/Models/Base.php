@@ -27,9 +27,4 @@ abstract class Base
 		return $only ;
 	}
 
-	public function __toString (): string
-	{
-		return json_encode ( $this -> toArray () ) ;
-	}
-
 }

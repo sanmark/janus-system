@@ -5,8 +5,10 @@ namespace App\Repos\Concretes\Eloquent\Tests\Repos ;
 use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\User as eUser ;
 use App\Repos\Concretes\Eloquent\Repos\UsersRepo ;
+use App\Repos\Exceptions\RecordNotFoundException ;
 use App\Repos\Exceptions\UniqueConstraintFailureException ;
 use Exception ;
+use Illuminate\Database\Eloquent\ModelNotFoundException ;
 use Illuminate\Database\QueryException ;
 use Mockery ;
 use Tests\TestCase ;
@@ -77,6 +79,132 @@ class UsersRepoTest extends TestCase
 
 			throw $ex ;
 		}
+	}
+
+	public function testGetOk ()
+	{
+		$eUser = $this -> mock ( eUser::class ) ;
+
+		$usersRepo = new UsersRepo ( $eUser ) ;
+
+		$eUserData = [
+			'id' => 'the_id' ,
+			'key' => 'the_key' ,
+			'secret' => 'the_secret' ,
+			'deleted_at' => 'the_deleted_at' ,
+			'created_at' => 'the_created_at' ,
+			'updated_at' => 'the_updated_at' ,
+			] ;
+
+		foreach ( $eUserData as $key => $value )
+		{
+			$eUser
+				-> shouldReceive ( 'getAttribute' )
+				-> withArgs ( [ $key ] )
+				-> andReturn ( $value ) ;
+		}
+
+		$eUser
+			-> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andReturn ( $eUser ) ;
+
+		$result = $usersRepo -> get ( 149 ) ;
+
+		$this -> assertInstanceOf ( User::class , $result ) ;
+		foreach ( $eUserData as $key => $value )
+		{
+			$this -> assertSame ( $result -> {$key} , $value ) ;
+		}
+	}
+
+	public function testGetThrowsRecordNotFoundException ()
+	{
+		$this -> expectException ( RecordNotFoundException::class ) ;
+
+		$eUser = $this -> mock ( eUser::class ) ;
+
+		$eUser
+			-> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andThrow ( ModelNotFoundException::class ) ;
+
+		$usersRepo = new UsersRepo ( $eUser ) ;
+
+		$usersRepo -> get ( 149 ) ;
+	}
+
+	public function testGetByKeyOk ()
+	{
+		$mockEUser = Mockery::mock ( eUser::class ) ;
+
+		$mockEUser
+			-> shouldReceive ( 'where' )
+			-> withArgs ( [
+				'key' ,
+				'=' ,
+				'rofl' ,
+			] )
+			-> andReturn ( $mockEUser ) ;
+
+		$mockEUser
+			-> shouldReceive ( 'firstOrFail' )
+			-> andReturn ( $mockEUser ) ;
+
+		$attributeValues = [
+			'id' => 'the_id' ,
+			'key' => 'the_key' ,
+			'secret' => 'the_secret' ,
+			'deleted_at' => 'the_deleted_at' ,
+			'created_at' => 'the_created_at' ,
+			'updated_at' => 'the_updated_at' ,
+			] ;
+
+		foreach ( $attributeValues as $attribute => $value )
+		{
+			$mockEUser
+				-> shouldReceive ( 'getAttribute' )
+				-> withArgs ( [ $attribute ] )
+				-> andReturn ( $value ) ;
+		}
+
+		$usersRepo = new UsersRepo ( $mockEUser ) ;
+
+		$user = $usersRepo
+			-> getByKey ( 'rofl' ) ;
+
+		$this -> assertInstanceOf ( User::class , $user ) ;
+		$this -> assertSame ( $user -> id , 'the_id' ) ;
+		$this -> assertSame ( $user -> key , 'the_key' ) ;
+		$this -> assertSame ( $user -> secret , 'the_secret' ) ;
+		$this -> assertSame ( $user -> deleted_at , 'the_deleted_at' ) ;
+		$this -> assertSame ( $user -> created_at , 'the_created_at' ) ;
+		$this -> assertSame ( $user -> updated_at , 'the_updated_at' ) ;
+	}
+
+	public function testGetByKeyThrowsRecordNotFoundException ()
+	{
+		$this -> expectException ( RecordNotFoundException::class ) ;
+
+		$mockEUser = Mockery::mock ( eUser::class ) ;
+
+		$mockEUser
+			-> shouldReceive ( 'where' )
+			-> withArgs ( [
+				'key' ,
+				'=' ,
+				'rofl' ,
+			] )
+			-> andThrow ( ModelNotFoundException::class ) ;
+
+		$usersRepo = new UsersRepo ( $mockEUser ) ;
+
+		$user = $usersRepo
+			-> getByKey ( 'rofl' ) ;
 	}
 
 }

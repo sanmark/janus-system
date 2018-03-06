@@ -2,9 +2,10 @@
 
 namespace Tests ;
 
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase ;
 use Faker\Factory as Faker ;
 use Faker\Generator as FakerGenerator ;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase ;
+use Mockery ;
 
 abstract class TestCase extends BaseTestCase
 {
@@ -16,6 +17,16 @@ abstract class TestCase extends BaseTestCase
 	protected function faker (): FakerGenerator
 	{
 		return $this -> faker ;
+	}
+
+	protected function mock ( string $className )
+	{
+		return Mockery::mock ( $className ) ;
+	}
+
+	protected function seedDb ()
+	{
+		$this -> artisan ( 'db:seed' ) ;
 	}
 
 	protected function setUp ()
