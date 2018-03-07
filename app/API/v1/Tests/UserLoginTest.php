@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\v1\Tests\Feature ;
+namespace App\API\v1\Tests ;
 
 use Tests\TestCase ;
 use function dd ;

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\v1\Tests\Unit\Controllers ;
+namespace App\API\v1\Controllers\Tests ;
 
 use App\API\v1\Controllers\UsersController ;
 use App\API\v1\Validators\Contracts\IUsersValidator ;
@@ -19,7 +19,7 @@ use Tests\TestCase ;
 class UsersControllerTest extends TestCase
 {
 
-	public function testCreateOk ()
+	public function testCreate_Ok ()
 	{
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$mockUsersValidator = Mockery::mock ( IUsersValidator::class ) ;
@@ -83,7 +83,7 @@ class UsersControllerTest extends TestCase
 				] , $r -> getData () ) ;
 	}
 
-	public function testCreateHandlesInvalidInputException ()
+	public function testCreate_HandlesInvalidInputException ()
 	{
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$mockUsersValidator = Mockery::mock ( IUsersValidator::class ) ;
@@ -120,7 +120,7 @@ class UsersControllerTest extends TestCase
 				] , $r -> getData () ) ;
 	}
 
-	public function testCreateHandlesUniqueConstraintFailureException ()
+	public function testCreate_HandlesUniqueConstraintFailureException ()
 	{
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$mockUsersValidator = Mockery::mock ( IUsersValidator::class ) ;

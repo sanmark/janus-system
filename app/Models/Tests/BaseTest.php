@@ -11,7 +11,7 @@ use Tests\TestCase ;
 class BaseTest extends TestCase
 {
 
-	public function testToArray ()
+	public function testToArray_Ok ()
 	{
 		$user = new User() ;
 
@@ -26,7 +26,7 @@ class BaseTest extends TestCase
 			] , $user -> toArray () ) ;
 	}
 
-	public function testToArrayOnly ()
+	public function testToArrayOnly_Ok ()
 	{
 		$user = new User() ;
 

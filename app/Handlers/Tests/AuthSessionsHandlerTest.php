@@ -16,7 +16,7 @@ use Tests\TestCase ;
 class AuthSessionsHandlerTest extends TestCase
 {
 
-	public function testCreateOk ()
+	public function testCreate_Ok ()
 	{
 		$mockUser = Mockery::mock ( User::class ) ;
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
@@ -45,7 +45,7 @@ class AuthSessionsHandlerTest extends TestCase
 		$this -> assertSame ( $mockAuthSession , $response ) ;
 	}
 
-	public function testGetByKey ()
+	public function testGetByKey_Ok ()
 	{
 		$usersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$authSessionsRepo = Mockery::mock ( IAuthSessionsRepo::class ) ;

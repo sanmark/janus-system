@@ -16,7 +16,7 @@ use Tests\TestCase ;
 class UsersHandlerTest extends TestCase
 {
 
-	public function testCreateOk ()
+	public function testCreate_Ok ()
 	{
 		$mockHash = Mockery::mock ( Hasher::class ) ;
 		$mockIUsersRepo = Mockery::mock ( IUsersRepo::class ) ;
@@ -39,7 +39,7 @@ class UsersHandlerTest extends TestCase
 		$this -> assertSame ( $mockUserModel , $response ) ;
 	}
 
-	public function testGetUserIfCredentialsValidOk ()
+	public function testGetUserIfCredentialsValid_Ok ()
 	{
 		$mockIUsersRepo = Mockery::mock ( IUsersRepo::class ) ;
 		$mockHash = Mockery::mock ( Hasher::class ) ;
@@ -69,7 +69,7 @@ class UsersHandlerTest extends TestCase
 		$this -> assertSame ( $mockUser , $response ) ;
 	}
 
-	public function testGetUserIfCredentialsValidHandlesInvalidCredentials ()
+	public function testGetUserIfCredentialsValid_HandlesInvalidCredentials ()
 	{
 		$this -> expectException ( RecordNotFoundException::class ) ;
 

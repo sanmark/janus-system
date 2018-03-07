@@ -12,7 +12,7 @@ use Tests\TestCase ;
 class UsersValidatorTest extends TestCase
 {
 
-	public function testCreateReturnsNullForValidInputs ()
+	public function testCreate_ReturnsNullForValidInputs ()
 	{
 		$data = [
 			'user_key' => 'the_key' ,
@@ -26,7 +26,7 @@ class UsersValidatorTest extends TestCase
 		$this -> assertNull ( $result ) ;
 	}
 
-	public function testCreateThrowsInvalidInputExceptionForInvalidInputs ()
+	public function testCreate_ThrowsInvalidInputExceptionForInvalidInputs ()
 	{
 		$data = [] ;
 

@@ -10,14 +10,14 @@
 		 stopOnFailure="false">
 	<testsuites>
 		<testsuite name="v1Feature">
-			<directory suffix="Test.php">./app/API/v1/Tests/Feature</directory>
+			<directory suffix="Test.php">./app/API/v1/Tests</directory>
 		</testsuite>
 		<testsuite name="v1Unit">
-			<directory suffix="Test.php">./app/API/v1/Tests/Unit</directory>
+			<directory suffix="Test.php">./app/API/v1/Controllers/Tests</directory>
 			<directory suffix="Test.php">./app/API/v1/Validators/Concretes/Laravel/Tests</directory>
 			<directory suffix="Test.php">./app/Handlers/Tests</directory>
 			<directory suffix="Test.php">./app/Models/Tests</directory>
-			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Tests</directory>
+			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Repos/Tests</directory>
 		</testsuite>
 	</testsuites>
 	<filter>

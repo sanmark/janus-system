@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\v1\Tests\Unit\Controllers ;
+namespace App\API\v1\Controllers\Tests ;
 
 use App\API\v1\Controllers\AuthSessionsController ;
 use App\API\v1\Validators\Concretes\Laravel\Validators\AuthSessionsValidator ;
@@ -18,7 +18,7 @@ use Tests\TestCase ;
 class AuthSessionsControllerTest extends TestCase
 {
 
-	public function testCreateOk ()
+	public function testCreate_Ok ()
 	{
 		$authSessionsHandler = $this -> mock ( AuthSessionsHandler::class ) ;
 		$authSessionsValidator = $this -> mock ( AuthSessionsValidator::class ) ;
@@ -81,7 +81,7 @@ class AuthSessionsControllerTest extends TestCase
 			] , $response -> getData () ) ;
 	}
 
-	public function testCreateHandlesInvalidInputException ()
+	public function testCreate_HandlesInvalidInputException ()
 	{
 		$authSessionsHandler = $this -> mock ( AuthSessionsHandler::class ) ;
 		$authSessionsValidator = $this -> mock ( AuthSessionsValidator::class ) ;
@@ -120,7 +120,7 @@ class AuthSessionsControllerTest extends TestCase
 			] , $respose -> getData () ) ;
 	}
 
-	public function testCreateHandlesRecordNotFoundException ()
+	public function testCreate_HandlesRecordNotFoundException ()
 	{
 		$authSessionsHandler = $this -> mock ( AuthSessionsHandler::class ) ;
 		$authSessionsValidator = $this -> mock ( AuthSessionsValidator::class ) ;
@@ -176,7 +176,7 @@ class AuthSessionsControllerTest extends TestCase
 		$this -> assertEquals ( 401 , $respose -> getStatusCode () ) ;
 	}
 
-	public function testValidateOk ()
+	public function testValidate_Ok ()
 	{
 		$authSessionsHandler = $this -> mock ( AuthSessionsHandler::class ) ;
 		$authSessionsValidator = $this -> mock ( AuthSessionsValidator::class ) ;
@@ -218,7 +218,7 @@ class AuthSessionsControllerTest extends TestCase
 			] , $result -> getData () ) ;
 	}
 
-	public function testValidateHandlesRecordNotFoundException ()
+	public function testValidate_HandlesRecordNotFoundException ()
 	{
 		$authSessionsHandler = $this -> mock ( AuthSessionsHandler::class ) ;
 		$authSessionsValidator = $this -> mock ( AuthSessionsValidator::class ) ;
