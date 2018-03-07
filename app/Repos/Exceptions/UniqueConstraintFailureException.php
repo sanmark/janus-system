@@ -24,9 +24,4 @@ class UniqueConstraintFailureException extends Exception
 		return $this -> constraint ;
 	}
 
-	public function getValue ()
-	{
-		return $this -> value ;
-	}
-
 }

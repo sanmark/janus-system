@@ -8,4 +8,6 @@ interface IAuthSessionsRepo
 {
 
 	public function create ( int $userId ): AuthSession ;
+
+	public function getByKey ( string $key ): AuthSession ;
 }

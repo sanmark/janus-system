@@ -14,17 +14,9 @@
 		</testsuite>
 		<testsuite name="v1Unit">
 			<directory suffix="Test.php">./app/API/v1/Tests/Unit</directory>
-		</testsuite>
-		<testsuite name="v1ValidatorsLaravel">
 			<directory suffix="Test.php">./app/API/v1/Validators/Concretes/Laravel/Tests</directory>
-		</testsuite>
-		<testsuite name="Handlers">
 			<directory suffix="Test.php">./app/Handlers/Tests</directory>
-		</testsuite>
-		<testsuite name="Models">
 			<directory suffix="Test.php">./app/Models/Tests</directory>
-		</testsuite>
-		<testsuite name="RepoEloquent">
 			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Tests</directory>
 		</testsuite>
 	</testsuites>

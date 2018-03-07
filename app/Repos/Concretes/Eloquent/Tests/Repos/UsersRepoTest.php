@@ -75,67 +75,9 @@ class UsersRepoTest extends TestCase
 		} catch ( UniqueConstraintFailureException $ex )
 		{
 			$this -> assertSame ( 'user_key' , $ex -> getConstraint () ) ;
-			$this -> assertSame ( $userKey , $ex -> getValue () ) ;
 
 			throw $ex ;
 		}
-	}
-
-	public function testGetOk ()
-	{
-		$eUser = $this -> mock ( eUser::class ) ;
-
-		$usersRepo = new UsersRepo ( $eUser ) ;
-
-		$eUserData = [
-			'id' => 'the_id' ,
-			'key' => 'the_key' ,
-			'secret' => 'the_secret' ,
-			'deleted_at' => 'the_deleted_at' ,
-			'created_at' => 'the_created_at' ,
-			'updated_at' => 'the_updated_at' ,
-			] ;
-
-		foreach ( $eUserData as $key => $value )
-		{
-			$eUser
-				-> shouldReceive ( 'getAttribute' )
-				-> withArgs ( [ $key ] )
-				-> andReturn ( $value ) ;
-		}
-
-		$eUser
-			-> shouldReceive ( 'findOrFail' )
-			-> withArgs ( [
-				149 ,
-			] )
-			-> andReturn ( $eUser ) ;
-
-		$result = $usersRepo -> get ( 149 ) ;
-
-		$this -> assertInstanceOf ( User::class , $result ) ;
-		foreach ( $eUserData as $key => $value )
-		{
-			$this -> assertSame ( $result -> {$key} , $value ) ;
-		}
-	}
-
-	public function testGetThrowsRecordNotFoundException ()
-	{
-		$this -> expectException ( RecordNotFoundException::class ) ;
-
-		$eUser = $this -> mock ( eUser::class ) ;
-
-		$eUser
-			-> shouldReceive ( 'findOrFail' )
-			-> withArgs ( [
-				149 ,
-			] )
-			-> andThrow ( ModelNotFoundException::class ) ;
-
-		$usersRepo = new UsersRepo ( $eUser ) ;
-
-		$usersRepo -> get ( 149 ) ;
 	}
 
 	public function testGetByKeyOk ()

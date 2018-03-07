@@ -45,4 +45,26 @@ class AuthSessionsHandlerTest extends TestCase
 		$this -> assertSame ( $mockAuthSession , $response ) ;
 	}
 
+	public function testGetByKey ()
+	{
+		$usersHandler = Mockery::mock ( UsersHandler::class ) ;
+		$authSessionsRepo = Mockery::mock ( IAuthSessionsRepo::class ) ;
+
+		$authSessionsHandler = new AuthSessionsHandler ( $authSessionsRepo , $usersHandler ) ;
+
+		$authSession = $this -> mock ( AuthSession::class ) ;
+
+		$authSessionsRepo
+			-> shouldReceive ( 'getByKey' )
+			-> withArgs ( [
+				'rofl' ,
+			] )
+			-> andReturn ( $authSession ) ;
+
+		$result = $authSessionsHandler -> getByKey ( 'rofl' ) ;
+
+		$this -> assertInstanceOf ( AuthSession::class , $result ) ;
+		$this -> assertSame ( $authSession , $result ) ;
+	}
+
 }

@@ -2,6 +2,7 @@
 
 namespace App\API\v1\Controllers ;
 
+use App\API\v1\Constants\Headers\RequestHeaderConstants ;
 use App\API\v1\Constants\UserInputs\UsersInputConstants ;
 use App\API\v1\Responses\ErrorResponse ;
 use App\API\v1\Responses\SuccessResponse ;
@@ -10,6 +11,7 @@ use App\API\v1\Validators\Exceptions\InvalidInputException ;
 use App\Handlers\AuthSessionsHandler ;
 use App\Repos\Exceptions\RecordNotFoundException ;
 use Illuminate\Http\Request ;
+use function dd ;
 use function response ;
 
 class AuthSessionsController
@@ -56,6 +58,29 @@ class AuthSessionsController
 			return response ()
 					-> json ( $response -> getOutput () )
 					-> setStatusCode ( 400 ) ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			return response ()
+					-> json ()
+					-> setStatusCode ( 401 ) ;
+		}
+	}
+
+	public function validate ( Request $request )
+	{
+		try
+		{
+			$key = $request -> header ( RequestHeaderConstants::SESSION_KEY ) ;
+
+			$authSession = $this
+				-> authSessionsHandler
+				-> getByKey ( $key ) ;
+
+			$response = new SuccessResponse ( $authSession ) ;
+
+			return response ()
+					-> json ( $response -> getOutput () )
+					-> setStatusCode ( 200 ) ;
 		} catch ( RecordNotFoundException $ex )
 		{
 			return response ()

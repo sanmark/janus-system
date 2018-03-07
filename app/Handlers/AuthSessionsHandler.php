@@ -33,4 +33,13 @@ class AuthSessionsHandler
 		return $authSession ;
 	}
 
+	public function getByKey ( string $key ): AuthSession
+	{
+		$authSession = $this
+			-> authSessionsRepo
+			-> getByKey ( $key ) ;
+
+		return $authSession ;
+	}
+
 }

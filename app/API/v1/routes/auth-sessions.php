@@ -12,4 +12,8 @@ Route::group ( [
 	$router
 		-> post ( '' , $methodPrefix . 'create' )
 		-> name ( 'auth-sessions.create' ) ;
+
+	$router
+		-> get ( 'validate' , $methodPrefix . 'validate' )
+		-> name ( 'auth-sessions.create' ) ;
 } ) ;

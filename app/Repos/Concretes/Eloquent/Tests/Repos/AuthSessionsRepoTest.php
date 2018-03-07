@@ -7,7 +7,9 @@ use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\AuthSession as eAuthSession ;
 use App\Repos\Concretes\Eloquent\Repos\AuthSessionsRepo ;
 use App\Repos\Concretes\Eloquent\Repos\UsersRepo ;
+use App\Repos\Exceptions\RecordNotFoundException ;
 use Illuminate\Contracts\Hashing\Hasher ;
+use Illuminate\Database\Eloquent\ModelNotFoundException ;
 use Tests\TestCase ;
 
 /**
@@ -32,17 +34,6 @@ class AuthSessionsRepoTest extends TestCase
 			-> shouldReceive ( 'newInstance' )
 			-> andReturn ( $eAuthSession ) ;
 
-		$user = $this -> mock ( User::class ) ;
-
-		$user -> id = 150 ;
-
-		$usersRepo
-			-> shouldReceive ( 'get' )
-			-> withArgs ( [
-				149 ,
-			] )
-			-> andReturn ( $user ) ;
-
 		$eAuthSession
 			-> shouldReceive ( 'setAttribute' )
 			-> withArgs ( [
@@ -55,7 +46,7 @@ class AuthSessionsRepoTest extends TestCase
 			-> shouldReceive ( 'setAttribute' )
 			-> withArgs ( [
 				'user_id' ,
-				150 ,
+				149 ,
 			] )
 			-> andReturns () ;
 
@@ -85,7 +76,89 @@ class AuthSessionsRepoTest extends TestCase
 		$this -> assertInstanceOf ( AuthSession::class , $result ) ;
 		$this -> assertSame ( 'the_id' , $result -> id ) ;
 		$this -> assertSame ( 'the_key' , $result -> key ) ;
-		$this -> assertSame ( 150 , $result -> user_id ) ;
+		$this -> assertSame ( 149 , $result -> user_id ) ;
+	}
+
+	public function testGetByKeyOk ()
+	{
+		$hash = $this -> mock ( Hasher::class ) ;
+		$eAuthSession = $this -> mock ( eAuthSession::class ) ;
+		$usersRepo = $this -> mock ( UsersRepo::class ) ;
+
+		$authSessionRepo = new AuthSessionsRepo (
+			$hash
+			, $eAuthSession
+			, $usersRepo
+			) ;
+
+		$eAuthSession
+			-> shouldReceive ( 'where' )
+			-> withArgs ( [
+				'key' ,
+				'=' ,
+				'rofl'
+			] )
+			-> andReturnSelf () ;
+
+		$eAuthSession
+			-> shouldReceive ( 'firstOrFail' )
+			-> andReturnSelf () ;
+
+		$attributes = [
+			'id' => 'the_id' ,
+			'key' => 'the_key' ,
+			'user_id' => 'the_user_id' ,
+			'created_at' => 'the_created_at' ,
+			'updated_at' => 'the_updated_at' ,
+			] ;
+
+		foreach ( $attributes as $key => $value )
+		{
+			$eAuthSession
+				-> shouldReceive ( 'getAttribute' )
+				-> withArgs ( [
+					$key ,
+				] )
+				-> andReturn ( $value ) ;
+		}
+
+		$result = $authSessionRepo -> getByKey ( 'rofl' ) ;
+
+		$this -> assertInstanceOf ( AuthSession::class , $result ) ;
+		foreach ( $attributes as $key => $value )
+		{
+			$this -> assertSame ( $value , $result -> {$key} ) ;
+		}
+	}
+
+	public function testGetByKeyThrowsRecordNotFoundException ()
+	{
+		$this -> expectException ( RecordNotFoundException::class ) ;
+
+		$hash = $this -> mock ( Hasher::class ) ;
+		$eAuthSession = $this -> mock ( eAuthSession::class ) ;
+		$usersRepo = $this -> mock ( UsersRepo::class ) ;
+
+		$authSessionRepo = new AuthSessionsRepo (
+			$hash
+			, $eAuthSession
+			, $usersRepo
+			) ;
+
+		$eAuthSession
+			-> shouldReceive ( 'where' )
+			-> withArgs ( [
+				'key' ,
+				'=' ,
+				'rofl'
+			] )
+			-> andReturnSelf () ;
+
+		$eAuthSession
+			-> shouldReceive ( 'firstOrFail' )
+			-> andThrow ( ModelNotFoundException::class ) ;
+
+		$authSessionRepo -> getByKey ( 'rofl' ) ;
 	}
 
 }
