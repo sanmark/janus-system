@@ -199,7 +199,7 @@ class AuthSessionsControllerTest extends TestCase
 		$authSession -> user_id = 'the_user_id' ;
 
 		$authSessionsHandler
-			-> shouldReceive ( 'getByKey' )
+			-> shouldReceive ( 'getByKeyIfActiveAndExtendActiveTime' )
 			-> withArgs ( [
 				'the_key' ,
 			] )
@@ -235,7 +235,7 @@ class AuthSessionsControllerTest extends TestCase
 			-> andReturn ( 'the_key' ) ;
 
 		$authSessionsHandler
-			-> shouldReceive ( 'getByKey' )
+			-> shouldReceive ( 'getByKeyIfActiveAndExtendActiveTime' )
 			-> withArgs ( [
 				'the_key' ,
 			] )

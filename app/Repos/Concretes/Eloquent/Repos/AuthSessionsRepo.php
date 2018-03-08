@@ -72,4 +72,17 @@ class AuthSessionsRepo implements IAuthSessionsRepo
 		}
 	}
 
+	public function update ( AuthSession $authSession ): AuthSession
+	{
+		$eAuthSession = $this
+			-> model
+			-> findOrFail ( $authSession -> id ) ;
+
+		$eAuthSession -> updated_at = $authSession -> updated_at ;
+
+		$eAuthSession -> save () ;
+
+		return $this -> getByKey ( $eAuthSession -> key ) ;
+	}
+
 }

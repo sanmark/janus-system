@@ -19,9 +19,14 @@ abstract class TestCase extends BaseTestCase
 		return $this -> faker ;
 	}
 
-	protected function mock ( string $className )
+	protected function mock ( string $className , array $constructorArgs = NULL )
 	{
-		return Mockery::mock ( $className ) ;
+		if ( is_null ( $constructorArgs ) )
+		{
+			return Mockery::mock ( $className ) ;
+		}
+
+		return Mockery::mock ( $className , $constructorArgs ) ;
 	}
 
 	protected function seedDb ()

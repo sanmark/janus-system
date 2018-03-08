@@ -10,4 +10,6 @@ interface IAuthSessionsRepo
 	public function create ( int $userId ): AuthSession ;
 
 	public function getByKey ( string $key ): AuthSession ;
+
+	public function update ( AuthSession $authSession ): AuthSession ;
 }

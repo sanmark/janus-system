@@ -161,4 +161,65 @@ class AuthSessionsRepoTest extends TestCase
 		$authSessionRepo -> getByKey ( 'rofl' ) ;
 	}
 
+	public function test_update_ok ()
+	{
+		$hash = $this -> mock ( Hasher::class ) ;
+		$eAuthSession = $this -> mock ( eAuthSession::class ) ;
+		$usersRepo = $this -> mock ( UsersRepo::class ) ;
+
+		$authSessionRepo = new AuthSessionsRepo (
+			$hash
+			, $eAuthSession
+			, $usersRepo
+			) ;
+
+		$authSessionRepo = $this -> mock ( AuthSessionsRepo::class . '[getByKey]' , [
+			$hash ,
+			$eAuthSession ,
+			$usersRepo ,
+			] ) ;
+
+		$authSession = $this -> mock ( AuthSession::class ) ;
+
+		$eAuthSession
+			-> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andReturnSelf () ;
+
+		$authSession -> id = 149 ;
+		$authSession -> updated_at = 'the_updated_at' ;
+
+		$eAuthSession
+			-> shouldReceive ( 'setAttribute' )
+			-> withArgs ( [
+				'updated_at' ,
+				'the_updated_at' ,
+			] )
+			-> andReturns () ;
+
+		$eAuthSession
+			-> shouldReceive ( 'save' )
+			-> andReturns () ;
+
+		$eAuthSession
+			-> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'key'
+			] )
+			-> andReturn ( 'the_key' ) ;
+
+		$authSessionRepo
+			-> shouldReceive ( 'getByKey' )
+			-> withArgs ( [
+				'the_key' ,
+			] )
+			-> andReturn ( $authSession ) ;
+
+		$result = $authSessionRepo -> update ( $authSession ) ;
+
+		$this -> assertSame ( $authSession , $result ) ;
+	}
+
 }

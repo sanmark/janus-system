@@ -10,8 +10,8 @@ use App\API\v1\Validators\Contracts\IAuthSessionsValidator ;
 use App\API\v1\Validators\Exceptions\InvalidInputException ;
 use App\Handlers\AuthSessionsHandler ;
 use App\Repos\Exceptions\RecordNotFoundException ;
+use App\SystemSettings\Contracts\ISystemSettingsInterface ;
 use Illuminate\Http\Request ;
-use function dd ;
 use function response ;
 
 class AuthSessionsController
@@ -81,7 +81,7 @@ class AuthSessionsController
 
 			$authSession = $this
 				-> authSessionsHandler
-				-> getByKey ( $key ) ;
+				-> getByKeyIfActiveAndExtendActiveTime ( $key ) ;
 
 			$response = new SuccessResponse ( $authSession ) ;
 

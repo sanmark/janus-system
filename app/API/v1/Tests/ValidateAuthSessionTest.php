@@ -47,4 +47,14 @@ class ValidateAuthSessionTest extends TestCase
 			-> assertJsonStructure ( [] ) ;
 	}
 
+	public function testSystemRejectsExpiredSessionKey ()
+	{
+		$this -> seedDb () ;
+		$this
+			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key_expired' )
+			-> get ( 'api/v1/auth-sessions/validate' )
+			-> assertStatus ( 401 )
+			-> assertJsonStructure ( [] ) ;
+	}
+
 }

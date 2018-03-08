@@ -18,6 +18,7 @@
 			<directory suffix="Test.php">./app/Handlers/Tests</directory>
 			<directory suffix="Test.php">./app/Models/Tests</directory>
 			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Repos/Tests</directory>
+			<directory suffix="Test.php">./app/SystemSettings/Concretes/LaravelEnv/Tests</directory>
 		</testsuite>
 	</testsuites>
 	<filter>
