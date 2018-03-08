@@ -9,12 +9,12 @@
 		 processIsolation="false"
 		 stopOnFailure="false">
 	<testsuites>
-		<testsuite name="v1Feature">
-			<directory suffix="Test.php">./app/API/v1/Tests</directory>
+		<testsuite name="feature">
+			<directory suffix="Test.php">./app/API/Tests</directory>
 		</testsuite>
-		<testsuite name="v1Unit">
-			<directory suffix="Test.php">./app/API/v1/Controllers/Tests</directory>
-			<directory suffix="Test.php">./app/API/v1/Validators/Concretes/Laravel/Tests</directory>
+		<testsuite name="unit">
+			<directory suffix="Test.php">./app/API/Controllers/Tests</directory>
+			<directory suffix="Test.php">./app/API/Validators/Concretes/Laravel/Tests</directory>
 			<directory suffix="Test.php">./app/Handlers/Tests</directory>
 			<directory suffix="Test.php">./app/Models/Tests</directory>
 			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Repos/Tests</directory>
@@ -25,7 +25,7 @@
 		<whitelist processUncoveredFilesFromWhitelist="true">
 			<directory suffix=".php">./app</directory>
 			<exclude>
-				<directory>./app/API/v1/routes</directory>
+				<directory>./app/API/routes</directory>
 				<directory>./app/Exceptions</directory>
 				<directory>./app/Http</directory>
 				<directory>./app/Providers</directory>

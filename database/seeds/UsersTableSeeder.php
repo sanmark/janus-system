@@ -1,6 +1,6 @@
 <?php
 
-use App\API\v1\Constants\UserInputs\UsersInputConstants ;
+use App\API\Constants\UserInputs\UsersInputConstants ;
 use App\Repos\Contracts\IUsersRepo ;
 use Illuminate\Database\Seeder ;
 

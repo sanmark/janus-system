@@ -6,7 +6,7 @@ Route::group ( [
 	'prefix' => 'users' ,
 	] , function(Router $router)
 {
-	$controller = App\Http\Controllers\API\v1\UsersController::class . '@' ;
+	$controller = App\Http\Controllers\API\UsersController::class . '@' ;
 
 	$router
 		-> post ( '' , $controller . 'create' )

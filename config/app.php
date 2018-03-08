@@ -153,7 +153,7 @@ return [
 		// App\Providers\BroadcastServiceProvider::class,
 		App\Providers\EventServiceProvider::class ,
 		App\Providers\RouteServiceProvider::class ,
-		App\API\v1\Validators\Concretes\Laravel\LaravelValidatorsProvider::class ,
+		App\API\Validators\Concretes\Laravel\LaravelValidatorsProvider::class ,
 		App\Repos\Concretes\Eloquent\EloquentReposProvider::class ,
 		App\SystemSettings\Concretes\LaravelEnv\LaravelEnvSystemSettingsProvider::class ,
 	] ,

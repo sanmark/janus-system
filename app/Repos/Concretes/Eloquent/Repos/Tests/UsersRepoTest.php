@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repos\Concretes\Eloquent\Tests\Repos ;
+namespace App\Repos\Concretes\Eloquent\Repos\Tests ;
 
 use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\User as eUser ;

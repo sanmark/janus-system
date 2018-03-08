@@ -2,7 +2,7 @@
 
 namespace App\Repos\Concretes\Eloquent\Repos ;
 
-use App\API\v1\Constants\UserInputs\UsersInputConstants ;
+use App\API\Constants\UserInputs\UsersInputConstants ;
 use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\User as eUser ;
 use App\Repos\Contracts\IUsersRepo ;
@@ -11,6 +11,7 @@ use App\Repos\Exceptions\UniqueConstraintFailureException ;
 use Hash ;
 use Illuminate\Database\Eloquent\ModelNotFoundException ;
 use Illuminate\Database\QueryException ;
+use function dd ;
 
 class UsersRepo implements IUsersRepo
 {
@@ -32,6 +33,7 @@ class UsersRepo implements IUsersRepo
 
 			$eUser -> key = $userKey ;
 			$eUser -> secret = Hash::make ( $userSecret ) ;
+
 
 			$eUser -> save () ;
 

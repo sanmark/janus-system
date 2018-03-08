@@ -42,10 +42,10 @@ class RouteServiceProvider extends ServiceProvider
 	protected function mapApiRoutes ()
 	{
 		Route::group ( [
-			'prefix' => 'api/v1/' ,
+			'prefix' => 'api/' ,
 			] , function()
 		{
-			$path = base_path ( 'app/API/v1/routes/*.php' ) ;
+			$path = base_path ( 'app/API/routes/*.php' ) ;
 			$files = glob ( $path ) ;
 
 			foreach ( $files as $file )
