@@ -242,6 +242,31 @@ class AuthSessionsControllerTest extends TestCase
 			-> andThrow ( RecordNotFoundException::class ) ;
 
 		$result = $authSessionsController -> validate ( $request ) ;
+
+		$this -> assertInstanceOf ( JsonResponse::class , $result ) ;
+		$this -> assertEquals ( 401 , $result -> getStatusCode () ) ;
+	}
+
+	public function test_validate_handlesEmptySessionKeyHeader ()
+	{
+		$authSessionsHandler = $this -> mock ( AuthSessionsHandler::class ) ;
+		$authSessionsValidator = $this -> mock ( AuthSessionsValidator::class ) ;
+
+		$authSessionsController = new AuthSessionsController ( $authSessionsHandler , $authSessionsValidator ) ;
+
+		$request = $this -> mock ( Request::class ) ;
+
+		$request
+			-> shouldReceive ( 'header' )
+			-> withArgs ( [
+				'x-lk-sanmark-janus-sessionkey' ,
+			] )
+			-> andReturnNull () ;
+
+		$result = $authSessionsController -> validate ( $request ) ;
+
+		$this -> assertInstanceOf ( JsonResponse::class , $result ) ;
+		$this -> assertEquals ( 401 , $result -> getStatusCode () ) ;
 	}
 
 }

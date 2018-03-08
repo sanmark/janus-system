@@ -28,6 +28,15 @@ class ValidateAuthSessionTest extends TestCase
 			] ) ;
 	}
 
+	public function testSystemRejectsNullSessionKey ()
+	{
+		$this -> seedDb () ;
+		$this
+			-> get ( 'api/v1/auth-sessions/validate' )
+			-> assertStatus ( 401 )
+			-> assertJsonStructure ( [] ) ;
+	}
+
 	public function testSystemRejectsInvalidSessionKey ()
 	{
 		$this -> seedDb () ;

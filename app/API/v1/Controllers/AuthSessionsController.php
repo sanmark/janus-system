@@ -72,6 +72,13 @@ class AuthSessionsController
 		{
 			$key = $request -> header ( RequestHeaderConstants::SESSION_KEY ) ;
 
+			if ( is_null ( $key ) )
+			{
+				return response ()
+						-> json ()
+						-> setStatusCode ( 401 ) ;
+			}
+
 			$authSession = $this
 				-> authSessionsHandler
 				-> getByKey ( $key ) ;
