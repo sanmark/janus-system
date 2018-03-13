@@ -49,6 +49,30 @@ class UsersRepo implements IUsersRepo
 		}
 	}
 
+	public function get ( int $id ): User
+	{
+		try
+		{
+			$eUser = $this
+				-> model
+				-> findOrFail ( $id ) ;
+
+			$user = new User() ;
+
+			$user -> id = $eUser -> id ;
+			$user -> key = $eUser -> key ;
+			$user -> secret = $eUser -> secret ;
+			$user -> deleted_at = $eUser -> deleted_at ;
+			$user -> created_at = $eUser -> created_at ;
+			$user -> updated_at = $eUser -> updated_at ;
+
+			return $user ;
+		} catch ( ModelNotFoundException $ex )
+		{
+			throw new RecordNotFoundException() ;
+		}
+	}
+
 	public function getByKey ( string $userKey ): User
 	{
 		try

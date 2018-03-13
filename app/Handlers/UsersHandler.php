@@ -29,6 +29,15 @@ class UsersHandler
 				-> create ( $userKey , $userSecret ) ;
 	}
 
+	public function get ( int $id ): User
+	{
+		$user = $this
+			-> usersRepo
+			-> get ( $id ) ;
+
+		return $user ;
+	}
+
 	public function getUserIfCredentialsValid ( string $userKey , string $userSecret ): User
 	{
 		$user = $this

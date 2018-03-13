@@ -3,6 +3,7 @@
 namespace App\Handlers ;
 
 use App\Models\AuthSession ;
+use App\Models\User ;
 use App\Repos\Contracts\IAuthSessionsRepo ;
 use App\Repos\Exceptions\RecordNotFoundException ;
 use App\SystemSettings\Contracts\ISystemSettingsInterface ;
@@ -35,6 +36,14 @@ class AuthSessionsHandler
 			-> usersHandler
 			-> getUserIfCredentialsValid ( $userKey , $userSecret ) ;
 
+		$authSession = $this
+			-> createForUserObject ( $user ) ;
+
+		return $authSession ;
+	}
+
+	public function createForUserObject ( User $user ): AuthSession
+	{
 		$authSession = $this
 			-> authSessionsRepo
 			-> create ( $user -> id ) ;

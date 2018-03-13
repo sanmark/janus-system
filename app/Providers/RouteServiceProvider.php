@@ -37,6 +37,7 @@ class RouteServiceProvider extends ServiceProvider
 	public function map ()
 	{
 		$this -> mapApiRoutes () ;
+		$this -> mapWebRoutes () ;
 	}
 
 	protected function mapApiRoutes ()
@@ -46,6 +47,21 @@ class RouteServiceProvider extends ServiceProvider
 			] , function()
 		{
 			$path = base_path ( 'app/API/routes/*.php' ) ;
+			$files = glob ( $path ) ;
+
+			foreach ( $files as $file )
+			{
+				require $file ;
+			}
+		} ) ;
+	}
+
+	protected function mapWebRoutes ()
+	{
+		Route::group ( [
+			] , function()
+		{
+			$path = base_path ( 'app/Web/routes/*.php' ) ;
 			$files = glob ( $path ) ;
 
 			foreach ( $files as $file )
