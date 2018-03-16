@@ -80,4 +80,32 @@ class MetasController extends Controller
 		}
 	}
 
+	public function getMetasForUser ( $userID )
+	{
+		try
+		{
+			$metas = $this -> metaKeysHandler -> getmetasForUser ( $userID ) ;
+			$response = new SuccessResponse ( $metas , 200 ) ;
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+			return $response -> getResponse () ;
+		}
+	}
+
+	public function getMetaForUser ( $userID , $metaKey )
+	{
+		try
+		{
+			$meta = $this -> metaKeysHandler -> getmetaForUser ( $userID , $metaKey ) ;
+			$response = new SuccessResponse ( $meta , 200 ) ;
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+			return $response -> getResponse () ;
+		}
+	}
+
 }

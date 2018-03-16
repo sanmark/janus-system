@@ -64,4 +64,33 @@ class MetaKeysHandler
 		$this -> metaKeysRepo -> saveMetas ( $authSession -> user_id , $data ) ;
 	}
 
+	public function getMetasForUser ( $userID )
+	{
+		$metas = $this -> metaKeysRepo -> getMetasForUser ( $userID ) ;
+		$data = [] ;
+		foreach ( $metas as $meta )
+		{
+			$data[] = [
+				'meta_key' => $meta -> getMetaKey () ,
+				'value' => $meta -> value ,
+				'user_id' => $meta -> user_id
+				] ;
+		}
+		return $data ;
+	}
+
+	public function getMetaForUser ( $userID , $key )
+	{
+		$meta = $this -> metaKeysRepo -> getOneMetaForUser ( $userID , $key ) ;
+		if ( $meta == null )
+		{
+			return null ;
+		}
+		$data = [] ;
+		$data[ "meta_key" ] = $meta -> getMetaKey () ;
+		$data[ "value" ] = $meta -> value ;
+		$data[ "user_id" ] = $meta -> user_id ;
+		return $data ;
+	}
+
 }
