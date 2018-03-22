@@ -36,6 +36,7 @@ class ThirdPartySignInController extends Controller
 			'app_id' => config ( 'third-party.' . Constants::thirdPartyFacebookAppId ) ,
 			'app_secret' => config ( 'third-party.' . Constants::thirdPartyFacebookAppSecret ) ,
 			'default_graph_version' => 'v2.5' ,
+			'http_client_handler' => 'stream' ,
 			] ) ;
 
 		$fb -> setDefaultAccessToken ( $token ) ;
