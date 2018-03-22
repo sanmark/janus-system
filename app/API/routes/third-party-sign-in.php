@@ -10,6 +10,10 @@ Route::group ( [
 	$methodPrefix = ThirdPartySignInController::class . '@' ;
 
 	$router
+		-> post ( 'facebook' , $methodPrefix . 'facebook' )
+		-> name ( 'api.third-party-sign-in.facebook' ) ;
+
+	$router
 		-> post ( 'google' , $methodPrefix . 'google' )
 		-> name ( 'api.third-party-sign-in.google' ) ;
 } ) ;
