@@ -9,6 +9,7 @@ use App\API\Validators\Constants\ResponseConstants ;
 use App\API\Validators\Contracts\IUsersValidator ;
 use App\API\Validators\Exceptions\InvalidInputException ;
 use App\Handlers\UsersHandler ;
+use App\Repos\Exceptions\RecordNotFoundException ;
 use App\Repos\Exceptions\UniqueConstraintFailureException ;
 use Illuminate\Http\Request ;
 use Illuminate\Routing\Controller ;
@@ -65,11 +66,36 @@ class UsersController extends Controller
 		{
 			$response = new ErrorResponse ( [
 				$ex -> getConstraint () => ResponseConstants::Duplicate ,
-			] ) ;
+				] ) ;
 
 			return response ()
 					-> json ( $response -> getOutput () )
 					-> setStatusCode ( 409 ) ;
+		}
+	}
+
+	public function update ( Request $request , $id )
+	{
+		try
+		{
+			$user = $this
+				-> usersHandler
+				-> update ( $id , $request -> all ( [
+					UsersInputConstants::UserSecret ,
+				] ) ) ;
+
+			$response = new SuccessResponse ( $user -> toArrayOnly ( [
+					'id' ,
+					'key' ,
+				] ) ) ;
+
+			return response ()
+					-> json ( $response -> getOutput () )
+					-> setStatusCode ( 200 ) ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+			return $response -> getResponse () ;
 		}
 	}
 

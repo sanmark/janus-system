@@ -12,4 +12,6 @@ interface IUsersRepo
 	public function get ( int $id ): User ;
 
 	public function getByKey ( string $userKey ): User ;
+
+	public function update ( int $id , array $data ): User ;
 }

@@ -9,17 +9,22 @@ use App\Repos\Contracts\IUsersRepo ;
 use App\Repos\Exceptions\RecordNotFoundException ;
 use App\Repos\Exceptions\UniqueConstraintFailureException ;
 use Hash ;
+use Illuminate\Contracts\Hashing\Hasher ;
 use Illuminate\Database\Eloquent\ModelNotFoundException ;
 use Illuminate\Database\QueryException ;
-use function dd ;
 
 class UsersRepo implements IUsersRepo
 {
 
+	private $hasher ;
 	private $model ;
 
-	public function __construct ( eUser $eUser )
+	public function __construct (
+	Hasher $hasher
+	, eUser $eUser
+	)
 	{
+		$this -> hasher = $hasher ;
 		$this -> model = $eUser ;
 	}
 
@@ -92,6 +97,30 @@ class UsersRepo implements IUsersRepo
 			$user -> updated_at = $eUser -> updated_at ;
 
 			return $user ;
+		} catch ( ModelNotFoundException $ex )
+		{
+			throw new RecordNotFoundException() ;
+		}
+	}
+
+	public function update ( int $id , array $data ): User
+	{
+		try
+		{
+			$eUser = $this
+				-> model
+				-> findOrFail ( $id ) ;
+
+			if ( array_key_exists ( UsersInputConstants::UserSecret , $data ) )
+			{
+				$eUser -> secret = $this
+					-> hasher
+					-> make ( $data[ UsersInputConstants::UserSecret ] ) ;
+			}
+
+			$eUser -> save () ;
+
+			return $this -> get ( $id ) ;
 		} catch ( ModelNotFoundException $ex )
 		{
 			throw new RecordNotFoundException() ;

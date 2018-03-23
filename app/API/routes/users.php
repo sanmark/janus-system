@@ -12,4 +12,8 @@ use Illuminate\Routing\Router ;
 	$router
 		-> post ( '' , $controller . 'create' )
 		-> name ( 'api.users.create' ) ;
+
+	$router
+		-> patch ( '{id}' , $controller . 'update' )
+		-> name ( 'api.users.update' ) ;
 } ) ;

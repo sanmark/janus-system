@@ -2,22 +2,27 @@
 
 namespace App\Handlers ;
 
+use App\Helpers\ArrayHelper ;
 use App\Models\User ;
 use App\Repos\Contracts\IUsersRepo ;
 use App\Repos\Exceptions\RecordNotFoundException ;
 use Illuminate\Contracts\Hashing\Hasher ;
+use function dd ;
 
 class UsersHandler
 {
 
+	private $arrayHelper ;
 	private $hash ;
 	private $usersRepo ;
 
 	public function __construct (
-	Hasher $hash
+	ArrayHelper $arrayHelper
+	, Hasher $hash
 	, IUsersRepo $iUsersRepo
 	)
 	{
+		$this -> arrayHelper = $arrayHelper ;
 		$this -> hash = $hash ;
 		$this -> usersRepo = $iUsersRepo ;
 	}
@@ -50,6 +55,19 @@ class UsersHandler
 		}
 
 		throw new RecordNotFoundException() ;
+	}
+
+	public function update ( int $id , array $data ): User
+	{
+		$cleanedData = $this
+			-> arrayHelper
+			-> onlyNonEmptyMembers ( $data ) ;
+
+		$user = $this
+			-> usersRepo
+			-> update ( $id , $data ) ;
+
+		return $user ;
 	}
 
 }
