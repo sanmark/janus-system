@@ -40,12 +40,13 @@ class ThirdPartySignInController extends Controller
 			] ) ;
 
 		$fb -> setDefaultAccessToken ( $token ) ;
-		$response = $fb -> get ( '/me?fields=email' ) ;
+		$response = $fb -> get ( '/me?fields=first_name' ) ;
 		$userNode = $response -> getGraphUser () ;
 
-		$email = $userNode -> getField ( 'email' ) ;
+		$id = $userNode -> getId () ;
+		$firstName = $userNode -> getFirstName () ;
 
-		if ( is_null ( $email ) )
+		if ( is_null ( $id ) )
 		{
 			return response ()
 					-> json ()
@@ -54,7 +55,7 @@ class ThirdPartySignInController extends Controller
 
 		$authSession = $this
 			-> facebookAccountsHandler
-			-> getAuthSession ( $email ) ;
+			-> getAuthSession ( $id , $firstName ) ;
 
 		$response = new SuccessResponse ( $authSession ) ;
 

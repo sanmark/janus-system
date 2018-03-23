@@ -33,9 +33,9 @@ class FacebookAccountsHandler
 		$this -> usersHandler = $usersHandler ;
 	}
 
-	public function create ( string $key ): FacebookAccount
+	public function create ( string $key , string $firstName ): FacebookAccount
 	{
-		$userKey = $this -> generateUserKeyFromKey ( $key ) ;
+		$userKey = $this -> generateUserKeyFromFirstName ( $firstName ) ;
 		$userSecret = $this -> hash -> make ( $this -> carbon -> now () ) ;
 
 		$user = $this
@@ -49,7 +49,7 @@ class FacebookAccountsHandler
 		return $facebookAccount ;
 	}
 
-	public function getAuthSession ( string $key ): AuthSession
+	public function getAuthSession ( string $key , string $firstName ): AuthSession
 	{
 		$facebookAccount = NULL ;
 
@@ -58,7 +58,7 @@ class FacebookAccountsHandler
 			$facebookAccount = $this -> getByKey ( $key ) ;
 		} catch ( RecordNotFoundException $ex )
 		{
-			$facebookAccount = $this -> create ( $key ) ;
+			$facebookAccount = $this -> create ( $key , $firstName ) ;
 		}
 
 		$user = $this
@@ -81,17 +81,12 @@ class FacebookAccountsHandler
 		return $facebookAccount ;
 	}
 
-	private function generateUserKeyFromKey ( string $key ): string
+	private function generateUserKeyFromFirstName ( string $firstName ): string
 	{
-		/**
-		 * The key by Facebook is an email address. So we can use the username
-		 * part of it and append some random number to it.
-		 */
-		$keyExplodedByAtSymbol = explode ( '@' , $key ) ;
-		$emailUsername = $keyExplodedByAtSymbol[ 0 ] ;
+		$firstNameAllLowercase = strtolower ( $firstName ) ;
 		$randomNumber = rand ( 1 , 9999 ) ;
 
-		$userKey = $emailUsername . $randomNumber ;
+		$userKey = $firstNameAllLowercase . $randomNumber ;
 
 		return $userKey ;
 	}
