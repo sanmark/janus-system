@@ -8,6 +8,7 @@ use App\API\Responses\SuccessResponse ;
 use App\API\Validators\Constants\ResponseConstants ;
 use App\API\Validators\Contracts\IUsersValidator ;
 use App\API\Validators\Exceptions\InvalidInputException ;
+use App\Handlers\UserSecretResetRequestsHandler ;
 use App\Handlers\UsersHandler ;
 use App\Repos\Exceptions\RecordNotFoundException ;
 use App\Repos\Exceptions\UniqueConstraintFailureException ;
@@ -19,14 +20,17 @@ class UsersController extends Controller
 {
 
 	private $usersHandler ;
+	private $userSecretResetRequestsHandler ;
 	private $usersValidator ;
 
 	public function __construct (
 	UsersHandler $usersHandler
+	, UserSecretResetRequestsHandler $userSecretResetRequestsHandler
 	, IUsersValidator $usersValidator
 	)
 	{
 		$this -> usersHandler = $usersHandler ;
+		$this -> userSecretResetRequestsHandler = $userSecretResetRequestsHandler ;
 		$this -> usersValidator = $usersValidator ;
 	}
 
@@ -95,6 +99,57 @@ class UsersController extends Controller
 		} catch ( RecordNotFoundException $ex )
 		{
 			$response = new ErrorResponse ( [] , 404 ) ;
+			return $response -> getResponse () ;
+		}
+	}
+
+	public function userSecretResetRequestsCreate ( Request $request , int $userId )
+	{
+		$userSecretResetRequest = $this
+			-> userSecretResetRequestsHandler
+			-> create ( $userId ) ;
+
+		$response = new SuccessResponse ( $userSecretResetRequest -> toArray () , 201 ) ;
+
+		return $response -> getResponse () ;
+	}
+
+	public function userSecretResetRequestsExecute ( Request $request , int $userId )
+	{
+		try
+		{
+			$data = $request -> toArray () ;
+
+			$this
+				-> usersValidator
+				-> userSecretResetRequestsExecute ( $data ) ;
+
+			$newSecret = $request -> get ( UsersInputConstants::NewSecret ) ;
+			$userSecretResetRequestToken = $request -> get ( UsersInputConstants::UserSecretResetRequestToken ) ;
+
+			$user = $this
+				-> userSecretResetRequestsHandler
+				-> execute ( $userId , $userSecretResetRequestToken , $newSecret ) ;
+
+			$response = new SuccessResponse ( $user -> toArrayOnly ( [
+					'id' ,
+					'key' ,
+				] ) ) ;
+
+			return $response -> getResponse () ;
+		} catch ( InvalidInputException $ex )
+		{
+			$response = new ErrorResponse ( $ex -> getErrors () , 400 ) ;
+
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse (
+				[
+				UsersInputConstants::UserSecretResetRequestToken => ResponseConstants::NotExists ,
+				]
+				, 400 ) ;
+
 			return $response -> getResponse () ;
 		}
 	}

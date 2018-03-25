@@ -6,4 +6,6 @@ interface IUsersValidator
 {
 
 	public function create ( array $data ) ;
+
+	public function userSecretResetRequestsExecute ( array $data ) ;
 }

@@ -35,4 +35,27 @@ class UsersValidator extends BaseValidator implements IUsersValidator
 		$this -> validate ( $d , $r , $m ) ;
 	}
 
+	public function userSecretResetRequestsExecute ( array $d )
+	{
+		$r = [
+			UsersInputConstants::NewSecret => [
+				RuleConstants::Required ,
+			] ,
+			UsersInputConstants::UserSecretResetRequestToken => [
+				RuleConstants::Required ,
+			] ,
+			] ;
+
+		$m = [
+			UsersInputConstants::NewSecret => [
+				RuleConstants::Required => ResponseConstants::Required ,
+			] ,
+			UsersInputConstants::UserSecretResetRequestToken => [
+				RuleConstants::Required => ResponseConstants::Required ,
+			] ,
+			] ;
+
+		$this -> validate ( $d , $r , $m ) ;
+	}
+
 }

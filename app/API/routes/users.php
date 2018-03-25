@@ -16,4 +16,12 @@ use Illuminate\Routing\Router ;
 	$router
 		-> patch ( '{id}' , $controller . 'update' )
 		-> name ( 'api.users.update' ) ;
+
+	$router
+		-> post ( '{id}/user-secret-reset-requests' , $controller . 'userSecretResetRequestsCreate' )
+		-> name ( 'api.users.user-secret-reset-requests.create' ) ;
+
+	$router
+		-> post ( '{id}/user-secret-reset-requests/execute' , $controller . 'userSecretResetRequestsExecute' )
+		-> name ( 'api.users.user-secret-reset-requests.execute' ) ;
 } ) ;
