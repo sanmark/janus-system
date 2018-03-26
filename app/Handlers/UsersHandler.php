@@ -43,6 +43,15 @@ class UsersHandler
 		return $user ;
 	}
 
+	public function getByKey ( string $key ): User
+	{
+		$user = $this
+			-> usersRepo
+			-> getByKey ( $key ) ;
+
+		return $user ;
+	}
+
 	public function getUserIfCredentialsValid ( string $userKey , string $userSecret ): User
 	{
 		$user = $this

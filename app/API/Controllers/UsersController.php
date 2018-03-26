@@ -34,6 +34,28 @@ class UsersController extends Controller
 		$this -> usersValidator = $usersValidator ;
 	}
 
+	public function byKeyGet ( Request $request , string $key )
+	{
+		try
+		{
+			$user = $this
+				-> usersHandler
+				-> getByKey ( $key ) ;
+
+			$response = new SuccessResponse ( $user -> toArrayOnly ( [
+					'id' ,
+					'key' ,
+				] ) ) ;
+
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+
+			return $response -> getResponse () ;
+		}
+	}
+
 	public function create ( Request $request )
 	{
 		try

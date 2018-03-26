@@ -12,6 +12,10 @@ use Illuminate\Routing\Router ;
 	$router
 		-> post ( '' , $controller . 'create' )
 		-> name ( 'api.users.create' ) ;
+	
+	$router
+		-> get ( '/by-key/{key}' , $controller . 'byKeyGet' )
+		-> name ( 'api.users.by-key' ) ;
 
 	$router
 		-> patch ( '{id}' , $controller . 'update' )
