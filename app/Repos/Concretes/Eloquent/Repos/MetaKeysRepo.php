@@ -4,12 +4,26 @@ namespace App\Repos\Concretes\Eloquent\Repos ;
 
 use App\Models\Meta ;
 use App\Models\MetaKey ;
+use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\Meta as eMeta ;
 use App\Repos\Concretes\Eloquent\Models\MetaKey as eMetaKey ;
 use App\Repos\Contracts\IMetaKeysRepo ;
+use Illuminate\Database\Eloquent\Relations\HasMany ;
 
 class MetaKeysRepo implements IMetaKeysRepo
 {
+
+	private $eMeta ;
+	private $eMetaKey ;
+
+	public function __construct (
+	eMeta $eMeta
+	, eMetaKey $eMetaKey
+	)
+	{
+		$this -> eMeta = $eMeta ;
+		$this -> eMetaKey = $eMetaKey ;
+	}
 
 	public function find ( $id )
 	{
@@ -89,6 +103,47 @@ class MetaKeysRepo implements IMetaKeysRepo
 					'value' => $value
 				] ) ;
 		}
+	}
+
+	public function getUsersForMetaValue ( string $metaKeyKey , string $metaValue ): array
+	{
+		$metaKeys = $this
+			-> eMetaKey
+			-> with ( [
+				'metas' => function(HasMany $q) use($metaValue)
+				{
+					$q -> where ( 'metas.value' , '=' , $metaValue ) ;
+				} ,
+				'metas.user' ,
+			] )
+			-> where ( 'key' , '=' , $metaKeyKey )
+			-> get () ;
+
+		$eUsers = [] ;
+
+		foreach ( $metaKeys as $metaKey )
+		{
+			$metas = $metaKey -> metas ;
+
+			foreach ( $metas as $meta )
+			{
+				$eUsers[] = $meta -> user ;
+			}
+		}
+
+		$users = [] ;
+
+		foreach ( $eUsers as $eUser )
+		{
+			$user = new User() ;
+
+			$user -> id = $eUser -> id ;
+			$user -> key = $eUser -> key ;
+
+			$users[] = $user ;
+		}
+
+		return $users ;
 	}
 
 }

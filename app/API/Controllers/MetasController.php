@@ -17,9 +17,9 @@ class MetasController extends Controller
 
 	private $metaKeysHandler ;
 
-	public function __construct ()
+	public function __construct ( MetaKeysHandler $metaKeysHandler )
 	{
-		$this -> metaKeysHandler = app ( MetaKeysHandler::class ) ;
+		$this -> metaKeysHandler = $metaKeysHandler ;
 	}
 
 	public function all ()
@@ -106,6 +106,17 @@ class MetasController extends Controller
 			$response = new ErrorResponse ( [] , 404 ) ;
 			return $response -> getResponse () ;
 		}
+	}
+
+	public function metaValueUsersGet ( string $metaKey , string $metaValue )
+	{
+		$users = $this
+			-> metaKeysHandler
+			-> getUsersForMetaValue ( $metaKey , $metaValue ) ;
+
+		$response = new SuccessResponse ( $users ) ;
+
+		return $response -> getResponse () ;
 	}
 
 }

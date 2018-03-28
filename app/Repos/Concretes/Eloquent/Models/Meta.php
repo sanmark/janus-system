@@ -18,4 +18,10 @@ class Meta extends Model
 		return $this -> belongsTo ( MetaKey::class ) ;
 	}
 
+	public function user ()
+	{
+		return $this
+				-> belongsTo ( User::class ) ;
+	}
+
 }

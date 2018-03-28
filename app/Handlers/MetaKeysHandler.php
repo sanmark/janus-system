@@ -9,15 +9,19 @@ use function app ;
 class MetaKeysHandler
 {
 
-	private $metaKeysRepo ;
 	private $authSessionHandler ;
 	private $metasValidator ;
+	private $metaKeysRepo ;
 
-	public function __construct ()
+	public function __construct (
+	AuthSessionsHandler $authSessionsHandler
+	, IMetasValidator $metasValidator
+	, IMetaKeysRepo $metaKeysRepo
+	)
 	{
-		$this -> metaKeysRepo = app ( IMetaKeysRepo::class ) ;
-		$this -> authSessionHandler = app ( AuthSessionsHandler::class ) ;
-		$this -> metasValidator = app ( IMetasValidator::class ) ;
+		$this -> authSessionHandler = $authSessionsHandler ;
+		$this -> metasValidator = $metasValidator ;
+		$this -> metaKeysRepo = $metaKeysRepo ;
 	}
 
 	public function all ()
@@ -91,6 +95,15 @@ class MetaKeysHandler
 		$data[ "value" ] = $meta -> value ;
 		$data[ "user_id" ] = $meta -> user_id ;
 		return $data ;
+	}
+
+	public function getUsersForMetaValue ( string $metaKey , string $metaValue ): array
+	{
+		$users = $this
+			-> metaKeysRepo
+			-> getUsersForMetaValue ( $metaKey , $metaValue ) ;
+
+		return $users ;
 	}
 
 }

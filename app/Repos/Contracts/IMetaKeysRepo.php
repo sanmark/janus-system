@@ -14,4 +14,6 @@ interface IMetaKeysRepo
 	public function getOneMetaForUser ( $userID , $metaKey ) ;
 
 	public function saveMetas ( $userID , array $data ) ;
+
+	public function getUsersForMetaValue ( string $metaKey , string $metaValue ): array ;
 }

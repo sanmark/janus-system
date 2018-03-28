@@ -9,6 +9,9 @@ Route::get ( 'metas' , 'App\API\Controllers\MetasController@getMetas' )
 Route::get ( 'metas/{metaKey}' , 'App\API\Controllers\MetasController@getMeta' )
 	-> name ( 'meta.get.one' ) ;
 
+Route::get ( 'metas/{key}/value/{value}/users' , 'App\API\Controllers\MetasController@metaValueUsersGet' )
+	-> name ( 'metas.values.users' ) ;
+
 Route::get ( 'users/{userID}/metas' , 'App\API\Controllers\MetasController@getMetasForUser' )
 	-> name ( 'metas.get.all' ) ;
 
