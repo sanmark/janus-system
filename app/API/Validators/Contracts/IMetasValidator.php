@@ -5,5 +5,5 @@ namespace App\API\Validators\Contracts ;
 interface IMetasValidator
 {
 
-	public function saveMetas ( array $data ) ;
+	public function create ( array $data ) ;
 }

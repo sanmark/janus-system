@@ -8,20 +8,22 @@ use function app ;
 class Meta
 {
 
-	private $metaKeyRepo ;
+	private $metaKeysRepo ;
 	public $id ;
 	public $meta_key_id ;
 	public $user_id ;
 	public $value ;
+	public $created_at ;
+	public $updated_at ;
 
 	public function __construct ()
 	{
-		$this -> metaKeyRepo = app ( IMetaKeysRepo::class ) ;
+		$this -> metaKeysRepo = app ( IMetaKeysRepo::class ) ;
 	}
 
 	public function getMetaKey ()
 	{
-		$metaKey = $this -> metaKeyRepo -> find ( $this -> meta_key_id ) ;
+		$metaKey = $this -> metaKeysRepo -> find ( $this -> meta_key_id ) ;
 		if ( ! $metaKey )
 		{
 			return null ;

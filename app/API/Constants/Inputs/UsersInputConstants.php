@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\Constants\UserInputs ;
+namespace App\API\Constants\Inputs ;
 
 class UsersInputConstants
 {

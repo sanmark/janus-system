@@ -2,18 +2,20 @@
 
 namespace App\Repos\Contracts ;
 
+use App\Models\MetaKey ;
+
 interface IMetaKeysRepo
 {
 
 	public function find ( $id ) ;
 
-	public function all () ;
+	public function all (): array ;
+
+	public function getByKey ( string $key ): MetaKey ;
 
 	public function getMetasForUser ( $userID ) ;
 
 	public function getOneMetaForUser ( $userID , $metaKey ) ;
-
-	public function saveMetas ( $userID , array $data ) ;
 
 	public function getUsersForMetaValue ( string $metaKey , string $metaValue ): array ;
 }

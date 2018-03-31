@@ -6,5 +6,6 @@ class RuleConstants
 {
 
 	const Required = 'required' ;
+	const Exists = 'exists' ;
 
 }

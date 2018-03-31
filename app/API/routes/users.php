@@ -12,7 +12,7 @@ use Illuminate\Routing\Router ;
 	$router
 		-> post ( '' , $controller . 'create' )
 		-> name ( 'api.users.create' ) ;
-	
+
 	$router
 		-> get ( '/by-key/{key}' , $controller . 'byKeyGet' )
 		-> name ( 'api.users.by-key' ) ;
@@ -20,6 +20,14 @@ use Illuminate\Routing\Router ;
 	$router
 		-> patch ( '{id}' , $controller . 'update' )
 		-> name ( 'api.users.update' ) ;
+
+	$router
+		-> get ( '{id}/metas' , $controller . 'metasAll' )
+		-> name ( 'api.users.metas.all' ) ;
+	
+	$router
+		-> get ( '{id}/metas/{key}' , $controller . 'metasOne' )
+		-> name ( 'api.users.metas.all' ) ;
 
 	$router
 		-> post ( '{id}/user-secret-reset-requests' , $controller . 'userSecretResetRequestsCreate' )

@@ -3,8 +3,8 @@
 namespace App\Handlers ;
 
 use App\API\Validators\Contracts\IMetasValidator ;
+use App\Models\MetaKey ;
 use App\Repos\Contracts\IMetaKeysRepo ;
-use function app ;
 
 class MetaKeysHandler
 {
@@ -45,6 +45,15 @@ class MetaKeysHandler
 		return $data ;
 	}
 
+	public function getByKey ( string $key ): MetaKey
+	{
+		$metaKey = $this
+			-> metaKeysRepo
+			-> getByKey ( $key ) ;
+
+		return $metaKey ;
+	}
+
 	public function getMetaForKey ( $sessionKey , $key )
 	{
 		$authSession = $this -> authSessionHandler -> getByKeyIfActiveAndExtendActiveTime ( $sessionKey ) ;
@@ -60,14 +69,6 @@ class MetaKeysHandler
 		return $data ;
 	}
 
-	public function saveMetas ( $sessionKey , array $data )
-	{
-		$authSession = $this -> authSessionHandler -> getByKeyIfActiveAndExtendActiveTime ( $sessionKey ) ;
-		$this -> metasValidator -> saveMetas ( $data ) ;
-
-		$this -> metaKeysRepo -> saveMetas ( $authSession -> user_id , $data ) ;
-	}
-
 	public function getMetasForUser ( $userID )
 	{
 		$metas = $this -> metaKeysRepo -> getMetasForUser ( $userID ) ;
@@ -80,20 +81,6 @@ class MetaKeysHandler
 				'user_id' => $meta -> user_id
 				] ;
 		}
-		return $data ;
-	}
-
-	public function getMetaForUser ( $userID , $key )
-	{
-		$meta = $this -> metaKeysRepo -> getOneMetaForUser ( $userID , $key ) ;
-		if ( $meta == null )
-		{
-			return null ;
-		}
-		$data = [] ;
-		$data[ "meta_key" ] = $meta -> getMetaKey () ;
-		$data[ "value" ] = $meta -> value ;
-		$data[ "user_id" ] = $meta -> user_id ;
 		return $data ;
 	}
 

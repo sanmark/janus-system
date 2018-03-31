@@ -1,22 +1,27 @@
 <?php
 
-Route::get ( 'metakeys' , 'App\API\Controllers\MetasController@all' )
-	-> name ( 'metas.all' ) ;
+use App\API\Controllers\MetasController ;
+use Illuminate\Routing\Router ;
 
-Route::get ( 'metas' , 'App\API\Controllers\MetasController@getMetas' )
-	-> name ( 'metas.get.all' ) ;
+Route::group ( [
+	'prefix' => 'metas' ,
+	] , function(Router $r)
+{
+	$controller = MetasController::class . '@' ;
 
-Route::get ( 'metas/{metaKey}' , 'App\API\Controllers\MetasController@getMeta' )
-	-> name ( 'meta.get.one' ) ;
+	$r
+		-> get ( '' , $controller . 'get' )
+		-> name ( 'api.metas.get' ) ;
 
-Route::get ( 'metas/{key}/value/{value}/users' , 'App\API\Controllers\MetasController@metaValueUsersGet' )
-	-> name ( 'metas.values.users' ) ;
+	$r
+		-> post ( '' , $controller . 'create' )
+		-> name ( 'api.metas.create' ) ;
 
-Route::get ( 'users/{userID}/metas' , 'App\API\Controllers\MetasController@getMetasForUser' )
-	-> name ( 'metas.get.all' ) ;
+	$r
+		-> get ( '{key}' , $controller . 'getMeta' )
+		-> name ( 'api.metas.value' ) ;
 
-Route::get ( 'users/{userID}/metas/{metaKey}' , 'App\API\Controllers\MetasController@getMetaForUser' )
-	-> name ( 'meta.get.one' ) ;
-
-Route::post ( 'metas' , 'App\API\Controllers\MetasController@saveMetas' )
-	-> name ( 'meta.save.one' ) ;
+	$r
+		-> get ( '{key}/value/{value}/users' , $controller . 'metaValueUsersGet' )
+		-> name ( 'api.metas.value.users' ) ;
+} ) ;

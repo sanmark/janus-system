@@ -8,11 +8,14 @@ use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\Meta as eMeta ;
 use App\Repos\Concretes\Eloquent\Models\MetaKey as eMetaKey ;
 use App\Repos\Contracts\IMetaKeysRepo ;
-use Illuminate\Database\Eloquent\Relations\HasMany ;
+use App\Repos\Exceptions\RecordNotFoundException ;
+use Illuminate\Database\Eloquent\Builder ;
+use Illuminate\Database\Eloquent\ModelNotFoundException ;
 
 class MetaKeysRepo implements IMetaKeysRepo
 {
 
+	private $model ;
 	private $eMeta ;
 	private $eMetaKey ;
 
@@ -23,6 +26,7 @@ class MetaKeysRepo implements IMetaKeysRepo
 	{
 		$this -> eMeta = $eMeta ;
 		$this -> eMetaKey = $eMetaKey ;
+		$this -> model = $eMetaKey ;
 	}
 
 	public function find ( $id )
@@ -39,18 +43,48 @@ class MetaKeysRepo implements IMetaKeysRepo
 		return $model ;
 	}
 
-	public function all ()
+	public function all (): array
 	{
-		$eModels = eMetaKey::all () ;
-		$metakeys = [] ;
-		foreach ( $eModels as $eModel )
+		$eMetaKeys = $this
+			-> model
+			-> all () ;
+
+		$metaKeys = [] ;
+
+		foreach ( $eMetaKeys as $eMetaKey )
 		{
-			$model = new MetaKey() ;
-			$model -> id = $eModel -> id ;
-			$model -> key = $eModel -> key ;
-			array_push ( $metakeys , $model ) ;
+			$metaKey = new MetaKey() ;
+
+			$metaKey -> id = $eMetaKey -> id ;
+			$metaKey -> key = $eMetaKey -> key ;
+
+			$metaKeys[] = $metaKey ;
 		}
-		return $metakeys ;
+
+		return $metaKeys ;
+	}
+
+	public function getByKey ( string $key ): MetaKey
+	{
+		try
+		{
+			$eMetaKey = $this
+				-> model
+				-> where ( 'key' , '=' , $key )
+				-> firstOrFail () ;
+
+			$metaKey = new MetaKey() ;
+
+			$metaKey -> id = $eMetaKey -> id ;
+			$metaKey -> key = $eMetaKey -> key ;
+			$metaKey -> created_at = $eMetaKey -> created_at ;
+			$metaKey -> updated_at = $eMetaKey -> updated_at ;
+
+			return $metaKey ;
+		} catch ( ModelNotFoundException $ex )
+		{
+			throw new RecordNotFoundException() ;
+		}
 	}
 
 	public function getMetasForUser ( $userID )
@@ -91,31 +125,14 @@ class MetaKeysRepo implements IMetaKeysRepo
 		return $model ;
 	}
 
-	public function saveMetas ( $userID , array $data )
-	{
-		foreach ( $data as $key => $value )
-		{
-			$metaKey = eMetaKey::where ( 'key' , $key ) -> first () ;
-			$eModel = eMeta::updateOrCreate ( [
-					'user_id' => $userID ,
-					'meta_key_id' => $metaKey -> id
-					] , [
-					'value' => $value
-				] ) ;
-		}
-	}
-
 	public function getUsersForMetaValue ( string $metaKeyKey , string $metaValue ): array
 	{
 		$metaKeys = $this
 			-> eMetaKey
-			-> with ( [
-				'metas' => function(HasMany $q) use($metaValue)
-				{
-					$q -> where ( 'metas.value' , '=' , $metaValue ) ;
-				} ,
-				'metas.user' ,
-			] )
+			-> whereHas ( 'metas' , function (Builder $q) use ($metaValue)
+			{
+				$q -> where ( 'value' , '=' , $metaValue ) ;
+			} )
 			-> where ( 'key' , '=' , $metaKeyKey )
 			-> get () ;
 
