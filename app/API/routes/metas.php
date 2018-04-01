@@ -10,18 +10,6 @@ Route::group ( [
 	$controller = MetasController::class . '@' ;
 
 	$r
-		-> get ( '' , $controller . 'get' )
-		-> name ( 'api.metas.get' ) ;
-
-	$r
-		-> post ( '' , $controller . 'create' )
-		-> name ( 'api.metas.create' ) ;
-
-	$r
-		-> get ( '{key}' , $controller . 'getMeta' )
-		-> name ( 'api.metas.value' ) ;
-
-	$r
 		-> get ( '{key}/value/{value}/users' , $controller . 'metaValueUsersGet' )
 		-> name ( 'api.metas.value.users' ) ;
 } ) ;

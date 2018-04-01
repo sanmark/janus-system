@@ -24,10 +24,14 @@ use Illuminate\Routing\Router ;
 	$router
 		-> get ( '{id}/metas' , $controller . 'metasAll' )
 		-> name ( 'api.users.metas.all' ) ;
-	
+
 	$router
 		-> get ( '{id}/metas/{key}' , $controller . 'metasOne' )
-		-> name ( 'api.users.metas.all' ) ;
+		-> name ( 'api.users.metas.one' ) ;
+
+	$router
+		-> post ( '{id}/metas/{key}' , $controller . 'metasOneCreate' )
+		-> name ( 'api.users.metas.one.create' ) ;
 
 	$router
 		-> post ( '{id}/user-secret-reset-requests' , $controller . 'userSecretResetRequestsCreate' )

@@ -2,37 +2,31 @@
 
 namespace App\API\Validators\Concretes\Laravel\Validators ;
 
-use App\API\Constants\Inputs\MetasInputConstants;
-use App\API\Validators\Concretes\Laravel\Constants\RuleConstants;
-use App\API\Validators\Constants\ResponseConstants;
-use App\API\Validators\Contracts\IMetasValidator;
+use App\API\Constants\Inputs\MetasInputConstants ;
+use App\API\Validators\Concretes\Laravel\Constants\RuleConstants ;
+use App\API\Validators\Constants\ResponseConstants ;
+use App\API\Validators\Contracts\IMetasValidator ;
+use Illuminate\Validation\Rule ;
 
 class MetasValidators extends BaseValidator implements IMetasValidator
 {
 
-	public function create ( array $d )
+	public function createByUserIdAndMetaKey ( array $data )
 	{
-		$r = [
-			MetasInputConstants::Key => [
+		$rules = [
+			'value' => [
 				RuleConstants::Required ,
-				RuleConstants::Exists . ':meta_keys,key' ,
 			] ,
-			MetasInputConstants::Value => [
-				RuleConstants::Required ,
-			]
 			] ;
 
-		$m = [
-			MetasInputConstants::Key => [
+		$messages = [
+			'value' => [
 				RuleConstants::Required => ResponseConstants::Required ,
-				RuleConstants::Exists => ResponseConstants::NotExists ,
+				RuleConstants::Unique => ResponseConstants::Duplicate ,
 			] ,
-			MetasInputConstants::Value => [
-				RuleConstants::Required => ResponseConstants::Required ,
-			]
 			] ;
 
-		$this -> validate ( $d , $r , $m ) ;
+		$this -> validate ( $data , $rules , $messages ) ;
 	}
 
 }

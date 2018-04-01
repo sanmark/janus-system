@@ -3,9 +3,12 @@
 namespace App\Handlers ;
 
 use App\API\Constants\Inputs\MetasInputConstants ;
+use App\API\Validators\Constants\ResponseConstants ;
 use App\API\Validators\Contracts\IMetasValidator ;
+use App\API\Validators\Exceptions\InvalidInputException ;
 use App\Models\Meta ;
 use App\Repos\Contracts\IMetasRepo ;
+use App\Repos\Exceptions\RecordNotFoundException ;
 use function dd ;
 
 class MetasHandler
@@ -15,59 +18,21 @@ class MetasHandler
 	private $metaKeysHandler ;
 	private $metasRepo ;
 	private $metasValidator ;
+	private $usersHandler ;
 
 	public function __construct (
 	AuthSessionsHandler $authSessionsHandler
 	, IMetasRepo $metasRepo
 	, IMetasValidator $metasValidator
 	, MetaKeysHandler $metaKeysHandler
+	, UsersHandler $usersHandler
 	)
 	{
 		$this -> authSessionsHandler = $authSessionsHandler ;
 		$this -> metaKeysHandler = $metaKeysHandler ;
 		$this -> metasRepo = $metasRepo ;
 		$this -> metasValidator = $metasValidator ;
-	}
-
-	/**
-	 * @param array $data['key'] Meta Key's "key".
-	 * @param array $data['value'] Meta value.
-	 */
-	public function createBySessionKey ( string $sessionKey , array $data ): Meta
-	{
-		$this
-			-> metasValidator
-			-> create ( $data ) ;
-
-		$authSession = $this
-			-> authSessionsHandler
-			-> getByKey ( $sessionKey ) ;
-
-		$metaKeyKey = $data[ MetasInputConstants::Key ] ;
-		$value = $data[ MetasInputConstants::Value ] ;
-
-		$metaKey = $this
-			-> metaKeysHandler
-			-> getByKey ( $metaKeyKey ) ;
-
-		$meta = $this
-			-> metasRepo
-			-> create ( $authSession -> user_id , $metaKey -> id , $value ) ;
-
-		return $meta ;
-	}
-
-	public function getAllBySessionKey ( string $sessionKey ): array
-	{
-		$authSession = $this
-			-> authSessionsHandler
-			-> getByKey ( $sessionKey ) ;
-
-		$userId = $authSession -> user_id ;
-
-		$metas = $this -> getAllByUserId ( $userId ) ;
-
-		return $metas ;
+		$this -> usersHandler = $usersHandler ;
 	}
 
 	public function getAllByUserId ( int $userId ): array
@@ -79,13 +44,49 @@ class MetasHandler
 		return $metas ;
 	}
 
-	public function getOneByUserIdAndMetaKey ( int $userId , string $metaKey ): Meta
+	public function getOneByUserIdAndMetaKeyKey ( int $userId , string $metaKey ): Meta
 	{
 		$meta = $this
 			-> metasRepo
 			-> getOneByUserIdAndMetaKey ( $userId , $metaKey ) ;
 
 		return $meta ;
+	}
+
+	public function createByUserIdAndMetaKeyKey ( int $userId , string $metaKeyKey , $value )
+	{
+		$data = [] ;
+		$data[ 'value' ] = $value ;
+
+		$user = $this
+			-> usersHandler
+			-> get ( $userId ) ;
+
+		$metaKey = $this
+			-> metaKeysHandler
+			-> getByKey ( $metaKeyKey ) ;
+
+		$this
+			-> metasValidator
+			-> createByUserIdAndMetaKey ( $data ) ;
+
+		try
+		{
+			$this -> getOneByUserIdAndMetaKeyKey ( $userId , $metaKeyKey ) ;
+
+			throw new InvalidInputException ( [
+			'meta' => [
+				ResponseConstants::Duplicate ,
+			]
+			] ) ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$meta = $this
+				-> metasRepo
+				-> create ( $user -> id , $metaKey -> id , $value ) ;
+
+			return $meta ;
+		}
 	}
 
 }

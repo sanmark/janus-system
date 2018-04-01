@@ -2,7 +2,7 @@
 
 namespace App\Models ;
 
-class MetaKey
+class MetaKey extends Base
 {
 
 	public $id ;

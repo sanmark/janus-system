@@ -5,7 +5,7 @@ namespace App\Models ;
 use App\Repos\Contracts\IMetaKeysRepo ;
 use function app ;
 
-class Meta
+class Meta extends Base
 {
 
 	private $metaKeysRepo ;

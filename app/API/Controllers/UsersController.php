@@ -129,42 +129,54 @@ class UsersController extends Controller
 		}
 	}
 
-	public function metasAll ( int $userId )
+	public function metasOne ( int $userId , string $metaKey )
 	{
-		$metas = $this
-			-> metasHandler
-			-> getAllByUserId ( $userId ) ;
-
-		$metasModified = [] ;
-
-		foreach ( $metas as $meta )
+		try
 		{
+			$meta = $this
+				-> metasHandler
+				-> getOneByUserIdAndMetaKeyKey ( $userId , $metaKey ) ;
+
+			$metaModified = [] ;
 			$metaModified[ 'meta_key' ] = $meta -> getMetaKey () ;
 			$metaModified[ 'value' ] = $meta -> value ;
 			$metaModified[ 'user_id' ] = $meta -> user_id ;
 
-			$metasModified[] = $metaModified ;
+			$response = new SuccessResponse ( $metaModified ) ;
+
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+
+			return $response -> getResponse () ;
 		}
-
-		$response = new SuccessResponse ( $metasModified ) ;
-
-		return $response -> getResponse () ;
 	}
 
-	public function metasOne ( int $userId , string $metaKey )
+	public function metasOneCreate ( Request $request , int $userId , string $metaKey )
 	{
-		$meta = $this
-			-> metasHandler
-			-> getOneByUserIdAndMetaKey ( $userId , $metaKey ) ;
+		try
+		{
+			$value = $request -> get ( UsersInputConstants::Value ) ;
 
-		$metaModified = [] ;
-		$metaModified[ 'meta_key' ] = $meta -> getMetaKey () ;
-		$metaModified[ 'value' ] = $meta -> value ;
-		$metaModified[ 'user_id' ] = $meta -> user_id ;
+			$meta = $this
+				-> metasHandler
+				-> createByUserIdAndMetaKeyKey ( $userId , $metaKey , $value ) ;
 
-		$response = new SuccessResponse ( $metaModified ) ;
+			$response = new SuccessResponse ( $meta ) ;
 
-		return $response -> getResponse () ;
+			return $response -> getResponse () ;
+		} catch ( InvalidInputException $ex )
+		{
+			$response = new ErrorResponse ( $ex -> getErrors () , 400 ) ;
+
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+
+			return $response -> getResponse () ;
+		}
 	}
 
 	public function userSecretResetRequestsCreate ( Request $request , int $userId )

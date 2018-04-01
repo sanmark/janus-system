@@ -5,7 +5,9 @@ namespace App\Repos\Concretes\Eloquent\Repos ;
 use App\Models\Meta ;
 use App\Repos\Concretes\Eloquent\Models\Meta as eMeta ;
 use App\Repos\Contracts\IMetasRepo ;
+use App\Repos\Exceptions\RecordNotFoundException ;
 use Illuminate\Database\Eloquent\Builder ;
+use Illuminate\Database\Eloquent\ModelNotFoundException ;
 
 class MetasRepo implements IMetasRepo
 {
@@ -69,25 +71,31 @@ class MetasRepo implements IMetasRepo
 
 	public function getOneByUserIdAndMetaKey ( int $userId , string $metaKey ): Meta
 	{
-		$eMeta = $this
-			-> model
-			-> whereHas ( 'metaKey' , function(Builder $q) use($metaKey)
-			{
-				$q -> where ( 'key' , '=' , $metaKey ) ;
-			} )
-			-> where ( 'user_id' , '=' , $userId )
-			-> firstOrFail () ;
+		try
+		{
+			$eMeta = $this
+				-> model
+				-> whereHas ( 'metaKey' , function(Builder $q) use($metaKey)
+				{
+					$q -> where ( 'key' , '=' , $metaKey ) ;
+				} )
+				-> where ( 'user_id' , '=' , $userId )
+				-> firstOrFail () ;
 
-		$meta = new Meta() ;
+			$meta = new Meta() ;
 
-		$meta -> id = $eMeta -> id ;
-		$meta -> user_id = $eMeta -> user_id ;
-		$meta -> meta_key_id = $eMeta -> meta_key_id ;
-		$meta -> value = $eMeta -> value ;
-		$meta -> created_at = $eMeta -> created_at ;
-		$meta -> updated_at = $eMeta -> updated_at ;
+			$meta -> id = $eMeta -> id ;
+			$meta -> user_id = $eMeta -> user_id ;
+			$meta -> meta_key_id = $eMeta -> meta_key_id ;
+			$meta -> value = $eMeta -> value ;
+			$meta -> created_at = $eMeta -> created_at ;
+			$meta -> updated_at = $eMeta -> updated_at ;
 
-		return $meta ;
+			return $meta ;
+		} catch ( ModelNotFoundException $ex )
+		{
+			throw new RecordNotFoundException() ;
+		}
 	}
 
 }

@@ -105,26 +105,6 @@ class MetaKeysRepo implements IMetaKeysRepo
 		return $metas ;
 	}
 
-	public function getOneMetaForUser ( $userID , $metaKey )
-	{
-		$eModel = eMeta::where ( 'user_id' , $userID )
-			-> whereHas ( 'metaKey' , function($q) use($metaKey)
-			{
-				$q -> where ( 'key' , $metaKey ) ;
-			} )
-			-> first () ;
-		if ( ! $eModel )
-		{
-			return null ;
-		}
-		$model = new Meta() ;
-		$model -> id = $eModel -> id ;
-		$model -> meta_key_id = $eModel -> meta_key_id ;
-		$model -> user_id = $eModel -> user_id ;
-		$model -> value = $eModel -> value ;
-		return $model ;
-	}
-
 	public function getUsersForMetaValue ( string $metaKeyKey , string $metaValue ): array
 	{
 		$metaKeys = $this

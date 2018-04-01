@@ -54,21 +54,6 @@ class MetaKeysHandler
 		return $metaKey ;
 	}
 
-	public function getMetaForKey ( $sessionKey , $key )
-	{
-		$authSession = $this -> authSessionHandler -> getByKeyIfActiveAndExtendActiveTime ( $sessionKey ) ;
-		$meta = $this -> metaKeysRepo -> getOneMetaForUser ( $authSession -> user_id , $key ) ;
-		if ( $meta == null )
-		{
-			return null ;
-		}
-		$data = [] ;
-		$data[ "meta_key" ] = $meta -> getMetaKey () ;
-		$data[ "value" ] = $meta -> value ;
-		$data[ "user_id" ] = $meta -> user_id ;
-		return $data ;
-	}
-
 	public function getMetasForUser ( $userID )
 	{
 		$metas = $this -> metaKeysRepo -> getMetasForUser ( $userID ) ;
