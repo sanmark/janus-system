@@ -2,7 +2,7 @@
 
 namespace App\Handlers ;
 
-use App\API\Constants\UserInputs\UsersInputConstants ;
+use App\API\Constants\Inputs\UsersInputConstants ;
 use App\Models\User ;
 use App\Models\UserSecretResetRequest ;
 use App\Repos\Contracts\IUserSecretResetRequestsRepo ;

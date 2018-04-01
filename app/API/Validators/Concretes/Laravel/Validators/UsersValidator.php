@@ -2,7 +2,7 @@
 
 namespace App\API\Validators\Concretes\Laravel\Validators ;
 
-use App\API\Constants\UserInputs\UsersInputConstants ;
+use App\API\Constants\Inputs\UsersInputConstants ;
 use App\API\Validators\Concretes\Laravel\Constants\RuleConstants ;
 use App\API\Validators\Constants\ResponseConstants ;
 use App\API\Validators\Contracts\IUsersValidator ;

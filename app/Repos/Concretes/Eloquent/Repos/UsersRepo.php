@@ -2,7 +2,7 @@
 
 namespace App\Repos\Concretes\Eloquent\Repos ;
 
-use App\API\Constants\UserInputs\UsersInputConstants ;
+use App\API\Constants\Inputs\UsersInputConstants ;
 use App\Models\User ;
 use App\Repos\Concretes\Eloquent\Models\User as eUser ;
 use App\Repos\Contracts\IUsersRepo ;

@@ -2,7 +2,7 @@
 
 namespace App\API\Controllers ;
 
-use App\API\Constants\UserInputs\UsersInputConstants ;
+use App\API\Constants\Inputs\UsersInputConstants ;
 use App\API\Responses\ErrorResponse ;
 use App\API\Responses\SuccessResponse ;
 use App\API\Validators\Constants\ResponseConstants ;
