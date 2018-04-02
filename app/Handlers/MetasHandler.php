@@ -72,13 +72,11 @@ class MetasHandler
 
 		try
 		{
-			$this -> getOneByUserIdAndMetaKeyKey ( $userId , $metaKeyKey ) ;
+			$meta = $this -> getOneByUserIdAndMetaKeyKey ( $userId , $metaKeyKey ) ;
 
-			throw new InvalidInputException ( [
-			'meta' => [
-				ResponseConstants::Duplicate ,
-			]
-			] ) ;
+			$updatedMeta = $this -> update ( $meta -> id , $value ) ;
+
+			return $updatedMeta ;
 		} catch ( RecordNotFoundException $ex )
 		{
 			$meta = $this
@@ -87,6 +85,15 @@ class MetasHandler
 
 			return $meta ;
 		}
+	}
+
+	public function update ( int $metaId , string $value ): Meta
+	{
+		$meta = $this
+			-> metasRepo
+			-> update ( $metaId , $value ) ;
+
+		return $meta ;
 	}
 
 }

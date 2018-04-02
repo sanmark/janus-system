@@ -30,8 +30,8 @@ use Illuminate\Routing\Router ;
 		-> name ( 'api.users.metas.one' ) ;
 
 	$router
-		-> post ( '{id}/metas/{key}' , $controller . 'metasOneCreate' )
-		-> name ( 'api.users.metas.one.create' ) ;
+		-> patch ( '{id}/metas/{key}' , $controller . 'metasUpdate' )
+		-> name ( 'api.users.metas.update' ) ;
 
 	$router
 		-> post ( '{id}/user-secret-reset-requests' , $controller . 'userSecretResetRequestsCreate' )

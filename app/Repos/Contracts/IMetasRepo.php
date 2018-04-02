@@ -12,4 +12,6 @@ interface IMetasRepo
 	public function getAllByUserId ( int $userId ): array ;
 
 	public function getOneByUserIdAndMetaKey ( int $userId , string $metaKey ): Meta ;
+
+	public function update ( int $metaId , string $value ): Meta ;
 }

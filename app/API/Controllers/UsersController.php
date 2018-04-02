@@ -153,7 +153,7 @@ class UsersController extends Controller
 		}
 	}
 
-	public function metasOneCreate ( Request $request , int $userId , string $metaKey )
+	public function metasUpdate ( Request $request , int $userId , string $metaKey )
 	{
 		try
 		{

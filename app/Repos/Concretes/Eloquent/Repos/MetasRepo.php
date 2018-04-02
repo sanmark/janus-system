@@ -98,4 +98,32 @@ class MetasRepo implements IMetasRepo
 		}
 	}
 
+	public function update ( int $metaId , string $value ): Meta
+	{
+		try
+		{
+			$eMeta = $this
+				-> model
+				-> findOrFail ( $metaId ) ;
+
+			$eMeta -> value = $value ;
+
+			$eMeta -> save () ;
+
+			$meta = new Meta() ;
+
+			$meta -> id = $eMeta -> id ;
+			$meta -> user_id = $eMeta -> user_id ;
+			$meta -> meta_key_id = $eMeta -> meta_key_id ;
+			$meta -> value = $eMeta -> value ;
+			$meta -> created_at = $eMeta -> created_at ;
+			$meta -> updated_at = $eMeta -> updated_at ;
+
+			return $meta ;
+		} catch ( ModelNotFoundException $ex )
+		{
+			throw new RecordNotFoundException() ;
+		}
+	}
+
 }
