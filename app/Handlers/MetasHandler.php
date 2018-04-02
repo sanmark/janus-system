@@ -37,9 +37,13 @@ class MetasHandler
 
 	public function getAllByUserId ( int $userId ): array
 	{
+		$user = $this
+			-> usersHandler
+			-> get ( $userId ) ;
+
 		$metas = $this
 			-> metasRepo
-			-> getAllByUserId ( $userId ) ;
+			-> getAllByUserId ( $user -> id ) ;
 
 		return $metas ;
 	}

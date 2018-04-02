@@ -129,6 +129,37 @@ class UsersController extends Controller
 		}
 	}
 
+	public function metasAll ( int $userId )
+	{
+		try
+		{
+			$metas = $this
+				-> metasHandler
+				-> getAllByUserId ( $userId ) ;
+
+			$metasModified = [] ;
+			foreach ( $metas as $meta )
+			{
+				$metaModified = [] ;
+
+				$metaModified[ 'meta_key' ] = $meta -> getMetaKey () ;
+				$metaModified[ 'value' ] = $meta -> value ;
+				$metaModified[ 'user_id' ] = $meta -> user_id ;
+
+				$metasModified[] = $metaModified ;
+			}
+
+			$response = new SuccessResponse ( $metasModified ) ;
+
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+
+			return $response -> getResponse () ;
+		}
+	}
+
 	public function metasOne ( int $userId , string $metaKey )
 	{
 		try
