@@ -5,6 +5,14 @@ namespace App\Models ;
 abstract class Base
 {
 
+	public function __toString ()
+	{
+		$array = $this -> toArray () ;
+		$string = json_encode ( $array ) ;
+
+		return $string ;
+	}
+
 	public function toArray (): array
 	{
 		return get_object_vars ( $this ) ;

@@ -7,8 +7,12 @@ use App\Models\GoogleAccount ;
 use App\Models\User ;
 use App\Repos\Contracts\IGoogleAccountsRepo ;
 use App\Repos\Exceptions\RecordNotFoundException ;
+use App\SystemSettings\Concretes\LaravelEnv\Constants ;
 use Carbon\Carbon ;
+use Google_Client ;
+use GuzzleHttp\Client ;
 use Illuminate\Contracts\Hashing\Hasher ;
+use function config ;
 
 class GoogleAccountsHandler
 {
@@ -81,6 +85,19 @@ class GoogleAccountsHandler
 		return $authSession ;
 	}
 
+	public function getAuthSessionByToken ( string $token ): AuthSession
+	{
+		$onlineGoogleAccount = $this
+			-> getOnlineGoogleAccountByToken ( $token ) ;
+
+		$email = $onlineGoogleAccount[ 'email' ] ;
+
+		$authSession = $this
+			-> getAuthSession ( $email ) ;
+
+		return $authSession ;
+	}
+
 	public function getByKey ( string $key ): GoogleAccount
 	{
 		$googleAccount = $this
@@ -88,6 +105,28 @@ class GoogleAccountsHandler
 			-> getByKey ( $key ) ;
 
 		return $googleAccount ;
+	}
+
+	public function getOnlineGoogleAccountByToken ( string $token ): array
+	{
+		$googleClient = new Google_Client ( [
+			'client_id' => config ( 'third-party' . Constants::thirdPartyGoogleApiClientId ) ,
+			] ) ;
+
+		$guzzleHttpClient = new Client ( [
+			'verify' => config ( 'third-party.' . Constants::thirdPartyGuzzleHttpVerify ) ,
+			] ) ;
+
+		$googleClient -> setHttpClient ( $guzzleHttpClient ) ;
+
+		$account = $googleClient -> verifyIdToken ( $token ) ;
+
+		if ( ! $account )
+		{
+			throw new RecordNotFoundException() ;
+		}
+
+		return $account ;
 	}
 
 	public function getUserByKey ( string $key ): User
