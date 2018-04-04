@@ -2,6 +2,7 @@
 
 namespace App\Repos\Concretes\Eloquent ;
 
+use App\Repos\Concretes\Eloquent\Repos\AppsRepo ;
 use App\Repos\Concretes\Eloquent\Repos\AuthSessionsRepo ;
 use App\Repos\Concretes\Eloquent\Repos\FacebookAccountsRepo ;
 use App\Repos\Concretes\Eloquent\Repos\GoogleAccountsRepo ;
@@ -9,6 +10,7 @@ use App\Repos\Concretes\Eloquent\Repos\MetaKeysRepo ;
 use App\Repos\Concretes\Eloquent\Repos\MetasRepo ;
 use App\Repos\Concretes\Eloquent\Repos\UserSecretResetRequestsRepo ;
 use App\Repos\Concretes\Eloquent\Repos\UsersRepo ;
+use App\Repos\Contracts\IAppsRepo ;
 use App\Repos\Contracts\IAuthSessionsRepo ;
 use App\Repos\Contracts\IFacebookAccountsRepo ;
 use App\Repos\Contracts\IGoogleAccountsRepo ;
@@ -24,6 +26,7 @@ class EloquentReposProvider extends ServiceProvider
 	public function register ()
 	{
 		$map = [
+			IAppsRepo::class => AppsRepo::class ,
 			IAuthSessionsRepo::class => AuthSessionsRepo::class ,
 			IFacebookAccountsRepo::class => FacebookAccountsRepo::class ,
 			IGoogleAccountsRepo::class => GoogleAccountsRepo::class ,

@@ -2,8 +2,10 @@
 
 namespace App\Providers ;
 
-use Illuminate\Support\Facades\Route ;
+use App\API\Middleware\AppVerifyMiddleware ;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider ;
+use Illuminate\Support\Facades\Route ;
+use function base_path ;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -44,6 +46,7 @@ class RouteServiceProvider extends ServiceProvider
 	{
 		Route::group ( [
 			'prefix' => 'api/' ,
+			'middleware' => AppVerifyMiddleware::class ,
 			] , function()
 		{
 			$path = base_path ( 'app/API/routes/*.php' ) ;
