@@ -18,6 +18,10 @@ use Illuminate\Routing\Router ;
 		-> name ( 'api.users.by-key' ) ;
 
 	$router
+		-> get ( '{id}' , $controller . 'get' )
+		-> name ( 'api.users.get' ) ;
+
+	$router
 		-> patch ( '{id}' , $controller . 'update' )
 		-> name ( 'api.users.update' ) ;
 

@@ -104,6 +104,28 @@ class UsersController extends Controller
 		}
 	}
 
+	public function get ( string $id )
+	{
+		try
+		{
+			$user = $this
+				-> usersHandler
+				-> get ( $id ) ;
+
+			$response = new SuccessResponse ( $user -> toArrayOnly ( [
+					'id' ,
+					'key' ,
+				] ) ) ;
+
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+
+			return $response -> getResponse () ;
+		}
+	}
+
 	public function update ( Request $request , $id )
 	{
 		try
