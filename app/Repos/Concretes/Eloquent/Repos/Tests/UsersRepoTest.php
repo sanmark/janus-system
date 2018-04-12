@@ -8,6 +8,7 @@ use App\Repos\Concretes\Eloquent\Repos\UsersRepo ;
 use App\Repos\Exceptions\RecordNotFoundException ;
 use App\Repos\Exceptions\UniqueConstraintFailureException ;
 use Exception ;
+use Illuminate\Contracts\Hashing\Hasher ;
 use Illuminate\Database\Eloquent\ModelNotFoundException ;
 use Illuminate\Database\QueryException ;
 use Mockery ;
@@ -21,7 +22,8 @@ class UsersRepoTest extends TestCase
 
 	public function testCreateOk ()
 	{
-		$mockEUser = Mockery::mock ( eUser::class ) ;
+		$mockEUser = $this -> mock ( eUser::class ) ;
+		$mockHasher = $this -> mock ( Hasher::class ) ;
 
 		$mockEUser
 			-> shouldReceive ( 'newInstance' )
@@ -36,7 +38,7 @@ class UsersRepoTest extends TestCase
 		$mockEUser
 			-> shouldReceive ( 'getAttribute' ) ;
 
-		$usersRepo = new UsersRepo ( $mockEUser ) ;
+		$usersRepo = new UsersRepo ( $mockHasher , $mockEUser ) ;
 
 		$userKey = $this -> faker () -> userName ;
 		$userSecret = $this -> faker () -> password ;
@@ -50,8 +52,9 @@ class UsersRepoTest extends TestCase
 	{
 		$this -> expectException ( UniqueConstraintFailureException::class ) ;
 
-		$mockEUser = Mockery::mock ( eUser::class ) ;
-		$mockPreviousException = Mockery::mock ( Exception::class ) ;
+		$mockEUser = $this -> mock ( eUser::class ) ;
+		$mockHasher = $this -> mock ( Hasher::class ) ;
+		$mockPreviousException = $this -> mock ( Exception::class ) ;
 
 		$mockEUser
 			-> shouldReceive ( 'newInstance' )
@@ -67,7 +70,7 @@ class UsersRepoTest extends TestCase
 		$userKey = $this -> faker () -> userName ;
 		$userSecret = $this -> faker () -> password ;
 
-		$usersRepo = new UsersRepo ( $mockEUser ) ;
+		$usersRepo = new UsersRepo ( $mockHasher , $mockEUser ) ;
 
 		try
 		{
@@ -82,7 +85,8 @@ class UsersRepoTest extends TestCase
 
 	public function testGetByKeyOk ()
 	{
-		$mockEUser = Mockery::mock ( eUser::class ) ;
+		$mockEUser = $this -> mock ( eUser::class ) ;
+		$mockHasher = $this -> mock ( Hasher::class ) ;
 
 		$mockEUser
 			-> shouldReceive ( 'where' )
@@ -114,7 +118,7 @@ class UsersRepoTest extends TestCase
 				-> andReturn ( $value ) ;
 		}
 
-		$usersRepo = new UsersRepo ( $mockEUser ) ;
+		$usersRepo = new UsersRepo ( $mockHasher , $mockEUser ) ;
 
 		$user = $usersRepo
 			-> getByKey ( 'rofl' ) ;
@@ -132,7 +136,8 @@ class UsersRepoTest extends TestCase
 	{
 		$this -> expectException ( RecordNotFoundException::class ) ;
 
-		$mockEUser = Mockery::mock ( eUser::class ) ;
+		$mockEUser = $this -> mock ( eUser::class ) ;
+		$mockHasher = $this -> mock ( Hasher::class ) ;
 
 		$mockEUser
 			-> shouldReceive ( 'where' )
@@ -143,7 +148,7 @@ class UsersRepoTest extends TestCase
 			] )
 			-> andThrow ( ModelNotFoundException::class ) ;
 
-		$usersRepo = new UsersRepo ( $mockEUser ) ;
+		$usersRepo = new UsersRepo ( $mockHasher , $mockEUser ) ;
 
 		$user = $usersRepo
 			-> getByKey ( 'rofl' ) ;

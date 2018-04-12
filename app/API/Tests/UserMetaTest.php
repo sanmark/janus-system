@@ -2,49 +2,62 @@
 
 namespace App\API\Tests ;
 
-use App\Repos\Concretes\Eloquent\Models\MetaKey ;
+use App\Repos\Concretes\Eloquent\Models\App ;
 use Illuminate\Foundation\Testing\DatabaseMigrations ;
 use Tests\TestCase ;
-use function factory ;
+use function dd ;
 
 class UserMetaTest extends TestCase
 {
 
 	use DatabaseMigrations ;
 
-	public function testGetAllMetakeys ()
+	public function test_getAllMetakeys_ok ()
 	{
-		factory ( MetaKey::class ) -> create ( [
-			'id' => 1 ,
-			'key' => 'key1'
-		] ) ;
-		factory ( MetaKey::class ) -> create ( [
-			'id' => 2 ,
-			'key' => 'key2'
-		] ) ;
+		$this -> seedDb () ;
 
-		$this -> post ( "api/metakeys" )
+		$this
+			-> getWithValidAppKeyAndSecretHash ( 'api/metakeys' )
 			-> assertStatus ( 200 )
-			-> assertjson ( [
-				"data" => [
+			-> assertJson ( [
+				'data' => [
 					[
 						'id' => 1 ,
-						'key' => 'key1'
+						'key' => 'demo-meta-1' ,
+						'created_at' => NULL ,
+						'updated_at' => NULL ,
 					] ,
 					[
 						'id' => 2 ,
-						'key' => 'key2'
-					]
-				]
+						'key' => 'demo-meta-2' ,
+						'created_at' => NULL ,
+						'updated_at' => NULL ,
+					] ,
+				] ,
 			] ) ;
 	}
 
-	public function testGetAllMetaKeysWhenNoKey ()
+	public function test_getAllMetaKeys_rejectsNoAppKey ()
 	{
-		$this -> post ( "api/metakeys" )
-			-> assertStatus ( 200 )
-			-> assertjson ( [
-				"data" => []
+		$this -> seedDb () ;
+
+		$this
+			-> get ( 'api/metakeys' )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
+			] ) ;
+	}
+	
+	public function test_getAllMetaKeys_rejectsInvalidAppKey ()
+	{
+		$this -> seedDb () ;
+
+		$this
+			-> get ( 'api/metakeys' )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
 			] ) ;
 	}
 

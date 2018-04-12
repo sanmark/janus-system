@@ -5,6 +5,8 @@ namespace App\API\Controllers\Tests ;
 use App\API\Controllers\UsersController ;
 use App\API\Validators\Contracts\IUsersValidator ;
 use App\API\Validators\Exceptions\InvalidInputException ;
+use App\Handlers\MetasHandler ;
+use App\Handlers\UserSecretResetRequestsHandler ;
 use App\Handlers\UsersHandler ;
 use App\Models\User ;
 use App\Repos\Exceptions\UniqueConstraintFailureException ;
@@ -21,10 +23,12 @@ class UsersControllerTest extends TestCase
 
 	public function testCreate_Ok ()
 	{
+		$mockMetasHandler = Mockery::mock ( MetasHandler::class ) ;
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$mockUsersValidator = Mockery::mock ( IUsersValidator::class ) ;
 		$mockRequest = Mockery::mock ( Request::class ) ;
 		$mockUserModel = Mockery::mock ( User::class ) ;
+		$mockUserSecretsResetRequestsHandler = Mockery::mock ( UserSecretResetRequestsHandler::class ) ;
 
 		$mockRequest
 			-> shouldReceive ( 'toArray' )
@@ -66,7 +70,7 @@ class UsersControllerTest extends TestCase
 			] )
 			-> andReturn ( [ 149 ] ) ;
 
-		$usersController = new UsersController ( $mockUsersHandler , $mockUsersValidator ) ;
+		$usersController = new UsersController ( $mockMetasHandler , $mockUsersHandler , $mockUserSecretsResetRequestsHandler , $mockUsersValidator ) ;
 
 		$r = $usersController
 			-> create ( $mockRequest ) ;
@@ -85,10 +89,13 @@ class UsersControllerTest extends TestCase
 
 	public function testCreate_HandlesInvalidInputException ()
 	{
+		$mockInvalidInputException = Mockery::mock ( InvalidInputException::class ) ;
+		$mockMetasHandler = Mockery::mock ( MetasHandler::class ) ;
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$mockUsersValidator = Mockery::mock ( IUsersValidator::class ) ;
 		$mockRequest = Mockery::mock ( Request::class ) ;
-		$mockInvalidInputException = Mockery::mock ( InvalidInputException::class ) ;
+		$mockUserModel = Mockery::mock ( User::class ) ;
+		$mockUserSecretsResetRequestsHandler = Mockery::mock ( UserSecretResetRequestsHandler::class ) ;
 
 		$mockRequest
 			-> shouldReceive ( 'toArray' )
@@ -103,7 +110,7 @@ class UsersControllerTest extends TestCase
 			-> shouldReceive ( 'getErrors' )
 			-> andReturn ( 149 ) ;
 
-		$usersController = new UsersController ( $mockUsersHandler , $mockUsersValidator ) ;
+		$usersController = new UsersController ( $mockMetasHandler , $mockUsersHandler , $mockUserSecretsResetRequestsHandler , $mockUsersValidator ) ;
 
 		$r = $usersController
 			-> create ( $mockRequest ) ;
@@ -122,10 +129,12 @@ class UsersControllerTest extends TestCase
 
 	public function testCreate_HandlesUniqueConstraintFailureException ()
 	{
+		$mockMetasHandler = Mockery::mock ( MetasHandler::class ) ;
 		$mockUsersHandler = Mockery::mock ( UsersHandler::class ) ;
 		$mockUsersValidator = Mockery::mock ( IUsersValidator::class ) ;
 		$mockRequest = Mockery::mock ( Request::class ) ;
 		$mockUniqueConstraintFailureException = Mockery::mock ( UniqueConstraintFailureException::class ) ;
+		$mockUserSecretsResetRequestsHandler = Mockery::mock ( UserSecretResetRequestsHandler::class ) ;
 
 		$mockRequest
 			-> shouldReceive ( 'toArray' )
@@ -161,7 +170,7 @@ class UsersControllerTest extends TestCase
 			-> shouldReceive ( 'getConstraint' )
 			-> andReturn ( 'rofl' ) ;
 
-		$usersController = new UsersController ( $mockUsersHandler , $mockUsersValidator ) ;
+		$usersController = new UsersController ( $mockMetasHandler , $mockUsersHandler , $mockUserSecretsResetRequestsHandler , $mockUsersValidator ) ;
 
 		$r = $usersController
 			-> create ( $mockRequest ) ;

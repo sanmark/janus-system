@@ -11,7 +11,39 @@ use function dd ;
 class UserLoginTest extends TestCase
 {
 
-	public function testUserCanLogin ()
+	public function test_login_systemRejectsNoAppKey ()
+	{
+		$data = [
+			'user_key' => 'user1' ,
+			'user_secret' => 'sec1' ,
+			] ;
+
+		$this
+			-> post ( 'api/auth-sessions' , $data )
+			-> assertStatus ( 401 )
+			-> assertJsonStructure ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+
+	public function test_login_systemRejectsInvalidAppKey ()
+	{
+		$data = [
+			'user_key' => 'user1' ,
+			'user_secret' => 'sec1' ,
+			] ;
+
+		$this
+			-> postWithInvalidAppKeyAndSecretHash ( 'api/auth-sessions' , $data )
+			-> assertStatus ( 401 )
+			-> assertJsonStructure ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+
+	public function test_login_ok ()
 	{
 		$this -> seedDb () ;
 
@@ -21,7 +53,7 @@ class UserLoginTest extends TestCase
 			] ;
 
 		$this
-			-> post ( 'api/auth-sessions' , $data )
+			-> postWithValidAppKeyAndSecretHash ( 'api/auth-sessions' , $data )
 			-> assertStatus ( 201 )
 			-> assertJsonStructure ( [
 				'data' => [
@@ -30,10 +62,12 @@ class UserLoginTest extends TestCase
 			] ) ;
 	}
 
-	public function testSystemValidatesUserInputs ()
+	public function test_login_systemValidatesUserInputs ()
 	{
+		$this -> seedDb () ;
+
 		$this
-			-> post ( 'api/auth-sessions' )
+			-> postWithValidAppKeyAndSecretHash ( 'api/auth-sessions' )
 			-> assertStatus ( 400 )
 			-> assertJson ( [
 				'errors' => [
@@ -47,7 +81,7 @@ class UserLoginTest extends TestCase
 			] ) ;
 	}
 
-	public function testSystemRejectsInvalidUserKeys ()
+	public function test_login_systemRejectsInvalidUserKeys ()
 	{
 		$this -> seedDb () ;
 
@@ -57,11 +91,11 @@ class UserLoginTest extends TestCase
 			] ;
 
 		$this
-			-> post ( 'api/auth-sessions' , $data )
+			-> postWithValidAppKeyAndSecretHash ( 'api/auth-sessions' , $data )
 			-> assertStatus ( 401 ) ;
 	}
 
-	public function testSystemRejectsInvalidUserSecrets ()
+	public function test_login_systemRejectsInvalidUserSecrets ()
 	{
 		$this -> seedDb () ;
 
@@ -71,7 +105,7 @@ class UserLoginTest extends TestCase
 			] ;
 
 		$this
-			-> post ( 'api/auth-sessions' , $data )
+			-> postWithValidAppKeyAndSecretHash ( 'api/auth-sessions' , $data )
 			-> assertStatus ( 401 ) ;
 	}
 

@@ -3,6 +3,7 @@
 namespace App\Handlers\Tests ;
 
 use App\Handlers\UsersHandler ;
+use App\Helpers\ArrayHelper ;
 use App\Models\User ;
 use App\Repos\Contracts\IUsersRepo ;
 use App\Repos\Exceptions\RecordNotFoundException ;
@@ -18,6 +19,7 @@ class UsersHandlerTest extends TestCase
 
 	public function testCreate_Ok ()
 	{
+		$mockArrayHelper = Mockery::mock ( ArrayHelper::class ) ;
 		$mockHash = Mockery::mock ( Hasher::class ) ;
 		$mockIUsersRepo = Mockery::mock ( IUsersRepo::class ) ;
 		$userKey = $this -> faker () -> userName ;
@@ -32,7 +34,7 @@ class UsersHandlerTest extends TestCase
 			] )
 			-> andReturn ( $mockUserModel ) ;
 
-		$usersHandler = new UsersHandler ( $mockHash , $mockIUsersRepo ) ;
+		$usersHandler = new UsersHandler ( $mockArrayHelper , $mockHash , $mockIUsersRepo ) ;
 
 		$response = $usersHandler -> create ( $userKey , $userSecret ) ;
 
@@ -41,6 +43,7 @@ class UsersHandlerTest extends TestCase
 
 	public function testGetUserIfCredentialsValid_Ok ()
 	{
+		$mockArrayHelper = Mockery::mock ( ArrayHelper::class ) ;
 		$mockIUsersRepo = Mockery::mock ( IUsersRepo::class ) ;
 		$mockHash = Mockery::mock ( Hasher::class ) ;
 		$mockUser = Mockery::mock ( User::class ) ;
@@ -62,7 +65,7 @@ class UsersHandlerTest extends TestCase
 
 		$mockUser -> secret = 'asdf' ;
 
-		$usersHandler = new UsersHandler ( $mockHash , $mockIUsersRepo ) ;
+		$usersHandler = new UsersHandler ( $mockArrayHelper , $mockHash , $mockIUsersRepo ) ;
 
 		$response = $usersHandler -> getUserIfCredentialsValid ( 'the_key' , 'the_secret' ) ;
 
@@ -71,25 +74,27 @@ class UsersHandlerTest extends TestCase
 
 	public function testGetUserIfCredentialsValid_HandlesInvalidCredentials ()
 	{
+
 		$this -> expectException ( RecordNotFoundException::class ) ;
 
-		$hash = $this -> mock ( Hasher::class ) ;
-		$iUsersRepo = $this -> mock ( IUsersRepo::class ) ;
+		$mockArrayHelper = $this -> mock ( ArrayHelper::class ) ;
+		$mockHash = $this -> mock ( Hasher::class ) ;
+		$mockIUsersRepo = $this -> mock ( IUsersRepo::class ) ;
 
-		$usersHandler = new UsersHandler ( $hash , $iUsersRepo ) ;
+		$usersHandler = new UsersHandler ( $mockArrayHelper , $mockHash , $mockIUsersRepo ) ;
 
 		$user = $this -> mock ( User::class ) ;
 
 		$user -> secret = 'the_secret_saved_in_db' ;
 
-		$iUsersRepo
+		$mockIUsersRepo
 			-> shouldReceive ( 'getByKey' )
 			-> withArgs ( [
 				'the_key' ,
 			] )
 			-> andReturn ( $user ) ;
 
-		$hash
+		$mockHash
 			-> shouldReceive ( 'check' )
 			-> withArgs ( [
 				'the_secret' ,

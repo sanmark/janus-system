@@ -10,8 +10,28 @@ use Tests\TestCase ;
 class UserRegistrationTest extends TestCase
 {
 
-	public function testUserCanRegister ()
+	public function testSystemRejectsInvalidAppKey ()
 	{
+		$this -> seedDb () ;
+
+		$data = [
+			'user_key' => $this -> faker () -> userName ,
+			'user_secret' => $this -> faker () -> password ,
+			] ;
+
+		$this
+			-> postWithInvalidAppKeyAndSecretHash ( 'api/users' , $data )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+	
+	public function testSystemRejectsNoAppKey ()
+	{
+		$this -> seedDb () ;
+
 		$data = [
 			'user_key' => $this -> faker () -> userName ,
 			'user_secret' => $this -> faker () -> password ,
@@ -19,6 +39,24 @@ class UserRegistrationTest extends TestCase
 
 		$this
 			-> post ( 'api/users' , $data )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+
+	public function testUserCanRegister ()
+	{
+		$this -> seedDb () ;
+
+		$data = [
+			'user_key' => $this -> faker () -> userName ,
+			'user_secret' => $this -> faker () -> password ,
+			] ;
+
+		$this
+			-> postWithValidAppKeyAndSecretHash ( 'api/users' , $data )
 			-> assertStatus ( 201 )
 			-> assertJson ( [
 				'data' => [
@@ -34,8 +72,10 @@ class UserRegistrationTest extends TestCase
 
 	public function testSystemValidatesUserInputs ()
 	{
+		$this -> seedDb () ;
+
 		$this
-			-> post ( 'api/users' )
+			-> postWithValidAppKeyAndSecretHash ( 'api/users' )
 			-> assertStatus ( 400 )
 			-> assertJson ( [
 				'errors' => [
@@ -51,15 +91,17 @@ class UserRegistrationTest extends TestCase
 
 	public function testSystemRejectsDuplicateUserKeys ()
 	{
+		$this -> seedDb () ;
+
 		$data = [
 			'user_key' => $this -> faker () -> userName ,
 			'user_secret' => $this -> faker () -> password ,
 			] ;
 
-		$this -> post ( 'api/users' , $data ) ;
+		$this -> postWithValidAppKeyAndSecretHash ( 'api/users' , $data ) ;
 
 		$this
-			-> post ( 'api/users' , $data )
+			-> postWithValidAppKeyAndSecretHash ( 'api/users' , $data )
 			-> assertStatus ( 409 )
 			-> assertJson ( [
 				'errors' => [

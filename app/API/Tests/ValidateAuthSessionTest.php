@@ -10,12 +10,41 @@ use Tests\TestCase ;
 class ValidateAuthSessionTest extends TestCase
 {
 
-	public function testUserCanValidateAuthSession ()
+	public function testSystemRejectsInvalidAppKey ()
 	{
 		$this -> seedDb () ;
+
+		$this
+			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key' )
+			-> getWithInvalidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+	
+	public function testSystemRejectsNoAppKey ()
+	{
+		$this -> seedDb () ;
+
 		$this
 			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key' )
 			-> get ( 'api/auth-sessions/validate' )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+
+	public function testUserCanValidateAuthSession ()
+	{
+		$this -> seedDb () ;
+
+		$this
+			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key' )
+			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
 			-> assertStatus ( 200 )
 			-> assertJsonStructure ( [
 				'data' => [
@@ -31,8 +60,9 @@ class ValidateAuthSessionTest extends TestCase
 	public function testSystemRejectsNullSessionKey ()
 	{
 		$this -> seedDb () ;
+		
 		$this
-			-> get ( 'api/auth-sessions/validate' )
+			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
 			-> assertStatus ( 401 )
 			-> assertJsonStructure ( [] ) ;
 	}
@@ -40,9 +70,10 @@ class ValidateAuthSessionTest extends TestCase
 	public function testSystemRejectsInvalidSessionKey ()
 	{
 		$this -> seedDb () ;
+		
 		$this
 			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'wrong' )
-			-> get ( 'api/auth-sessions/validate' )
+			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
 			-> assertStatus ( 401 )
 			-> assertJsonStructure ( [] ) ;
 	}
@@ -50,9 +81,10 @@ class ValidateAuthSessionTest extends TestCase
 	public function testSystemRejectsExpiredSessionKey ()
 	{
 		$this -> seedDb () ;
+		
 		$this
 			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key_expired' )
-			-> get ( 'api/auth-sessions/validate' )
+			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
 			-> assertStatus ( 401 )
 			-> assertJsonStructure ( [] ) ;
 	}
