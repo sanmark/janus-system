@@ -7,7 +7,7 @@ use Tests\TestCase ;
 /**
  * @codeCoverageIgnore
  */
-class UserRegistrationTest extends TestCase
+class Api_Users_Create_Test extends TestCase
 {
 
 	public function testSystemRejectsInvalidAppKey ()

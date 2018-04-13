@@ -7,7 +7,10 @@ use Illuminate\Foundation\Testing\DatabaseMigrations ;
 use Tests\TestCase ;
 use function dd ;
 
-class UserMetaTest extends TestCase
+/**
+ * @codeCoverageIgnore
+ */
+class Api_Metakeys_Get_Test extends TestCase
 {
 
 	use DatabaseMigrations ;
@@ -48,7 +51,7 @@ class UserMetaTest extends TestCase
 				'errors' => [] ,
 			] ) ;
 	}
-	
+
 	public function test_getAllMetaKeys_rejectsInvalidAppKey ()
 	{
 		$this -> seedDb () ;

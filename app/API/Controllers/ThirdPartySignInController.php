@@ -4,6 +4,7 @@ namespace App\API\Controllers ;
 
 use App\API\Responses\ErrorResponse ;
 use App\API\Responses\SuccessResponse ;
+use App\API\Validators\Constants\ResponseConstants ;
 use App\Handlers\FacebookAccountsHandler ;
 use App\Handlers\GoogleAccountsHandler ;
 use App\Http\Controllers\Controller ;
@@ -11,9 +12,13 @@ use App\Repos\Exceptions\RecordNotFoundException ;
 use App\SystemSettings\Concretes\LaravelEnv\Constants ;
 use Facebook\Facebook ;
 use Illuminate\Http\Request ;
+use InvalidArgumentException ;
 use function config ;
 use function response ;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ThirdPartySignInController extends Controller
 {
 
@@ -31,38 +36,50 @@ class ThirdPartySignInController extends Controller
 
 	public function facebook ( Request $request )
 	{
-		$token = $request -> get ( 'token' ) ;
-
-		$fb = new Facebook ( [
-			'app_id' => config ( 'third-party.' . Constants::thirdPartyFacebookAppId ) ,
-			'app_secret' => config ( 'third-party.' . Constants::thirdPartyFacebookAppSecret ) ,
-			'default_graph_version' => 'v2.5' ,
-			'http_client_handler' => 'stream' ,
-			] ) ;
-
-		$fb -> setDefaultAccessToken ( $token ) ;
-		$response = $fb -> get ( '/me?fields=first_name' ) ;
-		$userNode = $response -> getGraphUser () ;
-
-		$id = $userNode -> getId () ;
-		$firstName = $userNode -> getFirstName () ;
-
-		if ( is_null ( $id ) )
+		try
 		{
+			$token = $request -> get ( 'token' ) ;
+
+			$fb = new Facebook ( [
+				'app_id' => config ( 'third-party.' . Constants::thirdPartyFacebookAppId ) ,
+				'app_secret' => config ( 'third-party.' . Constants::thirdPartyFacebookAppSecret ) ,
+				'default_graph_version' => 'v2.5' ,
+				'http_client_handler' => 'stream' ,
+				] ) ;
+
+			$fb -> setDefaultAccessToken ( $token ) ;
+			$response = $fb -> get ( '/me?fields=first_name' ) ;
+			$userNode = $response -> getGraphUser () ;
+
+			$id = $userNode -> getId () ;
+			$firstName = $userNode -> getFirstName () ;
+
+			if ( is_null ( $id ) )
+			{
+				return response ()
+						-> json ()
+						-> setStatusCode ( 401 ) ;
+			}
+
+			$authSession = $this
+				-> facebookAccountsHandler
+				-> getAuthSession ( $id , $firstName ) ;
+
+			$response = new SuccessResponse ( $authSession ) ;
+
 			return response ()
-					-> json ()
-					-> setStatusCode ( 401 ) ;
+					-> json ( $response -> getOutput () )
+					-> setStatusCode ( 201 ) ;
+		} catch ( InvalidArgumentException $ex )
+		{
+			$response = new ErrorResponse ( [
+				'token' => [
+					ResponseConstants::Required ,
+				] ,
+				] , 400 ) ;
+
+			return $response -> getResponse () ;
 		}
-
-		$authSession = $this
-			-> facebookAccountsHandler
-			-> getAuthSession ( $id , $firstName ) ;
-
-		$response = new SuccessResponse ( $authSession ) ;
-
-		return response ()
-				-> json ( $response -> getOutput () )
-				-> setStatusCode ( 201 ) ;
 	}
 
 	public function google ( Request $request )

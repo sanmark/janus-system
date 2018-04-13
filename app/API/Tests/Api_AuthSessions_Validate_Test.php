@@ -7,7 +7,7 @@ use Tests\TestCase ;
 /**
  * @codeCoverageIgnore
  */
-class ValidateAuthSessionTest extends TestCase
+class Api_AuthSessions_Validate_Test extends TestCase
 {
 
 	public function testSystemRejectsInvalidAppKey ()

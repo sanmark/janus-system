@@ -25,29 +25,37 @@ class UserSecretResetRequestsHandler
 
 	public function create ( int $userId ): UserSecretResetRequest
 	{
+		$user = $this
+			-> usersHandler
+			-> get ( $userId ) ;
+
 		return $this
 				-> userSecretResetRequestsRepo
-				-> create ( $userId ) ;
+				-> create ( $user -> id ) ;
 	}
 
 	public function execute ( int $userId , string $userSecretResetRequestToken , string $newSecret ): User
 	{
+		$user = $this
+			-> usersHandler
+			-> get ( $userId ) ;
+
 		$userSecretResetRequest = $this
 			-> userSecretResetRequestsRepo
 			-> getByToken ( $userSecretResetRequestToken ) ;
 
-		if ( $userSecretResetRequest -> user_id != $userId )
+		if ( $userSecretResetRequest -> user_id != $user -> id )
 		{
 			throw new RecordNotFoundException() ;
 		}
 
 		$user = $this
 			-> usersHandler
-			-> update ( $userId , [
+			-> update ( $user -> id , [
 			UsersInputConstants::UserSecret => $newSecret ,
 			] ) ;
 
-		$this -> deleteOfUser ( $userId ) ;
+		$this -> deleteOfUser ( $user -> id ) ;
 
 		return $user ;
 	}

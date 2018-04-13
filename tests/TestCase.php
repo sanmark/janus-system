@@ -44,6 +44,18 @@ abstract class TestCase extends BaseTestCase
 
 		return Mockery::mock ( $className , $constructorArgs ) ;
 	}
+	
+	public function patchWithInvalidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
+	{
+		$headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
+		return parent::patch ( $uri , $data , $headers ) ;
+	}
+	
+	public function patchWithValidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
+	{
+		$headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
+		return parent::patch ( $uri , $data , $headers ) ;
+	}
 
 	public function postWithInvalidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
 	{

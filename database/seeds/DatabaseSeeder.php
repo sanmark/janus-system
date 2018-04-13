@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
 		$this -> call ( AuthSessionsTableSeeder::class ) ;
 		$this -> call ( MetaKeysSeeder::class ) ;
 		$this -> call ( AppsTableSeeder::class ) ;
+		$this -> call ( MetasTableSeeder::class ) ;
 	}
 
 }

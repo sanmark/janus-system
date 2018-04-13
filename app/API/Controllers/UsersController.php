@@ -234,13 +234,21 @@ class UsersController extends Controller
 
 	public function userSecretResetRequestsCreate ( Request $request , int $userId )
 	{
-		$userSecretResetRequest = $this
-			-> userSecretResetRequestsHandler
-			-> create ( $userId ) ;
+		try
+		{
+			$userSecretResetRequest = $this
+				-> userSecretResetRequestsHandler
+				-> create ( $userId ) ;
 
-		$response = new SuccessResponse ( $userSecretResetRequest -> toArray () , 201 ) ;
+			$response = new SuccessResponse ( $userSecretResetRequest -> toArray () , 201 ) ;
 
-		return $response -> getResponse () ;
+			return $response -> getResponse () ;
+		} catch ( RecordNotFoundException $ex )
+		{
+			$response = new ErrorResponse ( [] , 404 ) ;
+
+			return $response -> getResponse () ;
+		}
 	}
 
 	public function userSecretResetRequestsExecute ( Request $request , int $userId )
@@ -275,7 +283,9 @@ class UsersController extends Controller
 		{
 			$response = new ErrorResponse (
 				[
-				UsersInputConstants::UserSecretResetRequestToken => ResponseConstants::NotExists ,
+				UsersInputConstants::UserSecretResetRequestToken => [
+					ResponseConstants::NotExists ,
+				] ,
 				]
 				, 400 ) ;
 

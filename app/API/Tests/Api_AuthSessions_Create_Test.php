@@ -8,7 +8,7 @@ use function dd ;
 /**
  * @codeCoverageIgnore
  */
-class UserLoginTest extends TestCase
+class Api_AuthSessions_Create_Test extends TestCase
 {
 
 	public function test_login_systemRejectsNoAppKey ()
