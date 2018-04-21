@@ -23,7 +23,21 @@ class Api_AuthSessions_Validate_Test extends TestCase
 				] ,
 			] ) ;
 	}
-	
+
+	public function testSystemRejectsInvalidSecretHash ()
+	{
+		$this -> seedDb () ;
+
+		$this
+			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key' )
+			-> getWithValidAppKeyAndInvalidSecretHash ( 'api/auth-sessions/validate' )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+
 	public function testSystemRejectsNoAppKey ()
 	{
 		$this -> seedDb () ;
@@ -60,7 +74,7 @@ class Api_AuthSessions_Validate_Test extends TestCase
 	public function testSystemRejectsNullSessionKey ()
 	{
 		$this -> seedDb () ;
-		
+
 		$this
 			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
 			-> assertStatus ( 401 )
@@ -70,7 +84,7 @@ class Api_AuthSessions_Validate_Test extends TestCase
 	public function testSystemRejectsInvalidSessionKey ()
 	{
 		$this -> seedDb () ;
-		
+
 		$this
 			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'wrong' )
 			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )
@@ -81,7 +95,7 @@ class Api_AuthSessions_Validate_Test extends TestCase
 	public function testSystemRejectsExpiredSessionKey ()
 	{
 		$this -> seedDb () ;
-		
+
 		$this
 			-> withHeader ( 'x-lk-sanmark-janus-sessionkey' , 'the_auth_session_key_expired' )
 			-> getWithValidAppKeyAndSecretHash ( 'api/auth-sessions/validate' )

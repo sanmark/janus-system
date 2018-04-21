@@ -55,6 +55,16 @@ class Api_Users_Get_Test extends TestCase
 				'errors' => [] ,
 			] ) ;
 	}
+	
+	public function testInvalidSecretHashIsRejected ()
+	{
+		$this
+			-> getWithValidAppKeyAndInvalidSecretHash ( $this -> url )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
+			] ) ;
+	}
 
 	public function testNoAppKeyIsRejected ()
 	{

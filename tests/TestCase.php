@@ -29,6 +29,12 @@ abstract class TestCase extends BaseTestCase
 		return parent::get ( $uri , $headers ) ;
 	}
 
+	public function getWithValidAppKeyAndInvalidSecretHash ( $uri , array $headers = array () )
+	{
+		$headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray ( $headers ) ;
+		return parent::get ( $uri , $headers ) ;
+	}
+
 	public function getWithValidAppKeyAndSecretHash ( $uri , array $headers = array () )
 	{
 		$headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
@@ -44,13 +50,19 @@ abstract class TestCase extends BaseTestCase
 
 		return Mockery::mock ( $className , $constructorArgs ) ;
 	}
-	
+
 	public function patchWithInvalidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
 	{
 		$headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
 		return parent::patch ( $uri , $data , $headers ) ;
 	}
-	
+
+	public function patchWithValidAppKeyAndInvalidSecretHash ( $uri , array $data = array () , array $headers = array () )
+	{
+		$headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray ( $headers ) ;
+		return parent::patch ( $uri , $data , $headers ) ;
+	}
+
 	public function patchWithValidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
 	{
 		$headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
@@ -60,6 +72,12 @@ abstract class TestCase extends BaseTestCase
 	public function postWithInvalidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
 	{
 		$headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
+		return parent::post ( $uri , $data , $headers ) ;
+	}
+
+	public function postWithValidAppKeyAndInvalidSecretHash ( $uri , array $data = array () , array $headers = array () )
+	{
+		$headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray ( $headers ) ;
 		return parent::post ( $uri , $data , $headers ) ;
 	}
 
@@ -98,6 +116,18 @@ abstract class TestCase extends BaseTestCase
 			-> make ( 'invalid-secret' ) ;
 
 		$headers[ RequestHeaderConstants::APP_KEY ] = 'invalid-key' ;
+		$headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash ;
+
+		return $headers ;
+	}
+
+	private function attachValidAppKeyAndInvalidSecretHashToHeadersArray ( array $headers = [] )
+	{
+		$hash = $this
+			-> hasher
+			-> make ( 'invalid-secret' ) ;
+
+		$headers[ RequestHeaderConstants::APP_KEY ] = 'key' ;
 		$headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash ;
 
 		return $headers ;

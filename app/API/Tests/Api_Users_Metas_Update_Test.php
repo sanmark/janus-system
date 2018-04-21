@@ -87,6 +87,16 @@ class Api_Users_Metas_Update_Test extends TestCase
 				'errors' => [] ,
 			] ) ;
 	}
+	
+	public function testInvalidSecretHashIsRejected ()
+	{
+		$this
+			-> patchWithValidAppKeyAndInvalidSecretHash ( $this -> url )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
+			] ) ;
+	}
 
 	public function testNoAppKeyIsRejected ()
 	{

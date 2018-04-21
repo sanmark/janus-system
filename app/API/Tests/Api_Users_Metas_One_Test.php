@@ -46,7 +46,7 @@ class Api_Users_Metas_One_Test extends TestCase
 				] ,
 			] ) ;
 	}
-	
+
 	public function testInvalidUserIdCauseError ()
 	{
 		$url = 'api/users/149/metas/demo-meta-1' ;
@@ -64,6 +64,16 @@ class Api_Users_Metas_One_Test extends TestCase
 	{
 		$this
 			-> getWithInvalidAppKeyAndSecretHash ( $this -> url )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
+			] ) ;
+	}
+
+	public function testInvalidSecretHashIsRejected ()
+	{
+		$this
+			-> getWithValidAppKeyAndInvalidSecretHash ( $this -> url )
 			-> assertStatus ( 401 )
 			-> assertJson ( [
 				'errors' => [] ,

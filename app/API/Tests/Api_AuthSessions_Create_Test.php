@@ -43,6 +43,24 @@ class Api_AuthSessions_Create_Test extends TestCase
 			] ) ;
 	}
 
+	public function test_login_systemRejectsInvalidSecretHash ()
+	{
+		$this -> seedDb () ;
+
+		$data = [
+			'user_key' => 'user1' ,
+			'user_secret' => 'sec1' ,
+			] ;
+
+		$this
+			-> postWithValidAppKeyAndInvalidSecretHash ( 'api/auth-sessions' , $data )
+			-> assertStatus ( 401 )
+			-> assertJsonStructure ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+
 	public function test_login_ok ()
 	{
 		$this -> seedDb () ;

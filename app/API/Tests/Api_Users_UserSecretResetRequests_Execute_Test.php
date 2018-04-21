@@ -113,6 +113,16 @@ class Api_Users_UserSecretResetRequests_Execute_Test extends TestCase
 				'errors' => [] ,
 			] ) ;
 	}
+	
+	public function testInvalidSecretHashIsRejected ()
+	{
+		$this
+			-> postWithValidAppKeyAndInvalidSecretHash ( $this -> url )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
+			] ) ;
+	}
 
 	public function testNoAppKeyIsRejected ()
 	{

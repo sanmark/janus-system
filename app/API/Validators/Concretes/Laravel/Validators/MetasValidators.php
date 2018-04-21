@@ -28,21 +28,4 @@ class MetasValidators extends BaseValidator implements IMetasValidator
 		$this -> validate ( $data , $rules , $messages ) ;
 	}
 
-	public function updateOneByUserIdAndMetaKeyKey ( array $data )
-	{
-		$rules = [
-			'value' => [
-				RuleConstants::Required ,
-			] ,
-			] ;
-
-		$messages = [
-			'value' => [
-				RuleConstants::Required => ResponseConstants::Required ,
-			] ,
-			] ;
-
-		$this -> validate ( $data , $rules , $messages ) ;
-	}
-
 }

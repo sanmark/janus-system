@@ -57,7 +57,19 @@ class Api_Metakeys_Get_Test extends TestCase
 		$this -> seedDb () ;
 
 		$this
-			-> get ( 'api/metakeys' )
+			-> getWithInvalidAppKeyAndSecretHash ( 'api/metakeys' )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [] ,
+			] ) ;
+	}
+	
+	public function test_getAllMetaKeys_rejectsInvalidSecretHash ()
+	{
+		$this -> seedDb () ;
+
+		$this
+			-> getWithValidAppKeyAndInvalidSecretHash ( 'api/metakeys' )
 			-> assertStatus ( 401 )
 			-> assertJson ( [
 				'errors' => [] ,

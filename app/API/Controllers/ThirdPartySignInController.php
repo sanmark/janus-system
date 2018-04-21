@@ -16,9 +16,6 @@ use InvalidArgumentException ;
 use function config ;
 use function response ;
 
-/**
- * @codeCoverageIgnore
- */
 class ThirdPartySignInController extends Controller
 {
 

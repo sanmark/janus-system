@@ -28,6 +28,24 @@ class Api_Users_Create_Test extends TestCase
 			] ) ;
 	}
 	
+	public function testSystemRejectsInvalidSecretHash()
+	{
+		$this -> seedDb () ;
+
+		$data = [
+			'user_key' => $this -> faker () -> userName ,
+			'user_secret' => $this -> faker () -> password ,
+			] ;
+
+		$this
+			-> postWithValidAppKeyAndInvalidSecretHash ( 'api/users' , $data )
+			-> assertStatus ( 401 )
+			-> assertJson ( [
+				'errors' => [
+				] ,
+			] ) ;
+	}
+	
 	public function testSystemRejectsNoAppKey ()
 	{
 		$this -> seedDb () ;
