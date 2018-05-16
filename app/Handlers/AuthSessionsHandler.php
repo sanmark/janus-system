@@ -51,11 +51,9 @@ class AuthSessionsHandler
 		return $authSession ;
 	}
 
-	public function extendActiveTime ( AuthSession $authSession , int $authSessionActiveMinutes ): AuthSession
+	public function extendActiveTime ( AuthSession $authSession ): AuthSession
 	{
-		$authSession
-			-> updated_at
-			-> addMinutes ( $authSessionActiveMinutes ) ;
+		$authSession -> updated_at = $this -> carbon -> now () ;
 
 		return $this
 				-> authSessionsRepo
@@ -91,7 +89,7 @@ class AuthSessionsHandler
 			throw new RecordNotFoundException() ;
 		}
 
-		return $this -> extendActiveTime ( $authSession , $authSessionActiveMinutes ) ;
+		return $this -> extendActiveTime ( $authSession ) ;
 	}
 
 }
