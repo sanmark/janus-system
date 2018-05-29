@@ -1,0 +1,10 @@
+version: '3'
+services:
+    lk-sanmark-janus:
+        build: .
+        ports:
+        - 80:80
+        volumes:
+        - ./src:/app
+        env_file:
+        - ./src/.env
