@@ -1,0 +1,21 @@
+server {
+	listen 80;
+
+	root /app/public;
+
+	index index.php index.html;
+
+	location / {
+		try_files $uri $uri/ /index.php?$query_string;
+	}
+
+	location ~ \.php$ {
+		include snippets/fastcgi-php.conf;
+		include fastcgi_params_app;
+		fastcgi_pass unix:/run/php/php7.2-fpm.sock;
+	}
+
+	location ~ /\.ht {
+		deny all;
+	}
+}

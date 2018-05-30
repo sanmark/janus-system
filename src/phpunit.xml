@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit backupGlobals="false"
+		 backupStaticAttributes="false"
+		 bootstrap="vendor/autoload.php"
+		 colors="true"
+		 convertErrorsToExceptions="true"
+		 convertNoticesToExceptions="true"
+		 convertWarningsToExceptions="true"
+		 processIsolation="false"
+		 stopOnFailure="false">
+	<testsuites>
+		<testsuite name="feature">
+			<directory suffix="Test.php">./app/API/Tests</directory>
+		</testsuite>
+		<testsuite name="unit">
+			<directory suffix="Test.php">./app/API/Controllers/Tests</directory>
+			<directory suffix="Test.php">./app/API/Validators/Concretes/Laravel/Tests</directory>
+			<directory suffix="Test.php">./app/Handlers/Tests</directory>
+			<directory suffix="Test.php">./app/Models/Tests</directory>
+			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Repos/Tests</directory>
+			<directory suffix="Test.php">./app/SystemSettings/Concretes/LaravelEnv/Tests</directory>
+		</testsuite>
+	</testsuites>
+	<filter>
+		<whitelist processUncoveredFilesFromWhitelist="true">
+			<directory suffix=".php">./app</directory>
+			<exclude>
+				<directory>./app/API/routes</directory>
+				<directory>./app/Exceptions</directory>
+				<directory>./app/Http</directory>
+				<directory>./app/Providers</directory>
+			</exclude>
+		</whitelist>
+	</filter>
+	<php>
+		<env name="APP_ENV" value="testing"/>
+		<env name="CACHE_DRIVER" value="array"/>
+		<env name="SESSION_DRIVER" value="array"/>
+		<env name="QUEUE_DRIVER" value="sync"/>
+		<env name="DB_CONNECTION" value="testing" />
+	</php>
+</phpunit>
