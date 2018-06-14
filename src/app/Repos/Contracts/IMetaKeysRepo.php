@@ -13,7 +13,5 @@ interface IMetaKeysRepo
 
 	public function getByKey ( string $key ): MetaKey ;
 
-	public function getMetasForUser ( $userID ) ;
-
 	public function getUsersForMetaValue ( string $metaKey , string $metaValue ): array ;
 }

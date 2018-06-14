@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\Validators\Concretes\Laravel\Tests ;
+namespace App\API\Validators\Concretes\Laravel\Validators\Tests ;
 
 use App\API\Validators\Concretes\Laravel\Validators\UsersValidator ;
 use App\API\Validators\Exceptions\InvalidInputException ;
@@ -44,6 +44,43 @@ class UsersValidatorTest extends TestCase
 					'required' ,
 				] ,
 				'user_secret' => [
+					'required' ,
+				] ,
+				] , $ex -> getErrors () ) ;
+		}
+	}
+
+	public function test_userSecretResetRequestsExecute_returnsNullForValidInput ()
+	{
+		$data = [
+			'new_secret' => 'new-secret' ,
+			'user_secret_reset_request_token' => 'the-token' ,
+			] ;
+
+		$validator = new UsersValidator() ;
+
+		$response = $validator -> userSecretResetRequestsExecute ( $data ) ;
+
+		$this -> assertNull ( $response ) ;
+	}
+
+	public function test_userSecretResetRequestsExecute_throwsInvalidInputExceptionForInvalidInputs ()
+	{
+		try
+		{
+			$validator = new UsersValidator() ;
+
+			$data = [] ;
+			$validator -> userSecretResetRequestsExecute ( $data ) ;
+		} catch ( InvalidInputException $ex )
+		{
+			$this -> assertInstanceOf ( InvalidInputException::class , $ex ) ;
+
+			$this -> assertEquals ( [
+				'new_secret' => [
+					'required' ,
+				] ,
+				'user_secret_reset_request_token' => [
 					'required' ,
 				] ,
 				] , $ex -> getErrors () ) ;

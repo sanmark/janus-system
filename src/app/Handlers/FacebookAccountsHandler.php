@@ -33,22 +33,6 @@ class FacebookAccountsHandler
 		$this -> usersHandler = $usersHandler ;
 	}
 
-	public function create ( string $key , string $firstName ): FacebookAccount
-	{
-		$userKey = $this -> generateUserKeyFromFirstName ( $firstName ) ;
-		$userSecret = $this -> hash -> make ( $this -> carbon -> now () ) ;
-
-		$user = $this
-			-> usersHandler
-			-> create ( $userKey , $userSecret ) ;
-
-		$facebookAccount = $this
-			-> facebookAccountsRepo
-			-> create ( $user -> id , $key ) ;
-
-		return $facebookAccount ;
-	}
-
 	public function getAuthSession ( string $key , string $firstName ): AuthSession
 	{
 		$facebookAccount = NULL ;
@@ -72,7 +56,23 @@ class FacebookAccountsHandler
 		return $authSession ;
 	}
 
-	public function getByKey ( string $key ): FacebookAccount
+	private function create ( string $key , string $firstName ): FacebookAccount
+	{
+		$userKey = $this -> generateUserKeyFromFirstName ( $firstName ) ;
+		$userSecret = $this -> hash -> make ( $this -> carbon -> now () ) ;
+
+		$user = $this
+			-> usersHandler
+			-> create ( $userKey , $userSecret ) ;
+
+		$facebookAccount = $this
+			-> facebookAccountsRepo
+			-> create ( $user -> id , $key ) ;
+
+		return $facebookAccount ;
+	}
+
+	private function getByKey ( string $key ): FacebookAccount
 	{
 		$facebookAccount = $this
 			-> facebookAccountsRepo

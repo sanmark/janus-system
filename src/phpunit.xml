@@ -14,9 +14,13 @@
 		</testsuite>
 		<testsuite name="unit">
 			<directory suffix="Test.php">./app/API/Controllers/Tests</directory>
-			<directory suffix="Test.php">./app/API/Validators/Concretes/Laravel/Tests</directory>
+			<directory suffix="Test.php">./app/API/Middleware/Tests</directory>
+			<directory suffix="Test.php">./app/API/Responses/Tests</directory>
+			<directory suffix="Test.php">./app/API/Validators/Concretes/Laravel/Validators/Tests</directory>
 			<directory suffix="Test.php">./app/Handlers/Tests</directory>
+			<directory suffix="Test.php">./app/Helpers/Tests</directory>
 			<directory suffix="Test.php">./app/Models/Tests</directory>
+			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Models/Tests</directory>
 			<directory suffix="Test.php">./app/Repos/Concretes/Eloquent/Repos/Tests</directory>
 			<directory suffix="Test.php">./app/SystemSettings/Concretes/LaravelEnv/Tests</directory>
 		</testsuite>

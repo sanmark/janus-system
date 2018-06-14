@@ -91,7 +91,7 @@ class MetasHandler
 		}
 	}
 
-	public function update ( int $metaId , string $value ): Meta
+	private function update ( int $metaId , string $value ): Meta
 	{
 		$meta = $this
 			-> metasRepo

@@ -4,6 +4,9 @@ namespace App\API\Tests ;
 
 use Tests\TestCase ;
 
+/**
+ * @codeCoverageIgnore
+ */
 class Api_Users_UserSecretResetRequests_Execute_Test extends TestCase
 {
 
@@ -113,7 +116,7 @@ class Api_Users_UserSecretResetRequests_Execute_Test extends TestCase
 				'errors' => [] ,
 			] ) ;
 	}
-	
+
 	public function testInvalidSecretHashIsRejected ()
 	{
 		$this

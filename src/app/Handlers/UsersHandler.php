@@ -74,7 +74,7 @@ class UsersHandler
 
 		$user = $this
 			-> usersRepo
-			-> update ( $id , $data ) ;
+			-> update ( $id , $cleanedData ) ;
 
 		return $user ;
 	}

@@ -11,7 +11,6 @@ use Exception ;
 use Illuminate\Contracts\Hashing\Hasher ;
 use Illuminate\Database\Eloquent\ModelNotFoundException ;
 use Illuminate\Database\QueryException ;
-use Mockery ;
 use Tests\TestCase ;
 
 /**
@@ -20,7 +19,7 @@ use Tests\TestCase ;
 class UsersRepoTest extends TestCase
 {
 
-	public function testCreateOk ()
+	public function test_create_ok ()
 	{
 		$mockEUser = $this -> mock ( eUser::class ) ;
 		$mockHasher = $this -> mock ( Hasher::class ) ;
@@ -48,7 +47,7 @@ class UsersRepoTest extends TestCase
 		$this -> assertInstanceOf ( User::class , $user ) ;
 	}
 
-	public function testCreateThrowsUniqueConstraintFailureException ()
+	public function test_create_throwsUniqueConstraintFailureException ()
 	{
 		$this -> expectException ( UniqueConstraintFailureException::class ) ;
 
@@ -83,7 +82,89 @@ class UsersRepoTest extends TestCase
 		}
 	}
 
-	public function testGetByKeyOk ()
+	public function test_get_ok ()
+	{
+		$hasher = $this -> mock ( Hasher::class ) ;
+		$eUser = $this -> mock ( eUser::class ) ;
+
+		$usersRepo = new UsersRepo ( $hasher , $eUser ) ;
+
+		$theEUser = $this -> mock ( eUser::class ) ;
+
+		$theEUser -> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'id' ,
+			] )
+			-> andReturn ( 149 ) ;
+
+		$theEUser -> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'key' ,
+			] )
+			-> andReturn ( 'the-key' ) ;
+
+		$theEUser -> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'secret' ,
+			] )
+			-> andReturn ( 'the-secret' ) ;
+
+		$theEUser -> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'deleted_at' ,
+			] )
+			-> andReturn ( 'the-deleted_at' ) ;
+
+		$theEUser -> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'created_at' ,
+			] )
+			-> andReturn ( 'the-created_at' ) ;
+
+		$theEUser -> shouldReceive ( 'getAttribute' )
+			-> withArgs ( [
+				'updated_at' ,
+			] )
+			-> andReturn ( 'the-updated_at' ) ;
+
+		$eUser -> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andReturn ( $theEUser ) ;
+
+		$response = $usersRepo -> get ( 149 ) ;
+
+		$expectedUser = new User() ;
+		$expectedUser -> id = 149 ;
+		$expectedUser -> key = 'the-key' ;
+		$expectedUser -> secret = 'the-secret' ;
+		$expectedUser -> deleted_at = 'the-deleted_at' ;
+		$expectedUser -> created_at = 'the-created_at' ;
+		$expectedUser -> updated_at = 'the-updated_at' ;
+
+		$this -> assertEquals ( $expectedUser , $response ) ;
+	}
+
+	public function test_get_throwsRecordNotFoundException ()
+	{
+		$hasher = $this -> mock ( Hasher::class ) ;
+		$eUser = $this -> mock ( eUser::class ) ;
+
+		$usersRepo = new UsersRepo ( $hasher , $eUser ) ;
+
+		$eUser -> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andThrow ( ModelNotFoundException::class ) ;
+
+		$this -> expectException ( RecordNotFoundException::class ) ;
+
+		$usersRepo -> get ( 149 ) ;
+	}
+
+	public function test_getByKey_ok ()
 	{
 		$mockEUser = $this -> mock ( eUser::class ) ;
 		$mockHasher = $this -> mock ( Hasher::class ) ;
@@ -132,7 +213,7 @@ class UsersRepoTest extends TestCase
 		$this -> assertSame ( $user -> updated_at , 'the_updated_at' ) ;
 	}
 
-	public function testGetByKeyThrowsRecordNotFoundException ()
+	public function test_getByKey_throwsRecordNotFoundException ()
 	{
 		$this -> expectException ( RecordNotFoundException::class ) ;
 
@@ -152,6 +233,71 @@ class UsersRepoTest extends TestCase
 
 		$user = $usersRepo
 			-> getByKey ( 'rofl' ) ;
+	}
+
+	public function test_update_ok ()
+	{
+		$hasher = $this -> mock ( Hasher::class ) ;
+		$eUser = $this -> mock ( eUser::class ) ;
+
+		$usersRepo = $this -> mock ( UsersRepo::class . '[get]' , [
+			$hasher ,
+			$eUser ,
+			] ) ;
+
+		$theUser = $this -> mock ( eUser::class ) ;
+
+		$eUser -> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andReturn ( $theUser ) ;
+
+		$hasher -> shouldReceive ( 'make' )
+			-> withArgs ( [
+				'the-secret' ,
+			] )
+			-> andReturn ( 150 ) ;
+
+		$theUser -> shouldReceive ( 'setAttribute' )
+			-> withArgs ( [
+				'secret' ,
+				150 ,
+			] )
+			-> andReturnSelf () ;
+
+		$theUser -> shouldReceive ( 'save' )
+			-> withArgs ( [] ) ;
+
+		$user = $this -> mock ( User::class ) ;
+
+		$usersRepo -> shouldReceive ( 'get' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andReturn ( $user ) ;
+
+		$response = $usersRepo -> update ( 149 , [ 'user_secret' => 'the-secret' ] ) ;
+
+		$this -> assertSame ( $user , $response ) ;
+	}
+
+	public function test_update_throwsRecordNotFoundException ()
+	{
+		$hasher = $this -> mock ( Hasher::class ) ;
+		$eUser = $this -> mock ( eUser::class ) ;
+
+		$usersRepo = new UsersRepo ( $hasher , $eUser ) ;
+
+		$eUser -> shouldReceive ( 'findOrFail' )
+			-> withArgs ( [
+				149 ,
+			] )
+			-> andThrow ( ModelNotFoundException::class ) ;
+
+		$this -> expectException ( RecordNotFoundException::class ) ;
+
+		$usersRepo -> update ( 149 , [] ) ;
 	}
 
 }

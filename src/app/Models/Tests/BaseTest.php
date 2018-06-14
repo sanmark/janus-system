@@ -11,6 +11,13 @@ use Tests\TestCase ;
 class BaseTest extends TestCase
 {
 
+	public function test_toString_ok ()
+	{
+		$user = new User() ;
+
+		$this -> assertSame ( '{"id":null,"key":null,"secret":null}' , $user -> __toString () ) ;
+	}
+
 	public function testToArray_Ok ()
 	{
 		$user = new User() ;
