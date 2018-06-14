@@ -1,0 +1,13 @@
+version: '3'
+services:
+    lk-sanmark-janus-dev:
+        build:
+            context: .
+            dockerfile: dev.Dockerfile
+        image: lk-sanmark-janus-dev
+        ports:
+        - 80:80
+        volumes:
+        - ./src:/app
+        env_file:
+        - ./src/.env
