@@ -30,7 +30,7 @@ class AppsHandler
 		return $isValid ;
 	}
 
-	public function isValidBySecretHash ( App $app , string $secretHash ): bool
+	private function isValidBySecretHash ( App $app , string $secretHash ): bool
 	{
 		$secret = $app -> secret ;
 
@@ -41,7 +41,7 @@ class AppsHandler
 		return $isValid ;
 	}
 
-	public function getByKey ( string $id ): App
+	private function getByKey ( string $id ): App
 	{
 		$app = $this
 			-> appsRepo

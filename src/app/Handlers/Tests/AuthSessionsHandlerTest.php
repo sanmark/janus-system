@@ -57,21 +57,13 @@ class AuthSessionsHandlerTest extends TestCase
 		$usersHandler = $this -> mock ( UsersHandler::class ) ;
 		$carbon = $this -> mock ( Carbon::class ) ;
 
+		$carbon -> shouldReceive ( 'now' )
+			-> withArgs ( [] )
+			-> andReturn ( 149 ) ;
+
 		$authSessionsHandler = new AuthSessionsHandler ( $authSessionsRepo , $systemSettingsInterface , $usersHandler , $carbon ) ;
 
 		$authSession = $this -> mock ( AuthSession::class ) ;
-		$authSessionActiveMinutes = 149 ;
-
-		$updated_at = $this -> mock ( Carbon::class ) ;
-
-		$authSession -> updated_at = $this -> mock ( Carbon::class ) ;
-
-		$authSession
-			-> updated_at
-			-> shouldReceive ( 'addMinutes' )
-			-> withArgs ( [
-				149 ,
-			] ) ;
 
 		$authSessionsRepo
 			-> shouldReceive ( 'update' )
@@ -80,9 +72,10 @@ class AuthSessionsHandlerTest extends TestCase
 			] )
 			-> andReturn ( $authSession ) ;
 
-		$result = $authSessionsHandler -> extendActiveTime ( $authSession , $authSessionActiveMinutes ) ;
+		$result = $authSessionsHandler -> extendActiveTime ( $authSession ) ;
 
 		$this -> assertSame ( $authSession , $result ) ;
+		$this -> assertSame ( 149 , $authSession -> updated_at ) ;
 	}
 
 	public function test_getByKey_ok ()
@@ -159,7 +152,6 @@ class AuthSessionsHandlerTest extends TestCase
 			-> shouldReceive ( 'extendActiveTime' )
 			-> withArgs ( [
 				$authSession ,
-				149 ,
 			] )
 			-> andReturn ( $authSession ) ;
 

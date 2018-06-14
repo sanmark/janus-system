@@ -2,7 +2,7 @@
 FROM a2way/dunp:v0.1.0
 
 # Install required packages.
-RUN apt-get install -y composer unzip php-mbstring php-dom php-mysql
+RUN apt-get install -y composer unzip php-mbstring php-dom php-mysql php-sqlite3
 
 # Remove default "index.html" file of A2Way DUNP.
 WORKDIR /app

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\API\Validators\Concretes\Laravel\Tests ;
+namespace App\API\Validators\Concretes\Laravel\Validators\Tests ;
 
 use App\API\Validators\Concretes\Laravel\Validators\AuthSessionsValidator ;
 use App\API\Validators\Exceptions\InvalidInputException ;

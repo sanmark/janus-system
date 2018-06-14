@@ -8,7 +8,7 @@ use App\API\Validators\Constants\ResponseConstants ;
 use App\API\Validators\Contracts\IMetasValidator ;
 use Illuminate\Validation\Rule ;
 
-class MetasValidators extends BaseValidator implements IMetasValidator
+class MetasValidator extends BaseValidator implements IMetasValidator
 {
 
 	public function createByUserIdAndMetaKey ( array $data )
