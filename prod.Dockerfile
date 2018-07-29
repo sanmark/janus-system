@@ -23,6 +23,9 @@ COPY /src/public /app/public
 COPY /src/resources /app/resources
 COPY /src/routes /app/routes
 COPY /src/storage /app/storage
+COPY /src/artisan /app/artisan
+COPY /src/composer.json /app/composer.json
+COPY /src/composer.lock /app/composer.lock
 COPY /src/tests /app/tests
 COPY /src/.env /app/.env
 COPY /src/app /app/app
