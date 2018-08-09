@@ -1,179 +1,176 @@
 <?php
 
-namespace App\Handlers\Tests ;
+namespace App\Handlers\Tests;
 
-use App\Handlers\UsersHandler ;
-use App\Helpers\ArrayHelper ;
-use App\Models\User ;
-use App\Repos\Contracts\IUsersRepo ;
-use App\Repos\Exceptions\RecordNotFoundException ;
-use Illuminate\Contracts\Hashing\Hasher ;
-use Mockery ;
-use Tests\TestCase ;
+use App\Handlers\UsersHandler;
+use App\Helpers\ArrayHelper;
+use App\Models\User;
+use App\Repos\Contracts\IUsersRepo;
+use App\Repos\Exceptions\RecordNotFoundException;
+use Illuminate\Contracts\Hashing\Hasher;
+use Mockery;
+use Tests\TestCase;
 
 /**
  * @codeCoverageIgnore
  */
 class UsersHandlerTest extends TestCase
 {
+    public function test_create_Ok()
+    {
+        $mockArrayHelper = Mockery::mock(ArrayHelper::class);
+        $mockHash = Mockery::mock(Hasher::class);
+        $mockIUsersRepo = Mockery::mock(IUsersRepo::class);
+        $userKey = $this -> faker() -> userName;
+        $userSecret = $this -> faker() -> password;
+        $mockUserModel = Mockery::mock(User::class);
 
-	public function test_create_Ok ()
-	{
-		$mockArrayHelper = Mockery::mock ( ArrayHelper::class ) ;
-		$mockHash = Mockery::mock ( Hasher::class ) ;
-		$mockIUsersRepo = Mockery::mock ( IUsersRepo::class ) ;
-		$userKey = $this -> faker () -> userName ;
-		$userSecret = $this -> faker () -> password ;
-		$mockUserModel = Mockery::mock ( User::class ) ;
+        $mockIUsersRepo
+            -> shouldReceive('create')
+            -> withArgs([
+                $userKey ,
+                $userSecret ,
+            ])
+            -> andReturn($mockUserModel);
 
-		$mockIUsersRepo
-			-> shouldReceive ( 'create' )
-			-> withArgs ( [
-				$userKey ,
-				$userSecret ,
-			] )
-			-> andReturn ( $mockUserModel ) ;
+        $usersHandler = new UsersHandler($mockArrayHelper, $mockHash, $mockIUsersRepo);
 
-		$usersHandler = new UsersHandler ( $mockArrayHelper , $mockHash , $mockIUsersRepo ) ;
+        $response = $usersHandler -> create($userKey, $userSecret);
 
-		$response = $usersHandler -> create ( $userKey , $userSecret ) ;
+        $this -> assertSame($mockUserModel, $response);
+    }
 
-		$this -> assertSame ( $mockUserModel , $response ) ;
-	}
+    public function test_get_ok()
+    {
+        $arrayHelper = $this -> mock(ArrayHelper::class);
+        $hash = $this -> mock(Hasher::class);
+        $iUsersRepo = $this -> mock(IUsersRepo::class);
+        $user = $this -> mock(User::class);
 
-	public function test_get_ok ()
-	{
-		$arrayHelper = $this -> mock ( ArrayHelper::class ) ;
-		$hash = $this -> mock ( Hasher::class ) ;
-		$iUsersRepo = $this -> mock ( IUsersRepo::class ) ;
-		$user = $this -> mock ( User::class ) ;
+        $usersHandler = new UsersHandler($arrayHelper, $hash, $iUsersRepo);
 
-		$usersHandler = new UsersHandler ( $arrayHelper , $hash , $iUsersRepo ) ;
+        $iUsersRepo -> shouldReceive('get')
+            -> withArgs([ 149 ])
+            -> andReturn($user);
 
-		$iUsersRepo -> shouldReceive ( 'get' )
-			-> withArgs ( [ 149 ] )
-			-> andReturn ( $user ) ;
+        $response = $usersHandler -> get(149);
 
-		$response = $usersHandler -> get ( 149 ) ;
+        $this -> assertSame($user, $response);
+    }
 
-		$this -> assertSame ( $user , $response ) ;
-	}
+    public function test_getByKey_ok()
+    {
+        $arrayHelper = $this -> mock(ArrayHelper::class);
+        $hash = $this -> mock(Hasher::class);
+        $iUsersRepo = $this -> mock(IUsersRepo::class);
+        $user = $this -> mock(User::class);
 
-	public function test_getByKey_ok ()
-	{
-		$arrayHelper = $this -> mock ( ArrayHelper::class ) ;
-		$hash = $this -> mock ( Hasher::class ) ;
-		$iUsersRepo = $this -> mock ( IUsersRepo::class ) ;
-		$user = $this -> mock ( User::class ) ;
+        $usersHandler = new UsersHandler($arrayHelper, $hash, $iUsersRepo);
 
-		$usersHandler = new UsersHandler ( $arrayHelper , $hash , $iUsersRepo ) ;
+        $iUsersRepo -> shouldReceive('getByKey')
+            -> withArgs([ 'key' ])
+            -> andReturn($user);
 
-		$iUsersRepo -> shouldReceive ( 'getByKey' )
-			-> withArgs ( [ 'key' ] )
-			-> andReturn ( $user ) ;
+        $response = $usersHandler -> getByKey('key');
 
-		$response = $usersHandler -> getByKey ( 'key' ) ;
+        $this -> assertSame($user, $response);
+    }
 
-		$this -> assertSame ( $user , $response ) ;
-	}
+    public function test_getUserIfCredentialsValid_Ok()
+    {
+        $mockArrayHelper = Mockery::mock(ArrayHelper::class);
+        $mockIUsersRepo = Mockery::mock(IUsersRepo::class);
+        $mockHash = Mockery::mock(Hasher::class);
+        $mockUser = Mockery::mock(User::class);
 
-	public function test_getUserIfCredentialsValid_Ok ()
-	{
-		$mockArrayHelper = Mockery::mock ( ArrayHelper::class ) ;
-		$mockIUsersRepo = Mockery::mock ( IUsersRepo::class ) ;
-		$mockHash = Mockery::mock ( Hasher::class ) ;
-		$mockUser = Mockery::mock ( User::class ) ;
+        $mockIUsersRepo
+            -> shouldReceive('getByKey')
+            -> withArgs([
+                'the_key' ,
+            ])
+            -> andReturn($mockUser);
 
-		$mockIUsersRepo
-			-> shouldReceive ( 'getByKey' )
-			-> withArgs ( [
-				'the_key' ,
-			] )
-			-> andReturn ( $mockUser ) ;
+        $mockHash
+            -> shouldReceive('check')
+            -> withArgs([
+                'the_secret' ,
+                'asdf' ,
+            ])
+            -> andReturn(true);
 
-		$mockHash
-			-> shouldReceive ( 'check' )
-			-> withArgs ( [
-				'the_secret' ,
-				'asdf' ,
-			] )
-			-> andReturn ( TRUE ) ;
+        $mockUser -> secret = 'asdf';
 
-		$mockUser -> secret = 'asdf' ;
+        $usersHandler = new UsersHandler($mockArrayHelper, $mockHash, $mockIUsersRepo);
 
-		$usersHandler = new UsersHandler ( $mockArrayHelper , $mockHash , $mockIUsersRepo ) ;
+        $response = $usersHandler -> getUserIfCredentialsValid('the_key', 'the_secret');
 
-		$response = $usersHandler -> getUserIfCredentialsValid ( 'the_key' , 'the_secret' ) ;
+        $this -> assertSame($mockUser, $response);
+    }
 
-		$this -> assertSame ( $mockUser , $response ) ;
-	}
+    public function test_getUserIfCredentialsValid_HandlesInvalidCredentials()
+    {
+        $this -> expectException(RecordNotFoundException::class);
 
-	public function test_getUserIfCredentialsValid_HandlesInvalidCredentials ()
-	{
+        $mockArrayHelper = $this -> mock(ArrayHelper::class);
+        $mockHash = $this -> mock(Hasher::class);
+        $mockIUsersRepo = $this -> mock(IUsersRepo::class);
 
-		$this -> expectException ( RecordNotFoundException::class ) ;
+        $usersHandler = new UsersHandler($mockArrayHelper, $mockHash, $mockIUsersRepo);
 
-		$mockArrayHelper = $this -> mock ( ArrayHelper::class ) ;
-		$mockHash = $this -> mock ( Hasher::class ) ;
-		$mockIUsersRepo = $this -> mock ( IUsersRepo::class ) ;
+        $user = $this -> mock(User::class);
 
-		$usersHandler = new UsersHandler ( $mockArrayHelper , $mockHash , $mockIUsersRepo ) ;
+        $user -> secret = 'the_secret_saved_in_db';
 
-		$user = $this -> mock ( User::class ) ;
+        $mockIUsersRepo
+            -> shouldReceive('getByKey')
+            -> withArgs([
+                'the_key' ,
+            ])
+            -> andReturn($user);
 
-		$user -> secret = 'the_secret_saved_in_db' ;
+        $mockHash
+            -> shouldReceive('check')
+            -> withArgs([
+                'the_secret' ,
+                'the_secret_saved_in_db' ,
+            ])
+            -> andReturn(false);
 
-		$mockIUsersRepo
-			-> shouldReceive ( 'getByKey' )
-			-> withArgs ( [
-				'the_key' ,
-			] )
-			-> andReturn ( $user ) ;
+        $usersHandler -> getUserIfCredentialsValid('the_key', 'the_secret');
+    }
 
-		$mockHash
-			-> shouldReceive ( 'check' )
-			-> withArgs ( [
-				'the_secret' ,
-				'the_secret_saved_in_db' ,
-			] )
-			-> andReturn ( FALSE ) ;
+    public function test_update_ok()
+    {
+        $arrayHelper = $this -> mock(ArrayHelper::class);
+        $hash = $this -> mock(Hasher::class);
+        $iUsersRepo = $this -> mock(IUsersRepo::class);
+        $user = $this -> mock(User::class);
 
-		$usersHandler -> getUserIfCredentialsValid ( 'the_key' , 'the_secret' ) ;
-	}
+        $usersHandler = new UsersHandler($arrayHelper, $hash, $iUsersRepo);
 
-	public function test_update_ok ()
-	{
-		$arrayHelper = $this -> mock ( ArrayHelper::class ) ;
-		$hash = $this -> mock ( Hasher::class ) ;
-		$iUsersRepo = $this -> mock ( IUsersRepo::class ) ;
-		$user = $this -> mock ( User::class ) ;
+        $arrayHelper -> shouldReceive('onlyNonEmptyMembers')
+            -> withArgs([
+                [
+                    'lol' => 'rofl' ,
+                ] ,
+            ])
+            -> andReturn([
+                'foo' => 'bar' ,
+            ]);
 
-		$usersHandler = new UsersHandler ( $arrayHelper , $hash , $iUsersRepo ) ;
+        $iUsersRepo -> shouldReceive('update')
+            -> withArgs([
+                149 ,
+                [
+                    'foo' => 'bar' ,
+                ] ,
+            ])
+            -> andReturn($user);
 
-		$arrayHelper -> shouldReceive ( 'onlyNonEmptyMembers' )
-			-> withArgs ( [
-				[
-					'lol' => 'rofl' ,
-				] ,
-			] )
-			-> andReturn ( [
-				'foo' => 'bar' ,
-			] ) ;
+        $response = $usersHandler -> update(149, [
+            'lol' => 'rofl' ,
+        ]);
 
-		$iUsersRepo -> shouldReceive ( 'update' )
-			-> withArgs ( [
-				149 ,
-				[
-					'foo' => 'bar' ,
-				] ,
-			] )
-			-> andReturn ( $user ) ;
-
-		$response = $usersHandler -> update ( 149 , [
-			'lol' => 'rofl' ,
-			] ) ;
-
-		$this -> assertSame ( $user , $response ) ;
-	}
-
+        $this -> assertSame($user, $response);
+    }
 }

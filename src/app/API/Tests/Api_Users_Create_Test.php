@@ -1,131 +1,129 @@
 <?php
 
-namespace App\API\Tests ;
+namespace App\API\Tests;
 
-use Tests\TestCase ;
+use Tests\TestCase;
 
 /**
  * @codeCoverageIgnore
  */
 class Api_Users_Create_Test extends TestCase
 {
+    public function testSystemRejectsInvalidAppKey()
+    {
+        $this -> seedDb();
 
-	public function testSystemRejectsInvalidAppKey ()
-	{
-		$this -> seedDb () ;
+        $data = [
+            'user_key' => $this -> faker() -> userName ,
+            'user_secret' => $this -> faker() -> password ,
+        ];
 
-		$data = [
-			'user_key' => $this -> faker () -> userName ,
-			'user_secret' => $this -> faker () -> password ,
-			] ;
+        $this
+            -> postWithInvalidAppKeyAndSecretHash('api/users', $data)
+            -> assertStatus(401)
+            -> assertJson([
+                'errors' => [
+                ] ,
+            ]);
+    }
 
-		$this
-			-> postWithInvalidAppKeyAndSecretHash ( 'api/users' , $data )
-			-> assertStatus ( 401 )
-			-> assertJson ( [
-				'errors' => [
-				] ,
-			] ) ;
-	}
-	
-	public function testSystemRejectsInvalidSecretHash()
-	{
-		$this -> seedDb () ;
+    public function testSystemRejectsInvalidSecretHash()
+    {
+        $this -> seedDb();
 
-		$data = [
-			'user_key' => $this -> faker () -> userName ,
-			'user_secret' => $this -> faker () -> password ,
-			] ;
+        $data = [
+            'user_key' => $this -> faker() -> userName ,
+            'user_secret' => $this -> faker() -> password ,
+        ];
 
-		$this
-			-> postWithValidAppKeyAndInvalidSecretHash ( 'api/users' , $data )
-			-> assertStatus ( 401 )
-			-> assertJson ( [
-				'errors' => [
-				] ,
-			] ) ;
-	}
-	
-	public function testSystemRejectsNoAppKey ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> postWithValidAppKeyAndInvalidSecretHash('api/users', $data)
+            -> assertStatus(401)
+            -> assertJson([
+                'errors' => [
+                ] ,
+            ]);
+    }
 
-		$data = [
-			'user_key' => $this -> faker () -> userName ,
-			'user_secret' => $this -> faker () -> password ,
-			] ;
+    public function testSystemRejectsNoAppKey()
+    {
+        $this -> seedDb();
 
-		$this
-			-> post ( 'api/users' , $data )
-			-> assertStatus ( 401 )
-			-> assertJson ( [
-				'errors' => [
-				] ,
-			] ) ;
-	}
+        $data = [
+            'user_key' => $this -> faker() -> userName ,
+            'user_secret' => $this -> faker() -> password ,
+        ];
 
-	public function testUserCanRegister ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> post('api/users', $data)
+            -> assertStatus(401)
+            -> assertJson([
+                'errors' => [
+                ] ,
+            ]);
+    }
 
-		$data = [
-			'user_key' => $this -> faker () -> userName ,
-			'user_secret' => $this -> faker () -> password ,
-			] ;
+    public function testUserCanRegister()
+    {
+        $this -> seedDb();
 
-		$this
-			-> postWithValidAppKeyAndSecretHash ( 'api/users' , $data )
-			-> assertStatus ( 201 )
-			-> assertJson ( [
-				'data' => [
-					'key' => $data[ 'user_key' ] ,
-				] ,
-			] )
-			-> assertJsonStructure ( [
-				'data' => [
-					'id' ,
-				] ,
-			] ) ;
-	}
+        $data = [
+            'user_key' => $this -> faker() -> userName ,
+            'user_secret' => $this -> faker() -> password ,
+        ];
 
-	public function testSystemValidatesUserInputs ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> postWithValidAppKeyAndSecretHash('api/users', $data)
+            -> assertStatus(201)
+            -> assertJson([
+                'data' => [
+                    'key' => $data[ 'user_key' ] ,
+                ] ,
+            ])
+            -> assertJsonStructure([
+                'data' => [
+                    'id' ,
+                ] ,
+            ]);
+    }
 
-		$this
-			-> postWithValidAppKeyAndSecretHash ( 'api/users' )
-			-> assertStatus ( 400 )
-			-> assertJson ( [
-				'errors' => [
-					'user_key' => [
-						'required'
-					] ,
-					'user_secret' => [
-						'required'
-					] ,
-				] ,
-			] ) ;
-	}
+    public function testSystemValidatesUserInputs()
+    {
+        $this -> seedDb();
 
-	public function testSystemRejectsDuplicateUserKeys ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> postWithValidAppKeyAndSecretHash('api/users')
+            -> assertStatus(400)
+            -> assertJson([
+                'errors' => [
+                    'user_key' => [
+                        'required',
+                    ] ,
+                    'user_secret' => [
+                        'required',
+                    ] ,
+                ] ,
+            ]);
+    }
 
-		$data = [
-			'user_key' => $this -> faker () -> userName ,
-			'user_secret' => $this -> faker () -> password ,
-			] ;
+    public function testSystemRejectsDuplicateUserKeys()
+    {
+        $this -> seedDb();
 
-		$this -> postWithValidAppKeyAndSecretHash ( 'api/users' , $data ) ;
+        $data = [
+            'user_key' => $this -> faker() -> userName ,
+            'user_secret' => $this -> faker() -> password ,
+        ];
 
-		$this
-			-> postWithValidAppKeyAndSecretHash ( 'api/users' , $data )
-			-> assertStatus ( 409 )
-			-> assertJson ( [
-				'errors' => [
-					'user_key' => 'duplicate' ,
-				] ,
-			] ) ;
-	}
+        $this -> postWithValidAppKeyAndSecretHash('api/users', $data);
 
+        $this
+            -> postWithValidAppKeyAndSecretHash('api/users', $data)
+            -> assertStatus(409)
+            -> assertJson([
+                'errors' => [
+                    'user_key' => 'duplicate' ,
+                ] ,
+            ]);
+    }
 }

@@ -1,38 +1,34 @@
 <?php
 
-namespace App\Models ;
+namespace App\Models;
 
 abstract class Base
 {
+    public function __toString()
+    {
+        $array = $this -> toArray();
+        $string = json_encode($array);
 
-	public function __toString ()
-	{
-		$array = $this -> toArray () ;
-		$string = json_encode ( $array ) ;
+        return $string;
+    }
 
-		return $string ;
-	}
+    public function toArray(): array
+    {
+        return get_object_vars($this);
+    }
 
-	public function toArray (): array
-	{
-		return get_object_vars ( $this ) ;
-	}
+    public function toArrayOnly(array $onlyKeys): array
+    {
+        $only = [];
 
-	public function toArrayOnly ( array $onlyKeys ): array
-	{
-		$only = [] ;
+        $data = $this -> toArray();
 
-		$data = $this -> toArray () ;
+        foreach ($onlyKeys as $onlyKey) {
+            if (array_key_exists($onlyKey, $data)) {
+                $only[ $onlyKey ] = $data[ $onlyKey ];
+            }
+        }
 
-		foreach ( $onlyKeys as $onlyKey )
-		{
-			if ( array_key_exists ( $onlyKey , $data ) )
-			{
-				$only[ $onlyKey ] = $data[ $onlyKey ] ;
-			}
-		}
-
-		return $only ;
-	}
-
+        return $only;
+    }
 }

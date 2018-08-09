@@ -1,10 +1,9 @@
 <?php
 
-namespace App\Repos\Exceptions ;
+namespace App\Repos\Exceptions;
 
-use Exception ;
+use Exception;
 
 class RecordNotFoundException extends Exception
 {
-	
 }

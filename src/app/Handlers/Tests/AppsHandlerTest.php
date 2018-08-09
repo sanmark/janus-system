@@ -1,42 +1,40 @@
 <?php
 
-namespace App\Handlers\Tests ;
+namespace App\Handlers\Tests;
 
-use App\Handlers\AppsHandler ;
-use App\Models\App ;
-use App\Repos\Contracts\IAppsRepo ;
-use Illuminate\Contracts\Hashing\Hasher ;
-use Tests\TestCase ;
+use App\Handlers\AppsHandler;
+use App\Models\App;
+use App\Repos\Contracts\IAppsRepo;
+use Illuminate\Contracts\Hashing\Hasher;
+use Tests\TestCase;
 
 class AppsHandlerTest extends TestCase
 {
+    public function test_isValidByKeyAndSecretHash_ok()
+    {
+        $hasher = $this -> mock(Hasher::class);
+        $appsRepo = $this -> mock(IAppsRepo::class);
+        $app = $this -> mock(App::class);
 
-	public function test_isValidByKeyAndSecretHash_ok ()
-	{
-		$hasher = $this -> mock ( Hasher::class ) ;
-		$appsRepo = $this -> mock ( IAppsRepo::class ) ;
-		$app = $this -> mock ( App::class ) ;
+        $appsHandler = new AppsHandler($hasher, $appsRepo);
 
-		$appsHandler = new AppsHandler ( $hasher , $appsRepo ) ;
+        $app -> secret = 'the-secret';
 
-		$app -> secret = 'the-secret' ;
+        $appsRepo -> shouldReceive('getByKey')
+            -> withArgs([
+                'key' ,
+            ])
+            -> andReturn($app);
 
-		$appsRepo -> shouldReceive ( 'getByKey' )
-			-> withArgs ( [
-				'key' ,
-			] )
-			-> andReturn ( $app ) ;
+        $hasher -> shouldReceive('check')
+            -> withArgs([
+                'the-secret' ,
+                'secret-hash' ,
+            ])
+            -> andReturn(true);
 
-		$hasher -> shouldReceive ( 'check' )
-			-> withArgs ( [
-				'the-secret' ,
-				'secret-hash' ,
-			] )
-			-> andReturn ( TRUE ) ;
+        $response = $appsHandler -> isValidByKeyAndSecretHash('key', 'secret-hash');
 
-		$response = $appsHandler -> isValidByKeyAndSecretHash ( 'key' , 'secret-hash' ) ;
-
-		$this -> assertTrue ( $response ) ;
-	}
-
+        $this -> assertTrue($response);
+    }
 }

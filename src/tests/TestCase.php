@@ -1,148 +1,154 @@
 <?php
 
-namespace Tests ;
+namespace Tests;
 
-use App\API\Constants\Headers\RequestHeaderConstants ;
-use Faker\Factory as Faker ;
-use Faker\Generator as FakerGenerator ;
-use Illuminate\Contracts\Hashing\Hasher ;
-use Illuminate\Foundation\Testing\TestCase as BaseTestCase ;
-use Mockery ;
-use function app ;
+use App\API\Constants\Headers\RequestHeaderConstants;
+use Faker\Factory as Faker;
+use Faker\Generator as FakerGenerator;
+use Illuminate\Contracts\Hashing\Hasher;
+use Illuminate\Foundation\Testing\TestCase as BaseTestCase;
+use Mockery;
+use function app;
 
 abstract class TestCase extends BaseTestCase
 {
+    use CreatesApplication;
 
-	use CreatesApplication ;
+    private $faker;
+    private $hasher;
 
-	private $faker ;
-	private $hasher ;
+    protected function setUp()
+    {
+        parent::setUp();
 
-	protected function faker (): FakerGenerator
-	{
-		return $this -> faker ;
-	}
+        $this -> artisan('migrate');
 
-	public function getWithInvalidAppKeyAndSecretHash ( $uri , array $headers = array () )
-	{
-		$headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
-		return parent::get ( $uri , $headers ) ;
-	}
+        $this -> faker = Faker::create();
+        $this -> hasher = app(Hasher::class);
+    }
 
-	public function getWithValidAppKeyAndInvalidSecretHash ( $uri , array $headers = array () )
-	{
-		$headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray ( $headers ) ;
-		return parent::get ( $uri , $headers ) ;
-	}
+    protected function tearDown()
+    {
+        $this -> artisan('migrate:reset');
 
-	public function getWithValidAppKeyAndSecretHash ( $uri , array $headers = array () )
-	{
-		$headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
-		return parent::get ( $uri , $headers ) ;
-	}
+        parent::tearDown();
+    }
 
-	protected function mock ( string $className , array $constructorArgs = NULL )
-	{
-		if ( is_null ( $constructorArgs ) )
-		{
-			return Mockery::mock ( $className ) ;
-		}
+    public function getWithInvalidAppKeyAndSecretHash($uri, array $headers = [])
+    {
+        $headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray($headers);
 
-		return Mockery::mock ( $className , $constructorArgs ) ;
-	}
+        return parent::get($uri, $headers);
+    }
 
-	public function patchWithInvalidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
-	{
-		$headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
-		return parent::patch ( $uri , $data , $headers ) ;
-	}
+    public function getWithValidAppKeyAndInvalidSecretHash($uri, array $headers = [])
+    {
+        $headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray($headers);
 
-	public function patchWithValidAppKeyAndInvalidSecretHash ( $uri , array $data = array () , array $headers = array () )
-	{
-		$headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray ( $headers ) ;
-		return parent::patch ( $uri , $data , $headers ) ;
-	}
+        return parent::get($uri, $headers);
+    }
 
-	public function patchWithValidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
-	{
-		$headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
-		return parent::patch ( $uri , $data , $headers ) ;
-	}
+    public function getWithValidAppKeyAndSecretHash($uri, array $headers = [])
+    {
+        $headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray($headers);
 
-	public function postWithInvalidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
-	{
-		$headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
-		return parent::post ( $uri , $data , $headers ) ;
-	}
+        return parent::get($uri, $headers);
+    }
 
-	public function postWithValidAppKeyAndInvalidSecretHash ( $uri , array $data = array () , array $headers = array () )
-	{
-		$headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray ( $headers ) ;
-		return parent::post ( $uri , $data , $headers ) ;
-	}
+    public function patchWithInvalidAppKeyAndSecretHash($uri, array $data = [], array $headers = [])
+    {
+        $headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray($headers);
 
-	public function postWithValidAppKeyAndSecretHash ( $uri , array $data = array () , array $headers = array () )
-	{
-		$headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray ( $headers ) ;
-		return parent::post ( $uri , $data , $headers ) ;
-	}
+        return parent::patch($uri, $data, $headers);
+    }
 
-	protected function seedDb ()
-	{
-		$this -> artisan ( 'db:seed' ) ;
-	}
+    public function patchWithValidAppKeyAndInvalidSecretHash($uri, array $data = [], array $headers = [])
+    {
+        $headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray($headers);
 
-	protected function setUp ()
-	{
-		parent::setUp () ;
+        return parent::patch($uri, $data, $headers);
+    }
 
-		$this -> artisan ( 'migrate' ) ;
+    public function patchWithValidAppKeyAndSecretHash($uri, array $data = [], array $headers = [])
+    {
+        $headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray($headers);
 
-		$this -> faker = Faker::create () ;
-		$this -> hasher = app ( Hasher::class ) ;
-	}
+        return parent::patch($uri, $data, $headers);
+    }
 
-	protected function tearDown ()
-	{
-		$this -> artisan ( 'migrate:reset' ) ;
+    public function postWithInvalidAppKeyAndSecretHash($uri, array $data = [], array $headers = [])
+    {
+        $headers = $this -> attachInvalidAppKeyAndSecretHashToHeadersArray($headers);
 
-		parent::tearDown () ;
-	}
+        return parent::post($uri, $data, $headers);
+    }
 
-	private function attachInvalidAppKeyAndSecretHashToHeadersArray ( array $headers = [] )
-	{
-		$hash = $this
-			-> hasher
-			-> make ( 'invalid-secret' ) ;
+    public function postWithValidAppKeyAndInvalidSecretHash($uri, array $data = [], array $headers = [])
+    {
+        $headers = $this -> attachValidAppKeyAndInvalidSecretHashToHeadersArray($headers);
 
-		$headers[ RequestHeaderConstants::APP_KEY ] = 'invalid-key' ;
-		$headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash ;
+        return parent::post($uri, $data, $headers);
+    }
 
-		return $headers ;
-	}
+    public function postWithValidAppKeyAndSecretHash($uri, array $data = [], array $headers = [])
+    {
+        $headers = $this -> attachValidAppKeyAndSecretHashToHeadersArray($headers);
 
-	private function attachValidAppKeyAndInvalidSecretHashToHeadersArray ( array $headers = [] )
-	{
-		$hash = $this
-			-> hasher
-			-> make ( 'invalid-secret' ) ;
+        return parent::post($uri, $data, $headers);
+    }
 
-		$headers[ RequestHeaderConstants::APP_KEY ] = 'key' ;
-		$headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash ;
+    protected function faker(): FakerGenerator
+    {
+        return $this -> faker;
+    }
 
-		return $headers ;
-	}
+    protected function mock(string $className, array $constructorArgs = null)
+    {
+        if (is_null($constructorArgs)) {
+            return Mockery::mock($className);
+        }
 
-	private function attachValidAppKeyAndSecretHashToHeadersArray ( array $headers = [] )
-	{
-		$hash = $this
-			-> hasher
-			-> make ( 'secret' ) ;
+        return Mockery::mock($className, $constructorArgs);
+    }
 
-		$headers[ RequestHeaderConstants::APP_KEY ] = 'key' ;
-		$headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash ;
+    protected function seedDb()
+    {
+        $this -> artisan('db:seed');
+    }
 
-		return $headers ;
-	}
+    private function attachInvalidAppKeyAndSecretHashToHeadersArray(array $headers = [])
+    {
+        $hash = $this
+            -> hasher
+            -> make('invalid-secret');
 
+        $headers[ RequestHeaderConstants::APP_KEY ] = 'invalid-key';
+        $headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash;
+
+        return $headers;
+    }
+
+    private function attachValidAppKeyAndInvalidSecretHashToHeadersArray(array $headers = [])
+    {
+        $hash = $this
+            -> hasher
+            -> make('invalid-secret');
+
+        $headers[ RequestHeaderConstants::APP_KEY ] = 'key';
+        $headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash;
+
+        return $headers;
+    }
+
+    private function attachValidAppKeyAndSecretHashToHeadersArray(array $headers = [])
+    {
+        $hash = $this
+            -> hasher
+            -> make('secret');
+
+        $headers[ RequestHeaderConstants::APP_KEY ] = 'key';
+        $headers[ RequestHeaderConstants::APP_SECRET_HASH ] = $hash;
+
+        return $headers;
+    }
 }

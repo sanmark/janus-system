@@ -1,53 +1,50 @@
 <?php
 
-namespace App\Handlers ;
+namespace App\Handlers;
 
-use App\Models\App ;
-use App\Repos\Contracts\IAppsRepo ;
-use Illuminate\Contracts\Hashing\Hasher ;
+use App\Models\App;
+use App\Repos\Contracts\IAppsRepo;
+use Illuminate\Contracts\Hashing\Hasher;
 
 class AppsHandler
 {
+    private $appsRepo;
+    private $hasher;
 
-	private $appsRepo ;
-	private $hasher ;
+    public function __construct(
+    Hasher $hasher,
+        IAppsRepo $appsRepo
+    ) {
+        $this -> hasher = $hasher;
+        $this -> appsRepo = $appsRepo;
+    }
 
-	public function __construct (
-	Hasher $hasher
-	, IAppsRepo $appsRepo
-	)
-	{
-		$this -> hasher = $hasher ;
-		$this -> appsRepo = $appsRepo ;
-	}
+    public function isValidByKeyAndSecretHash(string $key, string $secretHash): bool
+    {
+        $app = $this -> getByKey($key);
 
-	public function isValidByKeyAndSecretHash ( string $key , string $secretHash ): bool
-	{
-		$app = $this -> getByKey ( $key ) ;
+        $isValid = $this -> isValidBySecretHash($app, $secretHash);
 
-		$isValid = $this -> isValidBySecretHash ( $app , $secretHash ) ;
+        return $isValid;
+    }
 
-		return $isValid ;
-	}
+    private function isValidBySecretHash(App $app, string $secretHash): bool
+    {
+        $secret = $app -> secret;
 
-	private function isValidBySecretHash ( App $app , string $secretHash ): bool
-	{
-		$secret = $app -> secret ;
+        $isValid = $this
+            -> hasher
+            -> check($secret, $secretHash);
 
-		$isValid = $this
-			-> hasher
-			-> check ( $secret , $secretHash ) ;
+        return $isValid;
+    }
 
-		return $isValid ;
-	}
+    private function getByKey(string $id): App
+    {
+        $app = $this
+            -> appsRepo
+            -> getByKey($id);
 
-	private function getByKey ( string $id ): App
-	{
-		$app = $this
-			-> appsRepo
-			-> getByKey ( $id ) ;
-
-		return $app ;
-	}
-
+        return $app;
+    }
 }

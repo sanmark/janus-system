@@ -1,12 +1,10 @@
 <?php
 
-namespace App\Models ;
+namespace App\Models;
 
 class User extends Base
 {
-
-	public $id ;
-	public $key ;
-	public $secret ;
-
+    public $id;
+    public $key;
+    public $secret;
 }

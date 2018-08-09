@@ -1,9 +1,8 @@
 <?php
 
-namespace App\SystemSettings\Contracts ;
+namespace App\SystemSettings\Contracts;
 
 interface ISystemSettingsInterface
 {
-
-	public function getAuthSessionActiveMinutes (): int ;
+    public function getAuthSessionActiveMinutes(): int;
 }

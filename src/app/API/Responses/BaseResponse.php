@@ -1,13 +1,12 @@
 <?php
 
-namespace App\API\Responses ;
+namespace App\API\Responses;
 
 abstract class BaseResponse
 {
+    abstract public function __construct($input);
 
-	abstract public function __construct ( $input ) ;
+    abstract public function getOutput(): array;
 
-	abstract public function getOutput (): array ;
-
-	abstract public function getResponse () ;
+    abstract public function getResponse();
 }

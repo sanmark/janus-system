@@ -1,27 +1,25 @@
 <?php
 
-namespace App\Repos\Exceptions ;
+namespace App\Repos\Exceptions;
 
-use Exception ;
-use Throwable ;
+use Exception;
+use Throwable;
 
 class UniqueConstraintFailureException extends Exception
 {
+    private $constraint;
+    private $value;
 
-	private $constraint ;
-	private $value ;
+    public function __construct(string $constraint = null, string $value = null, string $message = '', int $code = 0, Throwable $previous = null)
+    {
+        $this -> constraint = $constraint;
+        $this -> value = $value;
 
-	public function __construct ( string $constraint = null , string $value = null , string $message = "" , int $code = 0 , Throwable $previous = null )
-	{
-		$this -> constraint = $constraint ;
-		$this -> value = $value ;
+        parent::__construct($message, $code, $previous);
+    }
 
-		parent::__construct ( $message , $code , $previous ) ;
-	}
-
-	public function getConstraint ()
-	{
-		return $this -> constraint ;
-	}
-
+    public function getConstraint()
+    {
+        return $this -> constraint;
+    }
 }

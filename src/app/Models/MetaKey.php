@@ -1,13 +1,11 @@
 <?php
 
-namespace App\Models ;
+namespace App\Models;
 
 class MetaKey extends Base
 {
-
-	public $id ;
-	public $key ;
-	public $created_at;
-	public $updated_at;
-
+    public $id;
+    public $key;
+    public $created_at;
+    public $updated_at;
 }

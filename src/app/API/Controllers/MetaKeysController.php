@@ -1,32 +1,29 @@
 <?php
 
-namespace App\API\Controllers ;
+namespace App\API\Controllers;
 
-use App\API\Responses\SuccessResponse ;
-use App\Handlers\MetaKeysHandler ;
-use Illuminate\Routing\Controller ;
+use App\API\Responses\SuccessResponse;
+use App\Handlers\MetaKeysHandler;
+use Illuminate\Routing\Controller;
 
 class MetaKeysController extends Controller
 {
+    private $metaKeysHandler;
 
-	private $metaKeysHandler ;
+    public function __construct(
+    MetaKeysHandler $metaKeysHandler
+    ) {
+        $this -> metaKeysHandler = $metaKeysHandler;
+    }
 
-	public function __construct (
-	MetaKeysHandler $metaKeysHandler
-	)
-	{
-		$this -> metaKeysHandler = $metaKeysHandler ;
-	}
+    public function get()
+    {
+        $metaKeys = $this
+            -> metaKeysHandler
+            -> all();
 
-	public function get ()
-	{
-		$metaKeys = $this
-			-> metaKeysHandler
-			-> all () ;
+        $response = new SuccessResponse($metaKeys);
 
-		$response = new SuccessResponse ( $metaKeys ) ;
-
-		return $response -> getResponse () ;
-	}
-
+        return $response -> getResponse();
+    }
 }

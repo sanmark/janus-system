@@ -1,17 +1,15 @@
 <?php
 
-namespace App\SystemSettings\Concretes\LaravelEnv ;
+namespace App\SystemSettings\Concretes\LaravelEnv;
 
-use App\SystemSettings\Contracts\ISystemSettingsInterface ;
+use App\SystemSettings\Contracts\ISystemSettingsInterface;
 
 class SystemSettingsInterface implements ISystemSettingsInterface
 {
+    public function getAuthSessionActiveMinutes(): int
+    {
+        $authSessionActiveMinutes = intval(config('system.' . Constants::systemAuthSessionActiveMinutes));
 
-	public function getAuthSessionActiveMinutes (): int
-	{
-		$authSessionActiveMinutes = intval ( config ( 'system.' . Constants::systemAuthSessionActiveMinutes ) ) ;
-
-		return $authSessionActiveMinutes ;
-	}
-
+        return $authSessionActiveMinutes;
+    }
 }

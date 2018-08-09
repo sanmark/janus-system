@@ -6,7 +6,7 @@
  * @package  Laravel
  * @author   Taylor Otwell <taylor@laravel.com>
  */
-define ( 'LARAVEL_START' , microtime ( true ) ) ;
+define('LARAVEL_START', microtime(true));
 
 /*
   |--------------------------------------------------------------------------
@@ -20,7 +20,7 @@ define ( 'LARAVEL_START' , microtime ( true ) ) ;
   |
  */
 
-require '/app/vendor/autoload.php' ;
+require '/app/vendor/autoload.php';
 
 /*
   |--------------------------------------------------------------------------
@@ -34,7 +34,7 @@ require '/app/vendor/autoload.php' ;
   |
  */
 
-$app = require_once '/app/bootstrap/app.php' ;
+$app = require_once '/app/bootstrap/app.php';
 
 /*
   |--------------------------------------------------------------------------
@@ -48,12 +48,12 @@ $app = require_once '/app/bootstrap/app.php' ;
   |
  */
 
-$kernel = $app -> make ( Illuminate\Contracts\Http\Kernel::class ) ;
+$kernel = $app -> make(Illuminate\Contracts\Http\Kernel::class);
 
-$response = $kernel -> handle (
-	$request = Illuminate\Http\Request::capture ()
-	) ;
+$response = $kernel -> handle(
+    $request = Illuminate\Http\Request::capture()
+    );
 
-$response -> send () ;
+$response -> send();
 
-$kernel -> terminate ( $request , $response ) ;
+$kernel -> terminate($request, $response);

@@ -1,128 +1,116 @@
 <?php
 
-namespace App\Repos\Concretes\Eloquent\Repos ;
+namespace App\Repos\Concretes\Eloquent\Repos;
 
-use App\Models\Meta ;
-use App\Models\MetaKey ;
-use App\Models\User ;
-use App\Repos\Concretes\Eloquent\Models\Meta as eMeta ;
-use App\Repos\Concretes\Eloquent\Models\MetaKey as eMetaKey ;
-use App\Repos\Contracts\IMetaKeysRepo ;
-use App\Repos\Exceptions\RecordNotFoundException ;
-use Illuminate\Database\Eloquent\Builder ;
-use Illuminate\Database\Eloquent\ModelNotFoundException ;
+use App\Models\MetaKey;
+use App\Models\User;
+use App\Repos\Concretes\Eloquent\Models\Meta as eMeta;
+use App\Repos\Concretes\Eloquent\Models\MetaKey as eMetaKey;
+use App\Repos\Contracts\IMetaKeysRepo;
+use App\Repos\Exceptions\RecordNotFoundException;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 
 class MetaKeysRepo implements IMetaKeysRepo
 {
+    private $model;
+    private $eMeta;
+    private $eMetaKey;
 
-	private $model ;
-	private $eMeta ;
-	private $eMetaKey ;
+    public function __construct(
+    eMeta $eMeta,
+        eMetaKey $eMetaKey
+    ) {
+        $this -> eMeta = $eMeta;
+        $this -> eMetaKey = $eMetaKey;
+        $this -> model = $eMetaKey;
+    }
 
-	public function __construct (
-	eMeta $eMeta
-	, eMetaKey $eMetaKey
-	)
-	{
-		$this -> eMeta = $eMeta ;
-		$this -> eMetaKey = $eMetaKey ;
-		$this -> model = $eMetaKey ;
-	}
+    public function find($id)
+    {
+        $eModel = eMetaKey::find($id);
+        if (! $eModel) {
+            return null;
+        }
+        $model = new MetaKey();
+        $model -> id = $eModel -> id;
+        $model -> key = $eModel -> key;
 
-	public function find ( $id )
-	{
-		$eModel = eMetaKey::find ( $id ) ;
-		if ( ! $eModel )
-		{
-			return null ;
-		}
-		$model = new MetaKey() ;
-		$model -> id = $eModel -> id ;
-		$model -> key = $eModel -> key ;
+        return $model;
+    }
 
-		return $model ;
-	}
+    public function all(): array
+    {
+        $eMetaKeys = $this
+            -> model
+            -> all();
 
-	public function all (): array
-	{
-		$eMetaKeys = $this
-			-> model
-			-> all () ;
+        $metaKeys = [];
 
-		$metaKeys = [] ;
+        foreach ($eMetaKeys as $eMetaKey) {
+            $metaKey = new MetaKey();
 
-		foreach ( $eMetaKeys as $eMetaKey )
-		{
-			$metaKey = new MetaKey() ;
+            $metaKey -> id = $eMetaKey -> id;
+            $metaKey -> key = $eMetaKey -> key;
 
-			$metaKey -> id = $eMetaKey -> id ;
-			$metaKey -> key = $eMetaKey -> key ;
+            $metaKeys[] = $metaKey;
+        }
 
-			$metaKeys[] = $metaKey ;
-		}
+        return $metaKeys;
+    }
 
-		return $metaKeys ;
-	}
+    public function getByKey(string $key): MetaKey
+    {
+        try {
+            $eMetaKey = $this
+                -> model
+                -> where('key', '=', $key)
+                -> firstOrFail();
 
-	public function getByKey ( string $key ): MetaKey
-	{
-		try
-		{
-			$eMetaKey = $this
-				-> model
-				-> where ( 'key' , '=' , $key )
-				-> firstOrFail () ;
+            $metaKey = new MetaKey();
 
-			$metaKey = new MetaKey() ;
+            $metaKey -> id = $eMetaKey -> id;
+            $metaKey -> key = $eMetaKey -> key;
+            $metaKey -> created_at = $eMetaKey -> created_at;
+            $metaKey -> updated_at = $eMetaKey -> updated_at;
 
-			$metaKey -> id = $eMetaKey -> id ;
-			$metaKey -> key = $eMetaKey -> key ;
-			$metaKey -> created_at = $eMetaKey -> created_at ;
-			$metaKey -> updated_at = $eMetaKey -> updated_at ;
+            return $metaKey;
+        } catch (ModelNotFoundException $ex) {
+            throw new RecordNotFoundException();
+        }
+    }
 
-			return $metaKey ;
-		} catch ( ModelNotFoundException $ex )
-		{
-			throw new RecordNotFoundException() ;
-		}
-	}
+    public function getUsersForMetaValue(string $metaKeyKey, string $metaValue): array
+    {
+        $metaKeys = $this
+            -> eMetaKey
+            -> whereHas('metas', function (Builder $q) use ($metaValue) {
+                $q -> where('value', '=', $metaValue);
+            })
+            -> where('key', '=', $metaKeyKey)
+            -> get();
 
-	public function getUsersForMetaValue ( string $metaKeyKey , string $metaValue ): array
-	{
-		$metaKeys = $this
-			-> eMetaKey
-			-> whereHas ( 'metas' , function (Builder $q) use ($metaValue)
-			{
-				$q -> where ( 'value' , '=' , $metaValue ) ;
-			} )
-			-> where ( 'key' , '=' , $metaKeyKey )
-			-> get () ;
+        $eUsers = [];
 
-		$eUsers = [] ;
+        foreach ($metaKeys as $metaKey) {
+            $metas = $metaKey -> metas;
 
-		foreach ( $metaKeys as $metaKey )
-		{
-			$metas = $metaKey -> metas ;
+            foreach ($metas as $meta) {
+                $eUsers[] = $meta -> user;
+            }
+        }
 
-			foreach ( $metas as $meta )
-			{
-				$eUsers[] = $meta -> user ;
-			}
-		}
+        $users = [];
 
-		$users = [] ;
+        foreach ($eUsers as $eUser) {
+            $user = new User();
 
-		foreach ( $eUsers as $eUser )
-		{
-			$user = new User() ;
+            $user -> id = $eUser -> id;
+            $user -> key = $eUser -> key;
 
-			$user -> id = $eUser -> id ;
-			$user -> key = $eUser -> key ;
+            $users[] = $user;
+        }
 
-			$users[] = $user ;
-		}
-
-		return $users ;
-	}
-
+        return $users;
+    }
 }
