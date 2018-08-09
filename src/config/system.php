@@ -1,7 +1,7 @@
 <?php
 
-use App\SystemSettings\Concretes\LaravelEnv\Constants ;
+use App\SystemSettings\Concretes\LaravelEnv\Constants;
 
 return [
-	Constants::systemAuthSessionActiveMinutes => env ( Constants::systemAuthSessionActiveMinutes , 60 ) ,
-	] ;
+    Constants::systemAuthSessionActiveMinutes => env(Constants::systemAuthSessionActiveMinutes, 60) ,
+];

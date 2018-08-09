@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Repos\Contracts ;
+namespace App\Repos\Contracts;
 
-use App\Models\FacebookAccount ;
+use App\Models\FacebookAccount;
 
 interface IFacebookAccountsRepo
 {
+    public function create(int $userId, string $key): FacebookAccount;
 
-	public function create ( int $userId , string $key ): FacebookAccount ;
-
-	public function getByKey ( string $key ): FacebookAccount ;
+    public function getByKey(string $key): FacebookAccount;
 }

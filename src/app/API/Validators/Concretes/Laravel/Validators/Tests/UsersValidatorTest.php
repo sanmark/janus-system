@@ -1,90 +1,84 @@
 <?php
 
-namespace App\API\Validators\Concretes\Laravel\Validators\Tests ;
+namespace App\API\Validators\Concretes\Laravel\Validators\Tests;
 
-use App\API\Validators\Concretes\Laravel\Validators\UsersValidator ;
-use App\API\Validators\Exceptions\InvalidInputException ;
-use Tests\TestCase ;
+use App\API\Validators\Concretes\Laravel\Validators\UsersValidator;
+use App\API\Validators\Exceptions\InvalidInputException;
+use Tests\TestCase;
 
 /**
  * @codeCoverageIgnore
  */
 class UsersValidatorTest extends TestCase
 {
+    public function testCreate_ReturnsNullForValidInputs()
+    {
+        $data = [
+            'user_key' => 'the_key' ,
+            'user_secret' => 'the_secret' ,
+        ];
 
-	public function testCreate_ReturnsNullForValidInputs ()
-	{
-		$data = [
-			'user_key' => 'the_key' ,
-			'user_secret' => 'the_secret' ,
-			] ;
+        $validator = new UsersValidator();
 
-		$validator = new UsersValidator() ;
+        $result = $validator -> create($data);
 
-		$result = $validator -> create ( $data ) ;
+        $this -> assertNull($result);
+    }
 
-		$this -> assertNull ( $result ) ;
-	}
+    public function testCreate_ThrowsInvalidInputExceptionForInvalidInputs()
+    {
+        $data = [];
 
-	public function testCreate_ThrowsInvalidInputExceptionForInvalidInputs ()
-	{
-		$data = [] ;
+        $validator = new UsersValidator();
 
-		$validator = new UsersValidator() ;
+        try {
+            $validator -> create($data);
+        } catch (InvalidInputException $ex) {
+            $this -> assertInstanceOf(InvalidInputException::class, $ex);
 
-		try
-		{
-			$validator -> create ( $data ) ;
-		} catch ( InvalidInputException $ex )
-		{
-			$this -> assertInstanceOf ( InvalidInputException::class , $ex ) ;
+            $this -> assertEquals([
+                'user_key' => [
+                    'required' ,
+                ] ,
+                'user_secret' => [
+                    'required' ,
+                ] ,
+            ], $ex -> getErrors());
+        }
+    }
 
-			$this -> assertEquals ( [
-				'user_key' => [
-					'required' ,
-				] ,
-				'user_secret' => [
-					'required' ,
-				] ,
-				] , $ex -> getErrors () ) ;
-		}
-	}
+    public function test_userSecretResetRequestsExecute_returnsNullForValidInput()
+    {
+        $data = [
+            'new_secret' => 'new-secret' ,
+            'user_secret_reset_request_token' => 'the-token' ,
+        ];
 
-	public function test_userSecretResetRequestsExecute_returnsNullForValidInput ()
-	{
-		$data = [
-			'new_secret' => 'new-secret' ,
-			'user_secret_reset_request_token' => 'the-token' ,
-			] ;
+        $validator = new UsersValidator();
 
-		$validator = new UsersValidator() ;
+        $response = $validator -> userSecretResetRequestsExecute($data);
 
-		$response = $validator -> userSecretResetRequestsExecute ( $data ) ;
+        $this -> assertNull($response);
+    }
 
-		$this -> assertNull ( $response ) ;
-	}
+    public function test_userSecretResetRequestsExecute_throwsInvalidInputExceptionForInvalidInputs()
+    {
+        try {
+            $validator = new UsersValidator();
 
-	public function test_userSecretResetRequestsExecute_throwsInvalidInputExceptionForInvalidInputs ()
-	{
-		try
-		{
-			$validator = new UsersValidator() ;
+            $data = [];
+            $validator -> userSecretResetRequestsExecute($data);
+        } catch (InvalidInputException $ex) {
+            $this -> assertInstanceOf(InvalidInputException::class, $ex);
 
-			$data = [] ;
-			$validator -> userSecretResetRequestsExecute ( $data ) ;
-		} catch ( InvalidInputException $ex )
-		{
-			$this -> assertInstanceOf ( InvalidInputException::class , $ex ) ;
-
-			$this -> assertEquals ( [
-				'new_secret' => [
-					'required' ,
-				] ,
-				'user_secret_reset_request_token' => [
-					'required' ,
-				] ,
-				] , $ex -> getErrors () ) ;
-		}
-	}
-
+            $this -> assertEquals([
+                'new_secret' => [
+                    'required' ,
+                ] ,
+                'user_secret_reset_request_token' => [
+                    'required' ,
+                ] ,
+            ], $ex -> getErrors());
+        }
+    }
 }

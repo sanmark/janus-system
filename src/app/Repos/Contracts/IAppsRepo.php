@@ -1,11 +1,10 @@
 <?php
 
-namespace App\Repos\Contracts ;
+namespace App\Repos\Contracts;
 
-use App\Models\App ;
+use App\Models\App;
 
 interface IAppsRepo
 {
-
-	public function getByKey ( string $key): App ;
+    public function getByKey(string $key): App;
 }

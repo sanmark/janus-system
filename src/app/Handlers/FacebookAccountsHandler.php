@@ -1,94 +1,89 @@
 <?php
 
-namespace App\Handlers ;
+namespace App\Handlers;
 
-use App\Models\AuthSession ;
-use App\Models\FacebookAccount ;
-use App\Repos\Contracts\IFacebookAccountsRepo ;
-use App\Repos\Exceptions\RecordNotFoundException ;
-use Carbon\Carbon ;
-use Illuminate\Contracts\Hashing\Hasher ;
+use App\Models\AuthSession;
+use App\Models\FacebookAccount;
+use App\Repos\Contracts\IFacebookAccountsRepo;
+use App\Repos\Exceptions\RecordNotFoundException;
+use Carbon\Carbon;
+use Illuminate\Contracts\Hashing\Hasher;
 
 class FacebookAccountsHandler
 {
+    private $authSessionsHandler;
+    private $carbon;
+    private $facebookAccountsRepo;
+    private $hash;
+    private $usersHandler;
 
-	private $authSessionsHandler ;
-	private $carbon ;
-	private $facebookAccountsRepo ;
-	private $hash ;
-	private $usersHandler ;
+    public function __construct(
+    AuthSessionsHandler $authSessionsHandler,
+        Carbon $carbon,
+        IFacebookAccountsRepo $facebookAccountsRepo,
+        Hasher $hasher,
+        UsersHandler $usersHandler
+    ) {
+        $this -> authSessionsHandler = $authSessionsHandler;
+        $this -> carbon = $carbon;
+        $this -> facebookAccountsRepo = $facebookAccountsRepo;
+        $this -> hash = $hasher;
+        $this -> usersHandler = $usersHandler;
+    }
 
-	public function __construct (
-	AuthSessionsHandler $authSessionsHandler
-	, Carbon $carbon
-	, IFacebookAccountsRepo $facebookAccountsRepo
-	, Hasher $hasher
-	, UsersHandler $usersHandler
-	)
-	{
-		$this -> authSessionsHandler = $authSessionsHandler ;
-		$this -> carbon = $carbon ;
-		$this -> facebookAccountsRepo = $facebookAccountsRepo ;
-		$this -> hash = $hasher ;
-		$this -> usersHandler = $usersHandler ;
-	}
+    public function getAuthSession(string $key, string $firstName): AuthSession
+    {
+        $facebookAccount = null;
 
-	public function getAuthSession ( string $key , string $firstName ): AuthSession
-	{
-		$facebookAccount = NULL ;
+        try {
+            $facebookAccount = $this -> getByKey($key);
+        } catch (RecordNotFoundException $ex) {
+            $facebookAccount = $this -> create($key, $firstName);
+        }
 
-		try
-		{
-			$facebookAccount = $this -> getByKey ( $key ) ;
-		} catch ( RecordNotFoundException $ex )
-		{
-			$facebookAccount = $this -> create ( $key , $firstName ) ;
-		}
+        $user = $this
+            -> usersHandler
+            -> get($facebookAccount -> user_id);
 
-		$user = $this
-			-> usersHandler
-			-> get ( $facebookAccount -> user_id ) ;
+        $authSession = $this
+            -> authSessionsHandler
+            -> createForUserObject($user);
 
-		$authSession = $this
-			-> authSessionsHandler
-			-> createForUserObject ( $user ) ;
+        return $authSession;
+    }
 
-		return $authSession ;
-	}
+    private function create(string $key, string $firstName): FacebookAccount
+    {
+        $userKey = $this -> generateUserKeyFromFirstName($firstName);
+        $userSecret = $this -> hash -> make($this -> carbon -> now());
 
-	private function create ( string $key , string $firstName ): FacebookAccount
-	{
-		$userKey = $this -> generateUserKeyFromFirstName ( $firstName ) ;
-		$userSecret = $this -> hash -> make ( $this -> carbon -> now () ) ;
+        $user = $this
+            -> usersHandler
+            -> create($userKey, $userSecret);
 
-		$user = $this
-			-> usersHandler
-			-> create ( $userKey , $userSecret ) ;
+        $facebookAccount = $this
+            -> facebookAccountsRepo
+            -> create($user -> id, $key);
 
-		$facebookAccount = $this
-			-> facebookAccountsRepo
-			-> create ( $user -> id , $key ) ;
+        return $facebookAccount;
+    }
 
-		return $facebookAccount ;
-	}
+    private function getByKey(string $key): FacebookAccount
+    {
+        $facebookAccount = $this
+            -> facebookAccountsRepo
+            -> getByKey($key);
 
-	private function getByKey ( string $key ): FacebookAccount
-	{
-		$facebookAccount = $this
-			-> facebookAccountsRepo
-			-> getByKey ( $key ) ;
+        return $facebookAccount;
+    }
 
-		return $facebookAccount ;
-	}
+    private function generateUserKeyFromFirstName(string $firstName): string
+    {
+        $firstNameAllLowercase = strtolower($firstName);
+        $randomNumber = rand(1, 9999);
 
-	private function generateUserKeyFromFirstName ( string $firstName ): string
-	{
-		$firstNameAllLowercase = strtolower ( $firstName ) ;
-		$randomNumber = rand ( 1 , 9999 ) ;
+        $userKey = $firstNameAllLowercase . $randomNumber;
 
-		$userKey = $firstNameAllLowercase . $randomNumber ;
-
-		return $userKey ;
-	}
-
+        return $userKey;
+    }
 }

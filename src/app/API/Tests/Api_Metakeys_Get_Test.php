@@ -1,79 +1,76 @@
 <?php
 
-namespace App\API\Tests ;
+namespace App\API\Tests;
 
-use App\Repos\Concretes\Eloquent\Models\App ;
-use Illuminate\Foundation\Testing\DatabaseMigrations ;
-use Tests\TestCase ;
-use function dd ;
+use App\Repos\Concretes\Eloquent\Models\App;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Tests\TestCase;
 
 /**
  * @codeCoverageIgnore
  */
 class Api_Metakeys_Get_Test extends TestCase
 {
+    use DatabaseMigrations;
 
-	use DatabaseMigrations ;
+    public function test_getAllMetakeys_ok()
+    {
+        $this -> seedDb();
 
-	public function test_getAllMetakeys_ok ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> getWithValidAppKeyAndSecretHash('api/metakeys')
+            -> assertStatus(200)
+            -> assertJson([
+                'data' => [
+                    [
+                        'id' => 1 ,
+                        'key' => 'demo-meta-1' ,
+                        'created_at' => null ,
+                        'updated_at' => null ,
+                    ] ,
+                    [
+                        'id' => 2 ,
+                        'key' => 'demo-meta-2' ,
+                        'created_at' => null ,
+                        'updated_at' => null ,
+                    ] ,
+                ] ,
+            ]);
+    }
 
-		$this
-			-> getWithValidAppKeyAndSecretHash ( 'api/metakeys' )
-			-> assertStatus ( 200 )
-			-> assertJson ( [
-				'data' => [
-					[
-						'id' => 1 ,
-						'key' => 'demo-meta-1' ,
-						'created_at' => NULL ,
-						'updated_at' => NULL ,
-					] ,
-					[
-						'id' => 2 ,
-						'key' => 'demo-meta-2' ,
-						'created_at' => NULL ,
-						'updated_at' => NULL ,
-					] ,
-				] ,
-			] ) ;
-	}
+    public function test_getAllMetaKeys_rejectsNoAppKey()
+    {
+        $this -> seedDb();
 
-	public function test_getAllMetaKeys_rejectsNoAppKey ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> get('api/metakeys')
+            -> assertStatus(401)
+            -> assertJson([
+                'errors' => [] ,
+            ]);
+    }
 
-		$this
-			-> get ( 'api/metakeys' )
-			-> assertStatus ( 401 )
-			-> assertJson ( [
-				'errors' => [] ,
-			] ) ;
-	}
+    public function test_getAllMetaKeys_rejectsInvalidAppKey()
+    {
+        $this -> seedDb();
 
-	public function test_getAllMetaKeys_rejectsInvalidAppKey ()
-	{
-		$this -> seedDb () ;
+        $this
+            -> getWithInvalidAppKeyAndSecretHash('api/metakeys')
+            -> assertStatus(401)
+            -> assertJson([
+                'errors' => [] ,
+            ]);
+    }
 
-		$this
-			-> getWithInvalidAppKeyAndSecretHash ( 'api/metakeys' )
-			-> assertStatus ( 401 )
-			-> assertJson ( [
-				'errors' => [] ,
-			] ) ;
-	}
-	
-	public function test_getAllMetaKeys_rejectsInvalidSecretHash ()
-	{
-		$this -> seedDb () ;
+    public function test_getAllMetaKeys_rejectsInvalidSecretHash()
+    {
+        $this -> seedDb();
 
-		$this
-			-> getWithValidAppKeyAndInvalidSecretHash ( 'api/metakeys' )
-			-> assertStatus ( 401 )
-			-> assertJson ( [
-				'errors' => [] ,
-			] ) ;
-	}
-
+        $this
+            -> getWithValidAppKeyAndInvalidSecretHash('api/metakeys')
+            -> assertStatus(401)
+            -> assertJson([
+                'errors' => [] ,
+            ]);
+    }
 }

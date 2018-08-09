@@ -1,9 +1,8 @@
 <?php
 
-namespace App\API\Validators\Contracts ;
+namespace App\API\Validators\Contracts;
 
 interface IAuthSessionsValidator
 {
-
-	public function create ( array $data ) ;
+    public function create(array $data);
 }
