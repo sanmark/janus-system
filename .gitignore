@@ -1,4 +1,5 @@
 .directory
+/src/.php_cs.cache
 /src/cov
 /src/node_modules
 /src/public/hot
