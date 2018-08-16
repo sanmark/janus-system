@@ -1,7 +1,9 @@
 .directory
+/nbproject
 /src/.php_cs.cache
 /src/cov
 /src/node_modules
+/src/nbproject
 /src/public/hot
 /src/public/storage
 /src/storage/*.key

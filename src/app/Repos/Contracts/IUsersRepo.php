@@ -6,6 +6,8 @@ use App\Models\User;
 
 interface IUsersRepo
 {
+    public function all(int $page, int $count): array;
+
     public function create(string $userKey, string $userSecret): User;
 
     public function get(int $id): User;

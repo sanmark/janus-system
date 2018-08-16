@@ -48,25 +48,25 @@ class RouteServiceProvider extends ServiceProvider
             'prefix' => 'api/' ,
             'middleware' => AppVerifyMiddleware::class ,
         ], function () {
-                $path = base_path('app/API/routes/*.php');
-                $files = glob($path);
+            $path = base_path('app/API/routes/*.php');
+            $files = glob($path);
 
-                foreach ($files as $file) {
-                    require $file;
-                }
-            });
+            foreach ($files as $file) {
+                require $file;
+            }
+        });
     }
 
     protected function mapWebRoutes()
     {
         Route::group([
         ], function () {
-                $path = base_path('app/Web/routes/*.php');
-                $files = glob($path);
+            $path = base_path('app/Web/routes/*.php');
+            $files = glob($path);
 
-                foreach ($files as $file) {
-                    require $file;
-                }
-            });
+            foreach ($files as $file) {
+                require $file;
+            }
+        });
     }
 }

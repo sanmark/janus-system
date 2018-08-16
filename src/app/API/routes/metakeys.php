@@ -6,9 +6,9 @@ use Illuminate\Routing\Router;
 Route::group([
     'prefix' => 'metakeys' ,
 ], function (Router $r) {
-        $controller = MetaKeysController::class . '@';
+    $controller = MetaKeysController::class . '@';
 
-        $r
+    $r
         -> get('', $controller . 'get')
         -> name('api.metakeys.get');
-    });
+});

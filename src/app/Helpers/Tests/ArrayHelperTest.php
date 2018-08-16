@@ -5,6 +5,9 @@ namespace App\Helpers\Tests;
 use App\Helpers\ArrayHelper;
 use Tests\TestCase;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ArrayHelperTest extends TestCase
 {
     public function test_onlyNonEmptyMembers_ok()
