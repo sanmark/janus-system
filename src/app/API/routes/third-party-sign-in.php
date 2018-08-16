@@ -6,13 +6,13 @@ use Illuminate\Routing\Router;
 Route::group([
     'prefix' => 'third-party-sign-in',
 ], function (Router $router) {
-        $methodPrefix = ThirdPartySignInController::class . '@';
+    $methodPrefix = ThirdPartySignInController::class . '@';
 
-        $router
+    $router
         -> post('facebook', $methodPrefix . 'facebook')
         -> name('api.third-party-sign-in.facebook');
 
-        $router
+    $router
         -> post('google', $methodPrefix . 'google')
         -> name('api.third-party-sign-in.google');
-    });
+});

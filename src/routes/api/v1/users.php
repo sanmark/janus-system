@@ -5,9 +5,9 @@ use Illuminate\Routing\Router;
 Route::group([
     'prefix' => 'users' ,
 ], function (Router $router) {
-        $controller = App\Http\Controllers\API\UsersController::class . '@';
+    $controller = App\Http\Controllers\API\UsersController::class . '@';
 
-        $router
+    $router
         -> post('', $controller . 'create')
         -> name('users.create');
-    });
+});

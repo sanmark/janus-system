@@ -17,6 +17,7 @@ use App\Repos\Exceptions\UniqueConstraintFailureException;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Mockery;
+use stdClass;
 use Tests\TestCase;
 
 /**
@@ -34,80 +35,122 @@ class UsersControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this -> mockMetasHandler = $this -> mock(MetasHandler::class);
-        $this -> mockUsersHandler = $this -> mock(UsersHandler::class);
-        $this -> mockUserSecretResetRequestsHandler = $this -> mock(UserSecretResetRequestsHandler::class);
-        $this -> mockUsersValidator = $this -> mock(IUsersValidator::class);
+        $this->mockMetasHandler = $this->mock(MetasHandler::class);
+        $this->mockUsersHandler = $this->mock(UsersHandler::class);
+        $this->mockUserSecretResetRequestsHandler = $this->mock(UserSecretResetRequestsHandler::class);
+        $this->mockUsersValidator = $this->mock(IUsersValidator::class);
 
-        $this -> controller = new UsersController(
-            $this -> mockMetasHandler,
-            $this -> mockUsersHandler,
-            $this -> mockUserSecretResetRequestsHandler,
-            $this -> mockUsersValidator
-            );
+        $this->controller = new UsersController(
+            $this->mockMetasHandler,
+            $this->mockUsersHandler,
+            $this->mockUserSecretResetRequestsHandler,
+            $this->mockUsersValidator
+        );
+    }
+
+    public function test_all_ok()
+    {
+        $request = $this->mock(Request::class);
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'page',
+                1,
+            ])
+            ->andReturn(149)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'count',
+                10,
+            ])
+            ->andReturn(150)
+        ;
+
+        $mockUser = $this->mock(stdClass::class);
+        $mockUser->id = 151;
+        $mockUser->key = 152;
+
+        $this
+            ->mockUsersHandler
+            ->shouldReceive('all')
+            ->withArgs([
+                149,
+                150,
+            ])
+            ->andReturn([$mockUser])
+        ;
+
+        $r = $this
+            ->controller
+            ->all($request)
+        ;
     }
 
     public function test_byKeyGet_ok()
     {
         $mockUser = $this
-            -> mock(User::class);
+            ->mock(User::class);
 
         $this
-            -> mockUsersHandler
-            -> shouldReceive('getByKey')
-            -> withArgs([ 'sample-key' ])
-            -> andReturn($mockUser);
+            ->mockUsersHandler
+            ->shouldReceive('getByKey')
+            ->withArgs(['sample-key'])
+            ->andReturn($mockUser);
 
         $mockUser
-            -> shouldReceive('toArrayOnly')
-            -> withArgs([
+            ->shouldReceive('toArrayOnly')
+            ->withArgs([
                 [
-                    'id' ,
-                    'key' ,
-                ] ,
+                    'id',
+                    'key',
+                ],
             ])
-            -> andReturn([
-                'id' => 149 ,
-                'key' => 'big-brother' ,
+            ->andReturn([
+                'id' => 149,
+                'key' => 'big-brother',
             ]);
 
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $key = 'sample-key';
 
         $r = $this
-            -> controller
-            -> byKeyGet($request, $key);
+            ->controller
+            ->byKeyGet($request, $key);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => (object) [
-                'id' => 149 ,
-                'key' => 'big-brother' ,
-            ] ,
-        ], $r -> getData());
+                'id' => 149,
+                'key' => 'big-brother',
+            ],
+        ], $r->getData());
     }
 
     public function test_byKeyGet_handlesRecordNotFoundException()
     {
         $this
-            -> mockUsersHandler
-            -> shouldReceive('getByKey')
-            -> withArgs([ 'invalid-key' ])
-            -> andThrow(RecordNotFoundException::class);
+            ->mockUsersHandler
+            ->shouldReceive('getByKey')
+            ->withArgs(['invalid-key'])
+            ->andThrow(RecordNotFoundException::class);
 
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $key = 'invalid-key';
 
         $r = $this
-            -> controller
-            -> byKeyGet($request, $key);
+            ->controller
+            ->byKeyGet($request, $key);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => [] ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => [],
+        ], $r->getData());
     }
 
     public function test_create_ok()
@@ -120,60 +163,60 @@ class UsersControllerTest extends TestCase
         $mockUserSecretsResetRequestsHandler = Mockery::mock(UserSecretResetRequestsHandler::class);
 
         $mockRequest
-            -> shouldReceive('toArray')
-            -> andReturn([
+            ->shouldReceive('toArray')
+            ->andReturn([
             ]);
 
         $mockUsersValidator
-            -> shouldReceive('create');
+            ->shouldReceive('create');
 
         $mockRequest
-            -> shouldReceive('get')
-            -> withArgs([
-                'user_key' ,
+            ->shouldReceive('get')
+            ->withArgs([
+                'user_key',
             ])
-            -> andReturn('the_key');
+            ->andReturn('the_key');
 
         $mockRequest
-            -> shouldReceive('get')
-            -> withArgs([
-                'user_secret' ,
+            ->shouldReceive('get')
+            ->withArgs([
+                'user_secret',
             ])
-            -> andReturn('the_secret');
+            ->andReturn('the_secret');
 
         $mockUsersHandler
-            -> shouldReceive('create')
-            -> withArgs([
-                'the_key' ,
-                'the_secret' ,
+            ->shouldReceive('create')
+            ->withArgs([
+                'the_key',
+                'the_secret',
             ])
-            -> andReturn($mockUserModel);
+            ->andReturn($mockUserModel);
 
         $mockUserModel
-            -> shouldReceive('toArrayOnly')
-            -> withArgs([
+            ->shouldReceive('toArrayOnly')
+            ->withArgs([
                 [
-                    'id' ,
-                    'key' ,
-                ] ,
+                    'id',
+                    'key',
+                ],
             ])
-            -> andReturn([ 149 ]);
+            ->andReturn([149]);
 
         $usersController = new UsersController($mockMetasHandler, $mockUsersHandler, $mockUserSecretsResetRequestsHandler, $mockUsersValidator);
 
         $r = $usersController
-            -> create($mockRequest);
+            ->create($mockRequest);
 
         $this
-            -> assertInstanceOf(JsonResponse::class, $r);
+            ->assertInstanceOf(JsonResponse::class, $r);
 
         $this
-            -> assertEquals(201, $r -> getStatusCode());
+            ->assertEquals(201, $r->getStatusCode());
 
         $this
-            -> assertEquals((object) [
-                'data' => [ 149 ] ,
-            ], $r -> getData());
+            ->assertEquals((object) [
+                'data' => [149],
+            ], $r->getData());
     }
 
     public function test_create_HandlesInvalidInputException()
@@ -187,33 +230,33 @@ class UsersControllerTest extends TestCase
         $mockUserSecretsResetRequestsHandler = Mockery::mock(UserSecretResetRequestsHandler::class);
 
         $mockRequest
-            -> shouldReceive('toArray')
-            -> andReturn([
+            ->shouldReceive('toArray')
+            ->andReturn([
             ]);
 
         $mockUsersValidator
-            -> shouldReceive('create')
-            -> andThrow($mockInvalidInputException);
+            ->shouldReceive('create')
+            ->andThrow($mockInvalidInputException);
 
         $mockInvalidInputException
-            -> shouldReceive('getErrors')
-            -> andReturn(149);
+            ->shouldReceive('getErrors')
+            ->andReturn(149);
 
         $usersController = new UsersController($mockMetasHandler, $mockUsersHandler, $mockUserSecretsResetRequestsHandler, $mockUsersValidator);
 
         $r = $usersController
-            -> create($mockRequest);
+            ->create($mockRequest);
 
         $this
-            -> assertInstanceOf(JsonResponse::class, $r);
+            ->assertInstanceOf(JsonResponse::class, $r);
 
         $this
-            -> assertEquals(400, $r -> getStatusCode());
+            ->assertEquals(400, $r->getStatusCode());
 
         $this
-            -> assertEquals((object) [
-                'errors' => 149 ,
-            ], $r -> getData());
+            ->assertEquals((object) [
+                'errors' => 149,
+            ], $r->getData());
     }
 
     public function test_create_HandlesUniqueConstraintFailureException()
@@ -226,124 +269,124 @@ class UsersControllerTest extends TestCase
         $mockUserSecretsResetRequestsHandler = Mockery::mock(UserSecretResetRequestsHandler::class);
 
         $mockRequest
-            -> shouldReceive('toArray')
-            -> andReturn([
+            ->shouldReceive('toArray')
+            ->andReturn([
             ]);
 
         $mockUsersValidator
-            -> shouldReceive('create');
+            ->shouldReceive('create');
 
         $mockRequest
-            -> shouldReceive('get')
-            -> withArgs([
-                'user_key' ,
+            ->shouldReceive('get')
+            ->withArgs([
+                'user_key',
             ])
-            -> andReturn('the_key');
+            ->andReturn('the_key');
 
         $mockRequest
-            -> shouldReceive('get')
-            -> withArgs([
-                'user_secret' ,
+            ->shouldReceive('get')
+            ->withArgs([
+                'user_secret',
             ])
-            -> andReturn('the_secret');
+            ->andReturn('the_secret');
 
         $mockUsersHandler
-            -> shouldReceive('create')
-            -> withArgs([
-                'the_key' ,
-                'the_secret' ,
+            ->shouldReceive('create')
+            ->withArgs([
+                'the_key',
+                'the_secret',
             ])
-            -> andThrow($mockUniqueConstraintFailureException);
+            ->andThrow($mockUniqueConstraintFailureException);
 
         $mockUniqueConstraintFailureException
-            -> shouldReceive('getConstraint')
-            -> andReturn('rofl');
+            ->shouldReceive('getConstraint')
+            ->andReturn('rofl');
 
         $usersController = new UsersController($mockMetasHandler, $mockUsersHandler, $mockUserSecretsResetRequestsHandler, $mockUsersValidator);
 
         $r = $usersController
-            -> create($mockRequest);
+            ->create($mockRequest);
 
         $this
-            -> assertInstanceOf(JsonResponse::class, $r);
+            ->assertInstanceOf(JsonResponse::class, $r);
 
         $this
-            -> assertEquals(409, $r -> getStatusCode());
+            ->assertEquals(409, $r->getStatusCode());
 
         $this
-            -> assertObjectHasAttribute('errors', $r -> getData());
+            ->assertObjectHasAttribute('errors', $r->getData());
         $this
-            -> assertObjectHasAttribute('rofl', $r -> getData() -> errors);
+            ->assertObjectHasAttribute('rofl', $r->getData()->errors);
         $this
-            -> assertEquals((object) [
+            ->assertEquals((object) [
                 'errors' => (object) [
-                    'rofl' => 'duplicate' ,
-                ] ,
-            ], $r -> getData());
+                    'rofl' => 'duplicate',
+                ],
+            ], $r->getData());
     }
 
     public function test_get_ok()
     {
         $mockUser = $this
-            -> mock(User::class);
+            ->mock(User::class);
 
-        $this -> mockUsersHandler
-            -> shouldReceive('get')
-            -> withArgs([
-                149 ,
+        $this->mockUsersHandler
+            ->shouldReceive('get')
+            ->withArgs([
+                149,
             ])
-            -> andReturn($mockUser);
+            ->andReturn($mockUser);
 
         $mockUser
-            -> shouldReceive('toArrayOnly')
-            -> withArgs([
+            ->shouldReceive('toArrayOnly')
+            ->withArgs([
                 [
-                    'id' ,
-                    'key' ,
-                ] ,
+                    'id',
+                    'key',
+                ],
             ])
-            -> andReturn([
-                'id' => 149 ,
-                'key' => 'big-brother' ,
+            ->andReturn([
+                'id' => 149,
+                'key' => 'big-brother',
             ]);
 
         $userId = 149;
 
         $r = $this
-            -> controller
-            -> get($userId);
+            ->controller
+            ->get($userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => (object) [
-                'id' => 149 ,
-                'key' => 'big-brother' ,
-            ] ,
-        ], $r -> getData());
+                'id' => 149,
+                'key' => 'big-brother',
+            ],
+        ], $r->getData());
     }
 
     public function test_get_handlesRecordNotFoundException()
     {
         $this
-            -> mockUsersHandler
-            -> shouldReceive('get')
-            -> withArgs([
-                149 ,
+            ->mockUsersHandler
+            ->shouldReceive('get')
+            ->withArgs([
+                149,
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
         $userId = 149;
 
         $r = $this
-            -> controller
-            -> get($userId);
+            ->controller
+            ->get($userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => [] ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => [],
+        ], $r->getData());
     }
 
     public function test_metasAll_ok()
@@ -351,521 +394,521 @@ class UsersControllerTest extends TestCase
         $metas = [];
         foreach ([
             [
-                'meta_key' => 'sample-meta-key-1' ,
-                'value' => 'sample-value-1' ,
-                'user_id' => 1 ,
-            ] ,
+                'meta_key' => 'sample-meta-key-1',
+                'value' => 'sample-value-1',
+                'user_id' => 1,
+            ],
             [
-                'meta_key' => 'sample-meta-key-2' ,
-                'value' => 'sample-value-2' ,
-                'user_id' => 2 ,
-            ] ,
+                'meta_key' => 'sample-meta-key-2',
+                'value' => 'sample-value-2',
+                'user_id' => 2,
+            ],
         ] as $metaProto) {
-            $meta = $this -> mock(Meta::class);
+            $meta = $this->mock(Meta::class);
 
-            $meta -> value = $metaProto[ 'value' ];
-            $meta -> user_id = $metaProto[ 'user_id' ];
+            $meta->value = $metaProto['value'];
+            $meta->user_id = $metaProto['user_id'];
 
-            $meta -> shouldReceive('getMetaKey')
-                -> andReturn($metaProto[ 'meta_key' ]);
+            $meta->shouldReceive('getMetaKey')
+                ->andReturn($metaProto['meta_key']);
 
             $metas[] = $meta;
         }
 
         $this
-            -> mockMetasHandler
-            -> shouldReceive('getAllByUserId')
-            -> andReturn($metas);
+            ->mockMetasHandler
+            ->shouldReceive('getAllByUserId')
+            ->andReturn($metas);
 
         $userId = 149;
 
-        $r = $this -> controller
-            -> metasAll($userId);
+        $r = $this->controller
+            ->metasAll($userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => [
                 (object) [
-                    'meta_key' => 'sample-meta-key-1' ,
-                    'value' => 'sample-value-1' ,
-                    'user_id' => 1 ,
-                ] ,
+                    'meta_key' => 'sample-meta-key-1',
+                    'value' => 'sample-value-1',
+                    'user_id' => 1,
+                ],
                 (object) [
-                    'meta_key' => 'sample-meta-key-2' ,
-                    'value' => 'sample-value-2' ,
-                    'user_id' => 2 ,
-                ] ,
-            ] ,
-        ], $r -> getData());
+                    'meta_key' => 'sample-meta-key-2',
+                    'value' => 'sample-value-2',
+                    'user_id' => 2,
+                ],
+            ],
+        ], $r->getData());
     }
 
     public function test_metasAll_handlesRecordNotFoundException()
     {
-        $this -> mockMetasHandler
-            -> shouldReceive('getAllByUserId')
-            -> withArgs([
-                149 ,
+        $this->mockMetasHandler
+            ->shouldReceive('getAllByUserId')
+            ->withArgs([
+                149,
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
         $userId = 149;
 
-        $r = $this -> controller
-            -> metasAll($userId);
+        $r = $this->controller
+            ->metasAll($userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => [] ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => [],
+        ], $r->getData());
     }
 
     public function test_metasOne_ok()
     {
-        $meta = $this -> mock(Meta::class);
+        $meta = $this->mock(Meta::class);
 
-        $meta -> value = 'sample-value-1';
-        $meta -> user_id = 149;
+        $meta->value = 'sample-value-1';
+        $meta->user_id = 149;
 
-        $meta -> shouldReceive('getMetaKey')
-            -> andReturn('sample-meta-key-value-1');
+        $meta->shouldReceive('getMetaKey')
+            ->andReturn('sample-meta-key-value-1');
 
-        $this -> mockMetasHandler
-            -> shouldReceive('getOneByUserIdAndMetaKeyKey')
-            -> withArgs([
-                149 ,
-                'sample-meta-key-1' ,
+        $this->mockMetasHandler
+            ->shouldReceive('getOneByUserIdAndMetaKeyKey')
+            ->withArgs([
+                149,
+                'sample-meta-key-1',
             ])
-            -> andReturn($meta);
+            ->andReturn($meta);
 
         $userId = 149;
         $metaKey = 'sample-meta-key-1';
 
-        $r = $this -> controller
-            -> metasOne($userId, $metaKey);
+        $r = $this->controller
+            ->metasOne($userId, $metaKey);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => (object) [
-                'meta_key' => 'sample-meta-key-value-1' ,
-                'value' => 'sample-value-1' ,
-                'user_id' => 149 ,
+                'meta_key' => 'sample-meta-key-value-1',
+                'value' => 'sample-value-1',
+                'user_id' => 149,
             ],
-        ], $r -> getData());
+        ], $r->getData());
     }
 
     public function test_metasOne_handlesRecordNotFoundException()
     {
-        $this -> mockMetasHandler
-            -> shouldReceive('getOneByUserIdAndMetaKeyKey')
-            -> withArgs([
-                149 ,
-                'sample-meta-key-1' ,
+        $this->mockMetasHandler
+            ->shouldReceive('getOneByUserIdAndMetaKeyKey')
+            ->withArgs([
+                149,
+                'sample-meta-key-1',
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
         $userId = 149;
         $metaKey = 'sample-meta-key-1';
 
-        $r = $this -> controller
-            -> metasOne($userId, $metaKey);
+        $r = $this->controller
+            ->metasOne($userId, $metaKey);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => [] ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => [],
+        ], $r->getData());
     }
 
     public function test_metasUpdate_ok()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
         $metaKey = 'sample-meta-key-1';
 
-        $request -> shouldReceive('get')
-            -> withArgs([ 'value' ])
-            -> andReturn('sample-value');
+        $request->shouldReceive('get')
+            ->withArgs(['value'])
+            ->andReturn('sample-value');
 
-        $this -> mockMetasHandler
-            -> shouldReceive('createByUserIdAndMetaKeyKey')
-            -> withArgs([
-                149 ,
-                'sample-meta-key-1' ,
-                'sample-value' ,
+        $this->mockMetasHandler
+            ->shouldReceive('createByUserIdAndMetaKeyKey')
+            ->withArgs([
+                149,
+                'sample-meta-key-1',
+                'sample-value',
             ])
-            -> andReturn(150);
+            ->andReturn(150);
 
-        $r = $this -> controller
-            -> metasUpdate($request, $userId, $metaKey);
+        $r = $this->controller
+            ->metasUpdate($request, $userId, $metaKey);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'data' => 150 ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'data' => 150,
+        ], $r->getData());
     }
 
     public function test_metasUpdate_handlesInvalidInputException()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
         $metaKey = 'sample-meta-key-1';
 
-        $request -> shouldReceive('get')
-            -> withArgs([ 'value' ])
-            -> andReturn('sample-value');
+        $request->shouldReceive('get')
+            ->withArgs(['value'])
+            ->andReturn('sample-value');
 
-        $mockInvalidInputException = $this -> mock(InvalidInputException::class);
+        $mockInvalidInputException = $this->mock(InvalidInputException::class);
 
         $mockInvalidInputException
-            -> shouldReceive('getErrors')
-            -> andReturn(150);
+            ->shouldReceive('getErrors')
+            ->andReturn(150);
 
-        $this -> mockMetasHandler
-            -> shouldReceive('createByUserIdAndMetaKeyKey')
-            -> withArgs([
-                149 ,
-                'sample-meta-key-1' ,
-                'sample-value' ,
+        $this->mockMetasHandler
+            ->shouldReceive('createByUserIdAndMetaKeyKey')
+            ->withArgs([
+                149,
+                'sample-meta-key-1',
+                'sample-value',
             ])
-            -> andThrow($mockInvalidInputException);
+            ->andThrow($mockInvalidInputException);
 
-        $r = $this -> controller
-            -> metasUpdate($request, $userId, $metaKey);
+        $r = $this->controller
+            ->metasUpdate($request, $userId, $metaKey);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(400, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => 150 ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(400, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => 150,
+        ], $r->getData());
     }
 
     public function test_metasUpdate_handlesRecordNotFoundException()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
         $metaKey = 'sample-meta-key-1';
 
-        $request -> shouldReceive('get')
-            -> withArgs([ 'value' ])
-            -> andReturn('sample-value');
+        $request->shouldReceive('get')
+            ->withArgs(['value'])
+            ->andReturn('sample-value');
 
-        $this -> mockMetasHandler
-            -> shouldReceive('createByUserIdAndMetaKeyKey')
-            -> withArgs([
-                149 ,
-                'sample-meta-key-1' ,
-                'sample-value' ,
+        $this->mockMetasHandler
+            ->shouldReceive('createByUserIdAndMetaKeyKey')
+            ->withArgs([
+                149,
+                'sample-meta-key-1',
+                'sample-value',
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
-        $r = $this -> controller
-            -> metasUpdate($request, $userId, $metaKey);
+        $r = $this->controller
+            ->metasUpdate($request, $userId, $metaKey);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => [] ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => [],
+        ], $r->getData());
     }
 
     public function test_update_ok()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
 
-        $mockUser = $this -> mock(User::class);
+        $mockUser = $this->mock(User::class);
 
-        $request -> shouldReceive('all')
-            -> withArgs([
+        $request->shouldReceive('all')
+            ->withArgs([
                 [
-                    'user_secret' ,
-                ] ,
+                    'user_secret',
+                ],
             ])
-            -> andReturn([
-                'user_secret' => 'sample-user-secret' ,
+            ->andReturn([
+                'user_secret' => 'sample-user-secret',
             ]);
 
-        $this -> mockUsersHandler
-            -> shouldReceive('update')
-            -> withArgs([
-                149 ,
+        $this->mockUsersHandler
+            ->shouldReceive('update')
+            ->withArgs([
+                149,
                 [
-                    'user_secret' => 'sample-user-secret' ,
-                ] ,
+                    'user_secret' => 'sample-user-secret',
+                ],
             ])
-            -> andReturn($mockUser);
+            ->andReturn($mockUser);
 
         $mockUser
-            -> shouldReceive('toArrayOnly')
-            -> withArgs([
+            ->shouldReceive('toArrayOnly')
+            ->withArgs([
                 [
-                    'id' ,
-                    'key' ,
-                ] ,
+                    'id',
+                    'key',
+                ],
             ])
-            -> andReturn([
-                'id' => 149 ,
-                'key' => 'sample-key' ,
+            ->andReturn([
+                'id' => 149,
+                'key' => 'sample-key',
             ]);
 
-        $r = $this -> controller
-            -> update($request, $userId);
+        $r = $this->controller
+            ->update($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => (object) [
-                'id' => 149 ,
-                'key' => 'sample-key' ,
-            ] ,
-        ], $r -> getData());
+                'id' => 149,
+                'key' => 'sample-key',
+            ],
+        ], $r->getData());
     }
 
     public function test_update_handlesRecordNotFoundException()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
 
-        $request -> shouldReceive('all')
-            -> withArgs([
+        $request->shouldReceive('all')
+            ->withArgs([
                 [
-                    'user_secret' ,
-                ] ,
+                    'user_secret',
+                ],
             ])
-            -> andReturn([
-                'user_secret' => 'sample-user-secret' ,
+            ->andReturn([
+                'user_secret' => 'sample-user-secret',
             ]);
 
-        $this -> mockUsersHandler
-            -> shouldReceive('update')
-            -> withArgs([
-                149 ,
+        $this->mockUsersHandler
+            ->shouldReceive('update')
+            ->withArgs([
+                149,
                 [
-                    'user_secret' => 'sample-user-secret' ,
-                ] ,
+                    'user_secret' => 'sample-user-secret',
+                ],
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
-        $r = $this -> controller
-            -> update($request, $userId);
+        $r = $this->controller
+            ->update($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
-            'errors' => [] ,
-        ], $r -> getData());
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
+            'errors' => [],
+        ], $r->getData());
     }
 
     public function test_userSecretResetRequestsCreate_handlesRecordNotFoundException()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
 
-        $this -> mockUserSecretResetRequestsHandler
-            -> shouldReceive('create')
-            -> withArgs([
-                149 ,
+        $this->mockUserSecretResetRequestsHandler
+            ->shouldReceive('create')
+            ->withArgs([
+                149,
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
-        $r = $this -> controller
-            -> userSecretResetRequestsCreate($request, $userId);
+        $r = $this->controller
+            ->userSecretResetRequestsCreate($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(404, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(404, $r->getStatusCode());
+        $this->assertEquals((object) [
             'errors' => [
-            ] ,
-        ], $r -> getData());
+            ],
+        ], $r->getData());
     }
 
     public function test_userSecretResetRequestsCreate_ok()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
-        $userSecretResetRequest = $this -> mock(UserSecretResetRequest::class);
+        $userSecretResetRequest = $this->mock(UserSecretResetRequest::class);
 
-        $this -> mockUserSecretResetRequestsHandler
-            -> shouldReceive('create')
-            -> withArgs([
-                149 ,
+        $this->mockUserSecretResetRequestsHandler
+            ->shouldReceive('create')
+            ->withArgs([
+                149,
             ])
-            -> andReturn($userSecretResetRequest);
+            ->andReturn($userSecretResetRequest);
 
-        $userSecretResetRequest -> shouldReceive('toArray')
-            -> withArgs([])
-            -> andReturn([ 150 ]);
+        $userSecretResetRequest->shouldReceive('toArray')
+            ->withArgs([])
+            ->andReturn([150]);
 
-        $r = $this -> controller
-            -> userSecretResetRequestsCreate($request, $userId);
+        $r = $this->controller
+            ->userSecretResetRequestsCreate($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(201, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(201, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => [
-                150 ,
-            ] ,
-        ], $r -> getData());
+                150,
+            ],
+        ], $r->getData());
     }
 
     public function test_userSecretResetRequestsExecute_handlesInvalidInputException()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
 
-        $request -> shouldReceive('toArray')
-            -> withArgs([])
-            -> andReturn([
-                150 ,
+        $request->shouldReceive('toArray')
+            ->withArgs([])
+            ->andReturn([
+                150,
             ]);
 
-        $invalidInputException = $this -> mock(InvalidInputException::class);
+        $invalidInputException = $this->mock(InvalidInputException::class);
 
-        $this -> mockUsersValidator
-            -> shouldReceive('userSecretResetRequestsExecute')
-            -> withArgs([
+        $this->mockUsersValidator
+            ->shouldReceive('userSecretResetRequestsExecute')
+            ->withArgs([
                 [
-                    150 ,
-                ] ,
+                    150,
+                ],
             ])
-            -> andThrow($invalidInputException);
+            ->andThrow($invalidInputException);
 
-        $invalidInputException -> shouldReceive('getErrors')
-            -> withArgs([])
-            -> andReturns([
-                151 ,
+        $invalidInputException->shouldReceive('getErrors')
+            ->withArgs([])
+            ->andReturns([
+                151,
             ]);
 
-        $r = $this -> controller
-            -> userSecretResetRequestsExecute($request, $userId);
+        $r = $this->controller
+            ->userSecretResetRequestsExecute($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(400, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(400, $r->getStatusCode());
+        $this->assertEquals((object) [
             'errors' => [
-                151 ,
-            ] ,
-        ], $r -> getData());
+                151,
+            ],
+        ], $r->getData());
     }
 
     public function test_userSecretResetRequestsExecute_handlesRecordNotFoundException()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
 
-        $request -> shouldReceive('toArray')
-            -> andReturn([
-                150 ,
+        $request->shouldReceive('toArray')
+            ->andReturn([
+                150,
             ]);
 
-        $this -> mockUsersValidator
-            -> shouldReceive('userSecretResetRequestsExecute')
-            -> withArgs([
+        $this->mockUsersValidator
+            ->shouldReceive('userSecretResetRequestsExecute')
+            ->withArgs([
                 [
-                    150 ,
-                ] ,
+                    150,
+                ],
             ]);
 
-        $request -> shouldReceive('get')
-            -> withArgs([
-                UsersInputConstants::NewSecret ,
+        $request->shouldReceive('get')
+            ->withArgs([
+                UsersInputConstants::NewSecret,
             ])
-            -> andReturn('sample-new-secret');
+            ->andReturn('sample-new-secret');
 
-        $request -> shouldReceive('get')
-            -> withArgs([
-                UsersInputConstants::UserSecretResetRequestToken ,
+        $request->shouldReceive('get')
+            ->withArgs([
+                UsersInputConstants::UserSecretResetRequestToken,
             ])
-            -> andReturn('sample-token');
+            ->andReturn('sample-token');
 
-        $this -> mockUserSecretResetRequestsHandler
-            -> shouldReceive('execute')
-            -> withArgs([
-                149 ,
-                'sample-token' ,
-                'sample-new-secret' ,
+        $this->mockUserSecretResetRequestsHandler
+            ->shouldReceive('execute')
+            ->withArgs([
+                149,
+                'sample-token',
+                'sample-new-secret',
             ])
-            -> andThrow(RecordNotFoundException::class);
+            ->andThrow(RecordNotFoundException::class);
 
-        $r = $this -> controller
-            -> userSecretResetRequestsExecute($request, $userId);
+        $r = $this->controller
+            ->userSecretResetRequestsExecute($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(400, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(400, $r->getStatusCode());
+        $this->assertEquals((object) [
             'errors' => (object) [
                 'user_secret_reset_request_token' => [
-                    'not_exists' ,
-                ] ,
-            ] ,
-        ], $r -> getData());
+                    'not_exists',
+                ],
+            ],
+        ], $r->getData());
     }
 
     public function test_userSecretResetRequestsExecute_ok()
     {
-        $request = $this -> mock(Request::class);
+        $request = $this->mock(Request::class);
         $userId = 149;
 
-        $request -> shouldReceive('toArray')
-            -> andReturn([
-                150 ,
+        $request->shouldReceive('toArray')
+            ->andReturn([
+                150,
             ]);
 
-        $this -> mockUsersValidator
-            -> shouldReceive('userSecretResetRequestsExecute')
-            -> withArgs([
+        $this->mockUsersValidator
+            ->shouldReceive('userSecretResetRequestsExecute')
+            ->withArgs([
                 [
-                    150 ,
-                ] ,
+                    150,
+                ],
             ]);
 
-        $request -> shouldReceive('get')
-            -> withArgs([
-                UsersInputConstants::NewSecret ,
+        $request->shouldReceive('get')
+            ->withArgs([
+                UsersInputConstants::NewSecret,
             ])
-            -> andReturn('sample-new-secret');
+            ->andReturn('sample-new-secret');
 
-        $request -> shouldReceive('get')
-            -> withArgs([
-                UsersInputConstants::UserSecretResetRequestToken ,
+        $request->shouldReceive('get')
+            ->withArgs([
+                UsersInputConstants::UserSecretResetRequestToken,
             ])
-            -> andReturn('sample-token');
+            ->andReturn('sample-token');
 
-        $user = $this -> mock(User::class);
+        $user = $this->mock(User::class);
 
-        $this -> mockUserSecretResetRequestsHandler
-            -> shouldReceive('execute')
-            -> withArgs([
-                149 ,
-                'sample-token' ,
-                'sample-new-secret' ,
+        $this->mockUserSecretResetRequestsHandler
+            ->shouldReceive('execute')
+            ->withArgs([
+                149,
+                'sample-token',
+                'sample-new-secret',
             ])
-            -> andReturn($user);
+            ->andReturn($user);
 
-        $user -> shouldReceive('toArrayOnly')
-            -> withArgs([
+        $user->shouldReceive('toArrayOnly')
+            ->withArgs([
                 [
-                    'id' ,
-                    'key' ,
-                ] ,
+                    'id',
+                    'key',
+                ],
             ])
-            -> andReturn([
-                151 ,
+            ->andReturn([
+                151,
             ]);
 
-        $r = $this -> controller
-            -> userSecretResetRequestsExecute($request, $userId);
+        $r = $this->controller
+            ->userSecretResetRequestsExecute($request, $userId);
 
-        $this -> assertInstanceOf(JsonResponse::class, $r);
-        $this -> assertEquals(200, $r -> getStatusCode());
-        $this -> assertEquals((object) [
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals(200, $r->getStatusCode());
+        $this->assertEquals((object) [
             'data' => [
-                151 ,
-            ] ,
-        ], $r -> getData());
+                151,
+            ],
+        ], $r->getData());
     }
 }

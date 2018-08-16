@@ -22,26 +22,52 @@ class UsersRepo implements IUsersRepo
     Hasher $hasher,
         eUser $eUser
     ) {
-        $this -> hasher = $hasher;
-        $this -> model = $eUser;
+        $this->hasher = $hasher;
+        $this->model = $eUser;
+    }
+
+    public function all(int $page, int $count): array
+    {
+        $eUsers = $this
+            ->model
+            ->all()
+            ->forPage($page, $count)
+        ;
+
+        $users = [];
+
+        foreach ($eUsers as $eUser) {
+            $user = new User();
+
+            $user->id = $eUser->id;
+            $user->key = $eUser->key;
+            $user->secret = $eUser->secret;
+            $user->deleted_at = $eUser->deleted_at;
+            $user->created_at = $eUser->created_at;
+            $user->updated_at = $eUser->updated_at;
+
+            $users[] = $user;
+        }
+
+        return $users;
     }
 
     public function create(string $userKey, string $userSecret): User
     {
         try {
             $eUser = $this
-                -> model
-                -> newInstance();
+                ->model
+                ->newInstance();
 
-            $eUser -> key = $userKey;
-            $eUser -> secret = Hash::make($userSecret);
+            $eUser->key = $userKey;
+            $eUser->secret = Hash::make($userSecret);
 
-            $eUser -> save();
+            $eUser->save();
 
             $user = new User();
 
-            $user -> id = $eUser -> id;
-            $user -> key = $eUser -> key;
+            $user->id = $eUser->id;
+            $user->key = $eUser->key;
 
             return $user;
         } catch (QueryException $ex) {
@@ -53,17 +79,17 @@ class UsersRepo implements IUsersRepo
     {
         try {
             $eUser = $this
-                -> model
-                -> findOrFail($id);
+                ->model
+                ->findOrFail($id);
 
             $user = new User();
 
-            $user -> id = $eUser -> id;
-            $user -> key = $eUser -> key;
-            $user -> secret = $eUser -> secret;
-            $user -> deleted_at = $eUser -> deleted_at;
-            $user -> created_at = $eUser -> created_at;
-            $user -> updated_at = $eUser -> updated_at;
+            $user->id = $eUser->id;
+            $user->key = $eUser->key;
+            $user->secret = $eUser->secret;
+            $user->deleted_at = $eUser->deleted_at;
+            $user->created_at = $eUser->created_at;
+            $user->updated_at = $eUser->updated_at;
 
             return $user;
         } catch (ModelNotFoundException $ex) {
@@ -75,18 +101,18 @@ class UsersRepo implements IUsersRepo
     {
         try {
             $eUser = $this
-                -> model
-                -> where('key', '=', $userKey)
-                -> firstOrFail();
+                ->model
+                ->where('key', '=', $userKey)
+                ->firstOrFail();
 
             $user = new User();
 
-            $user -> id = $eUser -> id;
-            $user -> key = $eUser -> key;
-            $user -> secret = $eUser -> secret;
-            $user -> deleted_at = $eUser -> deleted_at;
-            $user -> created_at = $eUser -> created_at;
-            $user -> updated_at = $eUser -> updated_at;
+            $user->id = $eUser->id;
+            $user->key = $eUser->key;
+            $user->secret = $eUser->secret;
+            $user->deleted_at = $eUser->deleted_at;
+            $user->created_at = $eUser->created_at;
+            $user->updated_at = $eUser->updated_at;
 
             return $user;
         } catch (ModelNotFoundException $ex) {
@@ -98,18 +124,18 @@ class UsersRepo implements IUsersRepo
     {
         try {
             $eUser = $this
-                -> model
-                -> findOrFail($id);
+                ->model
+                ->findOrFail($id);
 
             if (array_key_exists(UsersInputConstants::UserSecret, $data)) {
-                $eUser -> secret = $this
-                    -> hasher
-                    -> make($data[ UsersInputConstants::UserSecret ]);
+                $eUser->secret = $this
+                    ->hasher
+                    ->make($data[UsersInputConstants::UserSecret]);
             }
 
-            $eUser -> save();
+            $eUser->save();
 
-            return $this -> get($id);
+            return $this->get($id);
         } catch (ModelNotFoundException $ex) {
             throw new RecordNotFoundException();
         }

@@ -20,6 +20,14 @@ class UsersTableSeeder extends Seeder
                 UsersInputConstants::UserKey => 'user1' ,
                 UsersInputConstants::UserSecret => 'sec1' ,
             ] ,
+            [
+                UsersInputConstants::UserKey => 'user2' ,
+                UsersInputConstants::UserSecret => 'sec2' ,
+            ] ,
+            [
+                UsersInputConstants::UserKey => 'user3' ,
+                UsersInputConstants::UserSecret => 'sec3' ,
+            ] ,
             //			[
             //				UsersInputConstants::UserKey => '' ,
             //				UsersInputConstants::UserSecret => '' ,

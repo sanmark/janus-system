@@ -6,13 +6,13 @@ use Illuminate\Routing\Router;
 Route::group([
     'prefix' => 'auth-sessions',
 ], function (Router $router) {
-        $methodPrefix = AuthSessionsController::class . '@';
+    $methodPrefix = AuthSessionsController::class . '@';
 
-        $router
+    $router
         -> post('', $methodPrefix . 'create')
         -> name('api.auth-sessions.create');
 
-        $router
+    $router
         -> get('validate', $methodPrefix . 'validate')
         -> name('api.auth-sessions.validate');
-    });
+});

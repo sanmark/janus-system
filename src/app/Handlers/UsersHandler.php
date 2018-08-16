@@ -19,23 +19,32 @@ class UsersHandler
         Hasher $hash,
         IUsersRepo $iUsersRepo
     ) {
-        $this -> arrayHelper = $arrayHelper;
-        $this -> hash = $hash;
-        $this -> usersRepo = $iUsersRepo;
+        $this->arrayHelper = $arrayHelper;
+        $this->hash = $hash;
+        $this->usersRepo = $iUsersRepo;
+    }
+
+    public function all(int $page, int $count)
+    {
+        return
+            $this
+            ->usersRepo
+            ->all($page, $count)
+        ;
     }
 
     public function create(string $userKey, string $userSecret): User
     {
         return $this
-                -> usersRepo
-                -> create($userKey, $userSecret);
+                ->usersRepo
+                ->create($userKey, $userSecret);
     }
 
     public function get(int $id): User
     {
         $user = $this
-            -> usersRepo
-            -> get($id);
+            ->usersRepo
+            ->get($id);
 
         return $user;
     }
@@ -43,8 +52,8 @@ class UsersHandler
     public function getByKey(string $key): User
     {
         $user = $this
-            -> usersRepo
-            -> getByKey($key);
+            ->usersRepo
+            ->getByKey($key);
 
         return $user;
     }
@@ -52,10 +61,10 @@ class UsersHandler
     public function getUserIfCredentialsValid(string $userKey, string $userSecret): User
     {
         $user = $this
-            -> usersRepo
-            -> getByKey($userKey);
+            ->usersRepo
+            ->getByKey($userKey);
 
-        if ($this -> hash -> check($userSecret, $user -> secret)) {
+        if ($this->hash->check($userSecret, $user->secret)) {
             return $user;
         }
 
@@ -65,12 +74,12 @@ class UsersHandler
     public function update(int $id, array $data): User
     {
         $cleanedData = $this
-            -> arrayHelper
-            -> onlyNonEmptyMembers($data);
+            ->arrayHelper
+            ->onlyNonEmptyMembers($data);
 
         $user = $this
-            -> usersRepo
-            -> update($id, $cleanedData);
+            ->usersRepo
+            ->update($id, $cleanedData);
 
         return $user;
     }

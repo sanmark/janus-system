@@ -6,41 +6,45 @@ use Illuminate\Routing\Router;
 \Route::group([
     'prefix' => 'users',
 ], function (Router $router) {
-        $controller = UsersController::class . '@';
+    $controller = UsersController::class . '@';
 
-        $router
+    $router
+        -> get('', $controller . 'all')
+        -> name('api.users.all');
+
+    $router
         -> post('', $controller . 'create')
         -> name('api.users.create');
 
-        $router
+    $router
         -> get('/by-key/{key}', $controller . 'byKeyGet')
         -> name('api.users.by-key');
 
-        $router
+    $router
         -> get('{id}', $controller . 'get')
         -> name('api.users.get');
 
-        $router
+    $router
         -> patch('{id}', $controller . 'update')
         -> name('api.users.update');
 
-        $router
+    $router
         -> get('{id}/metas', $controller . 'metasAll')
         -> name('api.users.metas.all');
 
-        $router
+    $router
         -> get('{id}/metas/{key}', $controller . 'metasOne')
         -> name('api.users.metas.one');
 
-        $router
+    $router
         -> patch('{id}/metas/{key}', $controller . 'metasUpdate')
         -> name('api.users.metas.update');
 
-        $router
+    $router
         -> post('{id}/user-secret-reset-requests', $controller . 'userSecretResetRequestsCreate')
         -> name('api.users.user-secret-reset-requests.create');
 
-        $router
+    $router
         -> post('{id}/user-secret-reset-requests/execute', $controller . 'userSecretResetRequestsExecute')
         -> name('api.users.user-secret-reset-requests.execute');
-    });
+});
