@@ -29,7 +29,9 @@ class UsersRepo implements IUsersRepo
     public function all(
         bool $noPagination = false,
         int $page = 1,
-        int $count = 10
+        int $count = 10,
+        string $orderBy = 'id',
+        string $orderSort = 'asc'
     ): array {
         $query = $this
             ->model
@@ -39,6 +41,8 @@ class UsersRepo implements IUsersRepo
         if (!$noPagination) {
             $query->forPage($page, $count);
         }
+
+        $query->orderBy($orderBy, $orderSort);
 
         $eUsers = $query->get();
 

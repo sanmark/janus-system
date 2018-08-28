@@ -69,7 +69,25 @@ class UsersControllerTest extends TestCase
             ])
             ->andReturn(150)
         ;
-        
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'order_by',
+                'id',
+            ])
+            ->andReturn(153)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'order_sort',
+                'asc',
+            ])
+            ->andReturn(154)
+        ;
+
         $request
             ->shouldReceive('get')
             ->withArgs([
@@ -90,6 +108,8 @@ class UsersControllerTest extends TestCase
                 false,
                 149,
                 150,
+                '153',
+                '154',
             ])
             ->andReturn([$mockUser])
         ;

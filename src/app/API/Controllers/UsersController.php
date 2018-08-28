@@ -41,10 +41,12 @@ class UsersController extends Controller
         $page = $request->get('page', 1);
         $count = $request->get('count', 10);
         $noPagination = $request->get('no_pagination', false);
+        $orderBy = $request->get('order_by', 'id');
+        $orderSort = $request->get('order_sort', 'asc');
 
         $users = $this
             ->usersHandler
-            ->all($noPagination, $page, $count)
+            ->all($noPagination, $page, $count, $orderBy, $orderSort)
         ;
 
         $payload = [];

@@ -43,7 +43,7 @@ class UsersRepoTest extends TestCase
             ->withNoArgs()
             ->andReturnSelf()
         ;
-        
+
         $mockEUser
             ->shouldReceive('forPage')
             ->withArgs([
@@ -52,7 +52,16 @@ class UsersRepoTest extends TestCase
             ])
             ->andReturnSelf()
         ;
-        
+
+        $mockEUser
+            ->shouldReceive('orderBy')
+            ->withArgs([
+                '157',
+                '158',
+            ])
+            ->andReturnSelf()
+        ;
+
         $mockEUser
             ->shouldReceive('get')
             ->withNoArgs()
@@ -69,7 +78,7 @@ class UsersRepoTest extends TestCase
 
         $usersRepo = new UsersRepo($mockHasher, $mockEUser);
 
-        $response = $usersRepo->all(false, 149, 150);
+        $response = $usersRepo->all(false, 149, 150, 157, 158);
 
         $this->assertEquals([$expectedResponse], $response);
     }

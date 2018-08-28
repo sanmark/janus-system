@@ -9,7 +9,9 @@ interface IUsersRepo
     public function all(
         bool $noPagination = false,
         int $page = 1,
-        int $count = 10
+        int $count = 10,
+        string $orderBy = 'id',
+        string $orderSort = 'asc'
     ): array;
 
     public function create(string $userKey, string $userSecret): User;
