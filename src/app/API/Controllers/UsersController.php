@@ -40,10 +40,11 @@ class UsersController extends Controller
     {
         $page = $request->get('page', 1);
         $count = $request->get('count', 10);
+        $noPagination = $request->get('no_pagination', false);
 
         $users = $this
             ->usersHandler
-            ->all($page, $count)
+            ->all($noPagination, $page, $count)
         ;
 
         $payload = [];

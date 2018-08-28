@@ -24,12 +24,15 @@ class UsersHandler
         $this->usersRepo = $iUsersRepo;
     }
 
-    public function all(int $page, int $count)
-    {
+    public function all(
+        bool $noPagination = false,
+        int $page = 1,
+        int $count = 10
+    ) {
         return
-            $this
-            ->usersRepo
-            ->all($page, $count)
+                $this
+                ->usersRepo
+                ->all($noPagination, $page, $count)
         ;
     }
 

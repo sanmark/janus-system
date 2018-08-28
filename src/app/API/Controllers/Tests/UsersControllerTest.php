@@ -69,6 +69,15 @@ class UsersControllerTest extends TestCase
             ])
             ->andReturn(150)
         ;
+        
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'no_pagination',
+                false,
+            ])
+            ->andReturn(false)
+        ;
 
         $mockUser = $this->mock(stdClass::class);
         $mockUser->id = 151;
@@ -78,6 +87,7 @@ class UsersControllerTest extends TestCase
             ->mockUsersHandler
             ->shouldReceive('all')
             ->withArgs([
+                false,
                 149,
                 150,
             ])
