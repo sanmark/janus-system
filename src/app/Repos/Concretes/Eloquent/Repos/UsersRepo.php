@@ -26,13 +26,21 @@ class UsersRepo implements IUsersRepo
         $this->model = $eUser;
     }
 
-    public function all(int $page, int $count): array
-    {
-        $eUsers = $this
+    public function all(
+        bool $noPagination = false,
+        int $page = 1,
+        int $count = 10
+    ): array {
+        $query = $this
             ->model
-            ->all()
-            ->forPage($page, $count)
+            ->query()
         ;
+
+        if (!$noPagination) {
+            $query->forPage($page, $count);
+        }
+
+        $eUsers = $query->get();
 
         $users = [];
 

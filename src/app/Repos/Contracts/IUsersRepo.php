@@ -6,7 +6,11 @@ use App\Models\User;
 
 interface IUsersRepo
 {
-    public function all(int $page, int $count): array;
+    public function all(
+        bool $noPagination = false,
+        int $page = 1,
+        int $count = 10
+    ): array;
 
     public function create(string $userKey, string $userSecret): User;
 

@@ -25,6 +25,7 @@ class UsersHandlerTest extends TestCase
         $mockIUsersRepo
             ->shouldReceive('all')
             ->withArgs([
+                false,
                 149,
                 150,
             ])
@@ -33,7 +34,7 @@ class UsersHandlerTest extends TestCase
 
         $usersHandler = new UsersHandler($mockArrayHelper, $mockHash, $mockIUsersRepo);
 
-        $response = $usersHandler->all(149, 150);
+        $response = $usersHandler->all(false, 149, 150);
 
         $this->assertSame([151], $response);
     }

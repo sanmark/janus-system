@@ -39,11 +39,23 @@ class UsersRepoTest extends TestCase
         $user->updated_at = 156;
 
         $mockEUser
+            ->shouldReceive('query')
+            ->withNoArgs()
+            ->andReturnSelf()
+        ;
+        
+        $mockEUser
             ->shouldReceive('forPage')
             ->withArgs([
                 149,
                 150,
             ])
+            ->andReturnSelf()
+        ;
+        
+        $mockEUser
+            ->shouldReceive('get')
+            ->withNoArgs()
             ->andReturn([$user])
         ;
 
@@ -57,7 +69,7 @@ class UsersRepoTest extends TestCase
 
         $usersRepo = new UsersRepo($mockHasher, $mockEUser);
 
-        $response = $usersRepo->all(149, 150);
+        $response = $usersRepo->all(false, 149, 150);
 
         $this->assertEquals([$expectedResponse], $response);
     }
