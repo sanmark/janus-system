@@ -91,6 +91,23 @@ class UsersControllerTest extends TestCase
         $request
             ->shouldReceive('get')
             ->withArgs([
+                'meta_order_by',
+            ])
+            ->andReturn(155)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'meta_order_sort',
+                'asc',
+            ])
+            ->andReturn(156)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
                 'no_pagination',
                 false,
             ])
@@ -110,6 +127,8 @@ class UsersControllerTest extends TestCase
                 150,
                 '153',
                 '154',
+                '155',
+                '156',
             ])
             ->andReturn([$mockUser])
         ;
@@ -118,6 +137,104 @@ class UsersControllerTest extends TestCase
             ->controller
             ->all($request)
         ;
+    }
+
+    public function test_all_invalidInputExceptionIsHandled()
+    {
+        $request = $this->mock(Request::class);
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'page',
+                1,
+            ])
+            ->andReturn(149)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'count',
+                10,
+            ])
+            ->andReturn(150)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'order_by',
+                'id',
+            ])
+            ->andReturn(153)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'order_sort',
+                'asc',
+            ])
+            ->andReturn(154)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'meta_order_by',
+            ])
+            ->andReturn(155)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'meta_order_sort',
+                'asc',
+            ])
+            ->andReturn(156)
+        ;
+
+        $request
+            ->shouldReceive('get')
+            ->withArgs([
+                'no_pagination',
+                false,
+            ])
+            ->andReturn(false)
+        ;
+
+        $invalidInputException = $this->mock(InvalidInputException::class);
+
+        $this
+            ->mockUsersHandler
+            ->shouldReceive('all')
+            ->withArgs([
+                false,
+                149,
+                150,
+                '153',
+                '154',
+                '155',
+                '156',
+            ])
+            ->andThrow($invalidInputException)
+        ;
+
+        $invalidInputException
+            ->shouldReceive('getErrors')
+            ->withNoArgs()
+            ->andReturn(157)
+        ;
+
+        $r = $this
+            ->controller
+            ->all($request)
+        ;
+
+        $this->assertInstanceOf(JsonResponse::class, $r);
+        $this->assertEquals('{"errors":157}', $r->getContent());
     }
 
     public function test_byKeyGet_ok()

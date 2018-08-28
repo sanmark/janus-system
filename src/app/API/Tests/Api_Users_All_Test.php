@@ -55,4 +55,18 @@ class Api_Users_All_Test extends TestCase
             ],
         ]);
     }
+
+    public function test_invalidMetaOrderByReturnsError()
+    {
+        $response = $this->getWithValidAppKeyAndSecretHash($this->url . '?meta_order_by=invalid-meta-key');
+
+        $response->assertStatus(422);
+        $response->assertJson([
+            'errors' => [
+                'meta_order_by' => [
+                    'value_not_found',
+                ],
+            ],
+        ]);
+    }
 }
