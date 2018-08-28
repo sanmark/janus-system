@@ -25,7 +25,7 @@ class UsersController extends Controller
     private $usersValidator;
 
     public function __construct(
-    MetasHandler $metasHandler,
+        MetasHandler $metasHandler,
         UsersHandler $usersHandler,
         UserSecretResetRequestsHandler $userSecretResetRequestsHandler,
         IUsersValidator $usersValidator
@@ -38,29 +38,43 @@ class UsersController extends Controller
 
     public function all(Request $request)
     {
-        $page = $request->get('page', 1);
-        $count = $request->get('count', 10);
-        $noPagination = $request->get('no_pagination', false);
+        try {
+            $page = $request->get('page', 1);
+            $count = $request->get('count', 10);
+            $noPagination = $request->get('no_pagination', false);
+            $orderBy = $request->get('order_by', 'id');
+            $orderSort = $request->get('order_sort', 'asc');
+            $metaOrderBy = $request->get('meta_order_by');
+            $metaOrderSort = $request->get('meta_order_sort', 'asc');
 
-        $users = $this
-            ->usersHandler
-            ->all($noPagination, $page, $count)
-        ;
+            $users = $this
+                ->usersHandler
+                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort)
+            ;
 
-        $payload = [];
+            $payload = [];
 
-        foreach ($users as $user) {
-            $payloadUser = [];
+            foreach ($users as $user) {
+                $payloadUser = [];
 
-            $payloadUser['id'] = $user->id;
-            $payloadUser['key'] = $user->key;
+                $payloadUser['id'] = $user->id;
+                $payloadUser['key'] = $user->key;
 
-            $payload[] = $payloadUser;
+                $payload[] = $payloadUser;
+            }
+
+            $response = new SuccessResponse($payload);
+
+            return $response->getResponse();
+        } catch (InvalidInputException $ex) {
+            $response = new ErrorResponse($ex->getErrors());
+
+            return
+                response()
+                ->json($response->getOutput())
+                ->setStatusCode(422)
+            ;
         }
-
-        $response = new SuccessResponse($payload);
-
-        return $response->getResponse();
     }
 
     public function byKeyGet(Request $request, string $key)

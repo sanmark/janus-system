@@ -28,13 +28,17 @@ class UsersHandlerTest extends TestCase
                 false,
                 149,
                 150,
+                '152',
+                '153',
+                '154',
+                '155',
             ])
             ->andReturn([151])
         ;
 
         $usersHandler = new UsersHandler($mockArrayHelper, $mockHash, $mockIUsersRepo);
 
-        $response = $usersHandler->all(false, 149, 150);
+        $response = $usersHandler->all(false, 149, 150, 152, 153, 154, 155);
 
         $this->assertSame([151], $response);
     }

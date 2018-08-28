@@ -27,12 +27,16 @@ class UsersHandler
     public function all(
         bool $noPagination = false,
         int $page = 1,
-        int $count = 10
+        int $count = 10,
+        string $orderBy = 'id',
+        string $orderSort = 'asc',
+        string $metaOrderBy = null,
+        string $metaOrderSort = 'asc'
     ) {
         return
                 $this
                 ->usersRepo
-                ->all($noPagination, $page, $count)
+                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort)
         ;
     }
 

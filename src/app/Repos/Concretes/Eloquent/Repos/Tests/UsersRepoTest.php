@@ -4,6 +4,7 @@ namespace App\Repos\Concretes\Eloquent\Repos\Tests;
 
 use App\Models\User;
 use App\Repos\Concretes\Eloquent\Models\User as eUser;
+use App\Repos\Concretes\Eloquent\Repos\MetaKeysRepo;
 use App\Repos\Concretes\Eloquent\Repos\UsersRepo;
 use App\Repos\Exceptions\RecordNotFoundException;
 use App\Repos\Exceptions\UniqueConstraintFailureException;
@@ -21,10 +22,13 @@ class UsersRepoTest extends TestCase
 {
     public function test_all_ok()
     {
-        $mockEUser = $this->mock(eUser::class);
-        $mockHasher = $this->mock(Hasher::class);
+        $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
+        $eUser = $this->mock(eUser::class);
 
-        $mockEUser
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
+
+        $eUser
             ->shouldReceive('all')
             ->withNoArgs()
             ->andReturnSelf()
@@ -38,13 +42,13 @@ class UsersRepoTest extends TestCase
         $user->created_at = 155;
         $user->updated_at = 156;
 
-        $mockEUser
+        $eUser
             ->shouldReceive('query')
             ->withNoArgs()
             ->andReturnSelf()
         ;
-        
-        $mockEUser
+
+        $eUser
             ->shouldReceive('forPage')
             ->withArgs([
                 149,
@@ -52,8 +56,17 @@ class UsersRepoTest extends TestCase
             ])
             ->andReturnSelf()
         ;
-        
-        $mockEUser
+
+        $eUser
+            ->shouldReceive('orderBy')
+            ->withArgs([
+                '157',
+                '158',
+            ])
+            ->andReturnSelf()
+        ;
+
+        $eUser
             ->shouldReceive('get')
             ->withNoArgs()
             ->andReturn([$user])
@@ -67,32 +80,31 @@ class UsersRepoTest extends TestCase
         $expectedResponse->created_at = 155;
         $expectedResponse->updated_at = 156;
 
-        $usersRepo = new UsersRepo($mockHasher, $mockEUser);
-
-        $response = $usersRepo->all(false, 149, 150);
+        $response = $usersRepo->all(false, 149, 150, 157, 158);
 
         $this->assertEquals([$expectedResponse], $response);
     }
 
     public function test_create_ok()
     {
-        $mockEUser = $this->mock(eUser::class);
-        $mockHasher = $this->mock(Hasher::class);
+        $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
+        $eUser = $this->mock(eUser::class);
 
-        $mockEUser
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
+
+        $eUser
             ->shouldReceive('newInstance')
-            ->andReturn($mockEUser);
+            ->andReturn($eUser);
 
-        $mockEUser
+        $eUser
             ->shouldReceive('setAttribute');
 
-        $mockEUser
+        $eUser
             ->shouldReceive('save');
 
-        $mockEUser
+        $eUser
             ->shouldReceive('getAttribute');
-
-        $usersRepo = new UsersRepo($mockHasher, $mockEUser);
 
         $userKey = $this->faker()->userName;
         $userSecret = $this->faker()->password;
@@ -106,25 +118,27 @@ class UsersRepoTest extends TestCase
     {
         $this->expectException(UniqueConstraintFailureException::class);
 
-        $mockEUser = $this->mock(eUser::class);
-        $mockHasher = $this->mock(Hasher::class);
+        $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
+        $eUser = $this->mock(eUser::class);
+
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
+
         $mockPreviousException = $this->mock(Exception::class);
 
-        $mockEUser
+        $eUser
             ->shouldReceive('newInstance')
-            ->andReturn($mockEUser);
+            ->andReturn($eUser);
 
-        $mockEUser
+        $eUser
             ->shouldReceive('setAttribute');
 
-        $mockEUser
+        $eUser
             ->shouldReceive('save')
             ->andThrow(new QueryException('sql', [], $mockPreviousException));
 
         $userKey = $this->faker()->userName;
         $userSecret = $this->faker()->password;
-
-        $usersRepo = new UsersRepo($mockHasher, $mockEUser);
 
         try {
             $usersRepo->create($userKey, $userSecret);
@@ -138,43 +152,42 @@ class UsersRepoTest extends TestCase
     public function test_get_ok()
     {
         $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
         $eUser = $this->mock(eUser::class);
 
-        $usersRepo = new UsersRepo($hasher, $eUser);
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
 
-        $theEUser = $this->mock(eUser::class);
-
-        $theEUser->shouldReceive('getAttribute')
+        $eUser->shouldReceive('getAttribute')
             ->withArgs([
                 'id',
             ])
             ->andReturn(149);
 
-        $theEUser->shouldReceive('getAttribute')
+        $eUser->shouldReceive('getAttribute')
             ->withArgs([
                 'key',
             ])
             ->andReturn('the-key');
 
-        $theEUser->shouldReceive('getAttribute')
+        $eUser->shouldReceive('getAttribute')
             ->withArgs([
                 'secret',
             ])
             ->andReturn('the-secret');
 
-        $theEUser->shouldReceive('getAttribute')
+        $eUser->shouldReceive('getAttribute')
             ->withArgs([
                 'deleted_at',
             ])
             ->andReturn('the-deleted_at');
 
-        $theEUser->shouldReceive('getAttribute')
+        $eUser->shouldReceive('getAttribute')
             ->withArgs([
                 'created_at',
             ])
             ->andReturn('the-created_at');
 
-        $theEUser->shouldReceive('getAttribute')
+        $eUser->shouldReceive('getAttribute')
             ->withArgs([
                 'updated_at',
             ])
@@ -184,7 +197,7 @@ class UsersRepoTest extends TestCase
             ->withArgs([
                 149,
             ])
-            ->andReturn($theEUser);
+            ->andReturn($eUser);
 
         $response = $usersRepo->get(149);
 
@@ -202,9 +215,10 @@ class UsersRepoTest extends TestCase
     public function test_get_throwsRecordNotFoundException()
     {
         $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
         $eUser = $this->mock(eUser::class);
 
-        $usersRepo = new UsersRepo($hasher, $eUser);
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
 
         $eUser->shouldReceive('findOrFail')
             ->withArgs([
@@ -219,21 +233,24 @@ class UsersRepoTest extends TestCase
 
     public function test_getByKey_ok()
     {
-        $mockEUser = $this->mock(eUser::class);
-        $mockHasher = $this->mock(Hasher::class);
+        $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
+        $eUser = $this->mock(eUser::class);
 
-        $mockEUser
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
+
+        $eUser
             ->shouldReceive('where')
             ->withArgs([
                 'key',
                 '=',
                 'rofl',
             ])
-            ->andReturn($mockEUser);
+            ->andReturn($eUser);
 
-        $mockEUser
+        $eUser
             ->shouldReceive('firstOrFail')
-            ->andReturn($mockEUser);
+            ->andReturn($eUser);
 
         $attributeValues = [
             'id' => 'the_id',
@@ -245,13 +262,11 @@ class UsersRepoTest extends TestCase
         ];
 
         foreach ($attributeValues as $attribute => $value) {
-            $mockEUser
+            $eUser
                 ->shouldReceive('getAttribute')
                 ->withArgs([$attribute])
                 ->andReturn($value);
         }
-
-        $usersRepo = new UsersRepo($mockHasher, $mockEUser);
 
         $user = $usersRepo
             ->getByKey('rofl');
@@ -269,10 +284,13 @@ class UsersRepoTest extends TestCase
     {
         $this->expectException(RecordNotFoundException::class);
 
-        $mockEUser = $this->mock(eUser::class);
-        $mockHasher = $this->mock(Hasher::class);
+        $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
+        $eUser = $this->mock(eUser::class);
 
-        $mockEUser
+        $usersRepo = new UsersRepo($hasher, $metaKeysRepo, $eUser);
+
+        $eUser
             ->shouldReceive('where')
             ->withArgs([
                 'key',
@@ -281,8 +299,6 @@ class UsersRepoTest extends TestCase
             ])
             ->andThrow(ModelNotFoundException::class);
 
-        $usersRepo = new UsersRepo($mockHasher, $mockEUser);
-
         $user = $usersRepo
             ->getByKey('rofl');
     }
@@ -290,10 +306,12 @@ class UsersRepoTest extends TestCase
     public function test_update_ok()
     {
         $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
         $eUser = $this->mock(eUser::class);
 
         $usersRepo = $this->mock(UsersRepo::class . '[get]', [
             $hasher,
+            $metaKeysRepo,
             $eUser,
         ]);
 
@@ -337,9 +355,14 @@ class UsersRepoTest extends TestCase
     public function test_update_throwsRecordNotFoundException()
     {
         $hasher = $this->mock(Hasher::class);
+        $metaKeysRepo = $this->mock(MetaKeysRepo::class);
         $eUser = $this->mock(eUser::class);
 
-        $usersRepo = new UsersRepo($hasher, $eUser);
+        $usersRepo = $this->mock(UsersRepo::class . '[get]', [
+            $hasher,
+            $metaKeysRepo,
+            $eUser,
+        ]);
 
         $eUser->shouldReceive('findOrFail')
             ->withArgs([
