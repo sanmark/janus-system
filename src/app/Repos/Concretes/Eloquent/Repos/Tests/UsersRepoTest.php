@@ -68,7 +68,7 @@ class UsersRepoTest extends TestCase
 
         $eUser
             ->shouldReceive('get')
-            ->withNoArgs()
+            ->withArgs([['users.*']])
             ->andReturn([$user])
         ;
 
