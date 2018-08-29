@@ -203,7 +203,7 @@ class AuthSessionsControllerTest extends TestCase
             ])
             -> andReturn($authSession);
 
-        $result = $authSessionsController -> validate($request);
+        $result = $authSessionsController -> validateAuthSession($request);
 
         $this -> assertInstanceOf(JsonResponse::class, $result);
         $this -> assertEquals(200, $result -> getStatusCode());
@@ -239,7 +239,7 @@ class AuthSessionsControllerTest extends TestCase
             ])
             -> andThrow(RecordNotFoundException::class);
 
-        $result = $authSessionsController -> validate($request);
+        $result = $authSessionsController -> validateAuthSession($request);
 
         $this -> assertInstanceOf(JsonResponse::class, $result);
         $this -> assertEquals(401, $result -> getStatusCode());
@@ -261,7 +261,7 @@ class AuthSessionsControllerTest extends TestCase
             ])
             -> andReturnNull();
 
-        $result = $authSessionsController -> validate($request);
+        $result = $authSessionsController -> validateAuthSession($request);
 
         $this -> assertInstanceOf(JsonResponse::class, $result);
         $this -> assertEquals(401, $result -> getStatusCode());

@@ -7,7 +7,6 @@ use App\API\Responses\SuccessResponse;
 use App\API\Validators\Constants\ResponseConstants;
 use App\Handlers\FacebookAccountsHandler;
 use App\Handlers\GoogleAccountsHandler;
-use App\Http\Controllers\Controller;
 use App\Repos\Exceptions\RecordNotFoundException;
 use App\SystemSettings\Concretes\LaravelEnv\Constants;
 use Facebook\Facebook;
@@ -16,7 +15,7 @@ use InvalidArgumentException;
 use function config;
 use function response;
 
-class ThirdPartySignInController extends Controller
+class ThirdPartySignInController extends Base
 {
     private $facebookAccountsHandler;
     private $googleAccountsHandler;
@@ -29,6 +28,32 @@ class ThirdPartySignInController extends Controller
         $this -> googleAccountsHandler = $googleAccountsHandler;
     }
 
+    /**
+     * @SWG\Post(
+     *  path = "/third-party-sign-in/facebook",
+     *  summary = "Sign in with Facebook.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "token",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "Logging in with Facebook successful.",
+     *  ),
+     *  @SWG\Response (
+     *   response = 400,
+     *   description = "Logging in with Facebook failed.",
+     *  ),
+     * )
+     */
     public function facebook(Request $request)
     {
         try {
@@ -74,6 +99,32 @@ class ThirdPartySignInController extends Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *  path = "/third-party-sign-in/google",
+     *  summary = "Sign in with Google.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "token",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "Logging in with Google successful.",
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "Logging in with Google failed.",
+     *  ),
+     * )
+     */
     public function google(Request $request)
     {
         $token = $request -> get('token');

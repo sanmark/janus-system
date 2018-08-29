@@ -14,10 +14,9 @@ use App\Handlers\UsersHandler;
 use App\Repos\Exceptions\RecordNotFoundException;
 use App\Repos\Exceptions\UniqueConstraintFailureException;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
 use function response;
 
-class UsersController extends Controller
+class UsersController extends Base
 {
     private $metasHandler;
     private $usersHandler;
@@ -36,6 +35,70 @@ class UsersController extends Controller
         $this->usersValidator = $usersValidator;
     }
 
+    /**
+     * @SWG\Get(
+     *  path = "/users",
+     *  summary = "Get a paginated list of Users.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "page",
+     *   in = "query",
+     *   type = "integer",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "count",
+     *   in = "query",
+     *   type = "integer",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "no_pagination",
+     *   in = "query",
+     *   type = "boolean",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "order_by",
+     *   in = "query",
+     *   type = "string",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "order_sort",
+     *   in = "query",
+     *   type = "string",
+     *   description = "Possible values: `asc` and `desc`.",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "meta_order_by",
+     *   in = "query",
+     *   type = "string",
+     *   description = "Order by Meta.",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "meta_order_sort",
+     *   in = "query",
+     *   type = "string",
+     *   description = "Possible values: `asc` and `desc`.",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "Array of Users.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "id": "int",
+     *       "key": "string",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function all(Request $request)
     {
         try {
@@ -77,6 +140,45 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *  path = "/users/by-key/{key}",
+     *  summary = "Get User by key.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "key",
+     *   in = "path",
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "User object.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      "id": "int",
+     *      "key": "string",
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function byKeyGet(Request $request, string $key)
     {
         try {
@@ -97,6 +199,60 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *  path = "/users",
+     *  summary = "Create User.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "user_key",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "user_secret",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "User creation successful.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "id": "int",
+     *       "key": "string",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 400,
+     *   description = "Validation failed.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *      "user_key": {
+     *       "required",
+     *      },
+     *      "user_secret": {
+     *       "required",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function create(Request $request)
     {
         try {
@@ -138,6 +294,45 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *  path = "/users/{id}",
+     *  summary = "Get User by ID.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   type = "integer",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "User object.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      "id": "int",
+     *      "key": "string",
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function get(string $id)
     {
         try {
@@ -158,6 +353,64 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Patch(
+     *  path = "/users/{id}",
+     *  summary = "Update User.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   type = "integer",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "user_secret",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "User object.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      "id": "int",
+     *      "key": "string",
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 400,
+     *   description = "Validation failed.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *      "user_secret": {
+     *       "required",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function update(Request $request, $id)
     {
         try {
@@ -182,6 +435,49 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *  path = "/users/{id}/metas",
+     *  summary = "Metas of a User.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   type = "integer",
+     *   required = true,
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "Array of Metas.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "meta_key": "string",
+     *       "value": "string",
+     *       "user_id": "int",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function metasAll(int $userId)
     {
         try {
@@ -210,6 +506,51 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Get(
+     *  path = "/users/{id}/metas/{key}",
+     *  summary = "Get a User's Meta by key.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   type = "string",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "key",
+     *   in = "path",
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "Meta object.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      "meta_key": "string",
+     *      "value": "string",
+     *      "user_id": "string",
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User or MetaKey not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function metasOne(int $userId, string $metaKey)
     {
         try {
@@ -232,6 +573,71 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Patch(
+     *  path = "/users/{id}/metas/{key}",
+     *  summary = "Update User's Meta.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   type = "integer",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "key",
+     *   in = "path",
+     *   type = "string",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "value",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "Meta object.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      "id": "int",
+     *      "meta_key_id": "int",
+     *      "user_id": "int",
+     *      "value": "string",
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 400,
+     *   description = "Validation failed.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *      "value": {
+     *       "required",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User or MetaKey not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function metasUpdate(Request $request, int $userId, string $metaKey)
     {
         try {
@@ -255,6 +661,51 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *  path = "/users/{id}/user-secret-reset-requests",
+     *  summary = "Create UserSecretResetRequest.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   required = true,
+     *   type = "integer",
+     *  ),
+     *  @SWG\Response (
+     *   response = 201,
+     *   description = "UserSecretResetRequest creation successful.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "id": "int",
+     *       "user_id": "string",
+     *       "token": "string",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 404,
+     *   description = "User not found.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *      {
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function userSecretResetRequestsCreate(Request $request, int $userId)
     {
         try {
@@ -272,6 +723,69 @@ class UsersController extends Controller
         }
     }
 
+    /**
+     * @SWG\Post(
+     *  path = "/users/{id}/user-secret-reset-requests/execute",
+     *  summary = "Execute a UserSecretResetRequest.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "id",
+     *   in = "path",
+     *   required = true,
+     *   type = "integer",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "new_secret",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "user_secret_reset_request_token",
+     *   in = "formData",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "UserSecretResetRequest execution successful.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "id": "int",
+     *       "key": "string",
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     *  @SWG\Response (
+     *   response = 400,
+     *   description = "Validation error.",
+     *   examples = {
+     *    {
+     *     "errors": {
+     *      {
+     *       "new_secret": {
+     *        "required",
+     *       },
+     *       "user_secret_reset_request_token": {
+     *        "required",
+     *        "not_exists",
+     *       },
+     *      },
+     *     },
+     *    },
+     *   },
+     *  ),
+     * )
+     */
     public function userSecretResetRequestsExecute(Request $request, int $userId)
     {
         try {
