@@ -13,6 +13,6 @@ Route::group([
         -> name('api.auth-sessions.create');
 
     $router
-        -> get('validate', $methodPrefix . 'validate')
+        -> get('validate', $methodPrefix . 'validateAuthSession')
         -> name('api.auth-sessions.validate');
 });

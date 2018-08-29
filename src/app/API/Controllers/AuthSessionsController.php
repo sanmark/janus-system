@@ -13,7 +13,7 @@ use App\Repos\Exceptions\RecordNotFoundException;
 use Illuminate\Http\Request;
 use function response;
 
-class AuthSessionsController
+class AuthSessionsController extends Base
 {
     private $authSessionsHandler;
     private $authSessionsValidator;
@@ -26,6 +26,49 @@ class AuthSessionsController
         $this -> authSessionsValidator = $authSessionsValidator;
     }
 
+    /**
+     * @SWG\Post(
+     *  path = "/auth-sessions",
+     *  summary = "Create a new AuthSession.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "user_key",
+     *   in = "formData",
+     *   type = "string",
+     *   required = true,
+     *  ),
+     *  @SWG\Parameter (
+     *   name = "user_secret",
+     *   in = "formData",
+     *   type = "string",
+     *   required = true,
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "AuthSession.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "id": "int",
+     *       "key": "string",
+     *       "user_id": "int",
+     *      },
+     *     }
+     *    }
+     *   }
+     *  ),
+     *  @SWG\Response (
+     *   response = 401,
+     *   description = "Either provided App Key andor App Secret Hash or provided user credentials are invalid.",
+     *  ),
+     * )
+     */
     public function create(Request $request)
     {
         try {
@@ -60,7 +103,46 @@ class AuthSessionsController
         }
     }
 
-    public function validate(Request $request)
+    /**
+     * @SWG\Get(
+     *  path = "/auth-sessions/validate",
+     *  summary = "Validate a new AuthSession.",
+     *  security = {
+     *   {
+     *    "x-lk-sanmark-janus-app-key": {},
+     *    "x-lk-sanmark-janus-app-secret-hash": {},
+     *   },
+     *  },
+     *  @SWG\Parameter (
+     *   name = "x-lk-sanmark-janus-sessionkey",
+     *   in = "header",
+     *   required = true,
+     *   type = "string",
+     *  ),
+     *  @SWG\Response (
+     *   response = 200,
+     *   description = "AuthSession.",
+     *   examples = {
+     *    {
+     *     "data": {
+     *      {
+     *       "id": "int",
+     *       "key": "string",
+     *       "user_id": "int",
+     *       "created_at": "string",
+     *       "updated_at": "string",
+     *      },
+     *     }
+     *    }
+     *   }
+     *  ),
+     *  @SWG\Response (
+     *   response = 401,
+     *   description = "Either provided App Key andor App Secret Hash or provided SessionKey are invalid.",
+     *  ),
+     * )
+     */
+    public function validateAuthSession(Request $request)
     {
         try {
             $key = $request -> header(RequestHeaderConstants::SESSION_KEY);
