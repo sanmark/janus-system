@@ -76,7 +76,7 @@ class UsersRepo implements IUsersRepo
             $query->forPage($page, $count);
         }
 
-        $eUsers = $query->get();
+        $eUsers = $query->get(['users.*']);
 
         $users = [];
 
