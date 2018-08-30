@@ -106,7 +106,7 @@ class AuthSessionsController extends Base
     /**
      * @SWG\Get(
      *  path = "/auth-sessions/validate",
-     *  summary = "Validate a new AuthSession.",
+     *  summary = "Validate an AuthSession.",
      *  security = {
      *   {
      *    "x-lk-sanmark-janus-app-key": {},
