@@ -576,7 +576,7 @@ class UsersController extends Base
     /**
      * @SWG\Patch(
      *  path = "/users/{id}/metas/{key}",
-     *  summary = "Update User's Meta.",
+     *  summary = "Update a User's Meta.",
      *  security = {
      *   {
      *    "x-lk-sanmark-janus-app-key": {},
