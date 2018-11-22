@@ -109,10 +109,11 @@ class UsersController extends Base
             $orderSort = $request->get('order_sort', 'asc');
             $metaOrderBy = $request->get('meta_order_by');
             $metaOrderSort = $request->get('meta_order_sort', 'asc');
+            $withMetas = json_decode($request->get('with_metas', '[]'));
 
             $users = $this
                 ->usersHandler
-                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort)
+                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort, $withMetas)
             ;
 
             $payload = [];
@@ -122,6 +123,12 @@ class UsersController extends Base
 
                 $payloadUser['id'] = $user->id;
                 $payloadUser['key'] = $user->key;
+                
+                foreach($withMetas as $withMeta){
+                    if(property_exists($user, $withMeta)){
+                        $payloadUser[$withMeta] = $user->{$withMeta};
+                    }
+                }
 
                 $payload[] = $payloadUser;
             }

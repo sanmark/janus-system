@@ -31,12 +31,13 @@ class UsersHandler
         string $orderBy = 'id',
         string $orderSort = 'asc',
         string $metaOrderBy = null,
-        string $metaOrderSort = 'asc'
+        string $metaOrderSort = 'asc',
+        array $withMetas = []
     ) {
         return
                 $this
                 ->usersRepo
-                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort)
+                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort, $withMetas)
         ;
     }
 
