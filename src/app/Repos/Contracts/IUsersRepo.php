@@ -14,7 +14,8 @@ interface IUsersRepo
         string $orderSort = 'asc',
         string $metaOrderBy = null,
         string $metaOrderSort = 'asc',
-        array $withMetas = []
+        array $withMetas = [],
+        array $filters = []
     ): array;
 
     public function create(string $userKey, string $userSecret): User;

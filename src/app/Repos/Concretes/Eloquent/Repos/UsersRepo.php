@@ -39,14 +39,25 @@ class UsersRepo implements IUsersRepo
         string $orderSort = 'asc',
         string $metaOrderBy = null,
         string $metaOrderSort = 'asc',
-        array $withMetas = []
+        array $withMetas = [],
+        array $filters = []
     ): array {
         $query = $this
             ->model
             ->query()
         ;
-        
-        foreach($withMetas as $withMeta){
+
+        foreach ($filters as $filter) {
+            if (
+                $filter[0] === 'id' &&
+                is_array($filter[1])
+            ) {
+                //Eg: [["id", [149,150,151]]]
+                $query->whereIn('id', $filter[1]);
+            }
+        }
+
+        foreach ($withMetas as $withMeta) {
             $query->with($withMeta);
         }
 
@@ -94,9 +105,9 @@ class UsersRepo implements IUsersRepo
             $user->deleted_at = $eUser->deleted_at;
             $user->created_at = $eUser->created_at;
             $user->updated_at = $eUser->updated_at;
-            
-            foreach($withMetas as $withMeta){
-                if(!is_null($eUser->{$withMeta})){
+
+            foreach ($withMetas as $withMeta) {
+                if (!is_null($eUser->{$withMeta})) {
                     $user->{$withMeta} = $eUser->{$withMeta}->value;
                 }
             }
