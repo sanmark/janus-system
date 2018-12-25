@@ -6,19 +6,23 @@ use Illuminate\Database\Eloquent\Model;
 
 class User extends Model
 {
-    public function metaFirstName() {
+    public function metaFirstName()
+    {
         return $this->meta('first_name');
     }
-    
-    public function metaLastName() {
+
+    public function metaLastName()
+    {
         return $this->meta('last_name');
     }
-    
-    public function metaName() {
+
+    public function metaName()
+    {
         return $this->meta('name');
     }
-    
-    public function meta($metaKey) {
+
+    public function meta($metaKey)
+    {
         return $this
             ->hasOne(Meta::class)
             ->leftJoin('meta_keys', 'meta_keys.id', '=', 'metas.meta_key_id')

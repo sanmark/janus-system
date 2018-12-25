@@ -130,9 +130,9 @@ class UsersController extends Base
 
                 $payloadUser['id'] = $user->id;
                 $payloadUser['key'] = $user->key;
-                
-                foreach($withMetas as $withMeta){
-                    if(property_exists($user, $withMeta)){
+
+                foreach ($withMetas as $withMeta) {
+                    if (property_exists($user, $withMeta)) {
                         $payloadUser[$withMeta] = $user->{$withMeta};
                     }
                 }

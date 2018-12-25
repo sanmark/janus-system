@@ -46,7 +46,7 @@ class UsersRepo implements IUsersRepo
             ->model
             ->query()
         ;
-        
+
         foreach ($filters as $filter) {
             if (
                 $filter[0] === 'id' &&
@@ -56,8 +56,8 @@ class UsersRepo implements IUsersRepo
                 $query->whereIn('id', $filter[1]);
             }
         }
-        
-        foreach($withMetas as $withMeta){
+
+        foreach ($withMetas as $withMeta) {
             $query->with($withMeta);
         }
 
@@ -105,9 +105,9 @@ class UsersRepo implements IUsersRepo
             $user->deleted_at = $eUser->deleted_at;
             $user->created_at = $eUser->created_at;
             $user->updated_at = $eUser->updated_at;
-            
-            foreach($withMetas as $withMeta){
-                if(!is_null($eUser->{$withMeta})){
+
+            foreach ($withMetas as $withMeta) {
+                if (!is_null($eUser->{$withMeta})) {
                     $user->{$withMeta} = $eUser->{$withMeta}->value;
                 }
             }
