@@ -23,4 +23,6 @@ RUN chown -R www-data:www-data .
 WORKDIR /app/storage
 RUN chown -R www-data:www-data .
 
+WORKDIR /app
+
 CMD ["bash", "/app-boot/boot.sh"]

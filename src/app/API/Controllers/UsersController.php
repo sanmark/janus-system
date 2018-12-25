@@ -83,6 +83,12 @@ class UsersController extends Base
      *   type = "string",
      *   description = "Possible values: `asc` and `desc`.",
      *  ),
+     *  @SWG\Parameter (
+     *   name = "filters",
+     *   in = "query",
+     *   type = "string",
+     *   description = "Possible values: [['id', [149,150,151]]].",
+     *  ),
      *  @SWG\Response (
      *   response = 200,
      *   description = "Array of Users.",
@@ -110,10 +116,11 @@ class UsersController extends Base
             $metaOrderBy = $request->get('meta_order_by');
             $metaOrderSort = $request->get('meta_order_sort', 'asc');
             $withMetas = json_decode($request->get('with_metas', '[]'));
+            $filters = json_decode($request->get('filters', '[]'));
 
             $users = $this
                 ->usersHandler
-                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort, $withMetas)
+                ->all($noPagination, $page, $count, $orderBy, $orderSort, $metaOrderBy, $metaOrderSort, $withMetas, $filters)
             ;
 
             $payload = [];

@@ -39,12 +39,23 @@ class UsersRepo implements IUsersRepo
         string $orderSort = 'asc',
         string $metaOrderBy = null,
         string $metaOrderSort = 'asc',
-        array $withMetas = []
+        array $withMetas = [],
+        array $filters = []
     ): array {
         $query = $this
             ->model
             ->query()
         ;
+        
+        foreach ($filters as $filter) {
+            if (
+                $filter[0] === 'id' &&
+                is_array($filter[1])
+            ) {
+                //Eg: [["id", [149,150,151]]]
+                $query->whereIn('id', $filter[1]);
+            }
+        }
         
         foreach($withMetas as $withMeta){
             $query->with($withMeta);
