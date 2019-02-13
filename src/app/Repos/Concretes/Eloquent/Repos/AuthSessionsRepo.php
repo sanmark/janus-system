@@ -59,6 +59,7 @@ class AuthSessionsRepo implements IAuthSessionsRepo
             $authSession -> id = $eAuthSession -> id;
             $authSession -> key = $eAuthSession -> key;
             $authSession -> user_id = $eAuthSession -> user_id;
+            $authSession -> is_permanent = $eAuthSession -> is_permanent;
             $authSession -> created_at = $eAuthSession -> created_at;
             $authSession -> updated_at = $eAuthSession -> updated_at;
 
