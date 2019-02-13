@@ -82,6 +82,10 @@ class AuthSessionsHandler
 
         $now = $this -> carbon -> now();
 
+        if ($authSession->is_permanent) {
+            return $authSession;
+        }
+
         if ($now > $expiryTime) {
             throw new RecordNotFoundException();
         }
